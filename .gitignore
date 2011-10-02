@@ -1,0 +1,6 @@
+/Makefile
+/temp/*
+/Debug/
+/Release/
+qt-leptonica.pro.*
+
