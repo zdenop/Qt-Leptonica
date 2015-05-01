@@ -1,12 +1,14 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
-#include <QtGui/QImage>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QSettings>
 #include <QDebug>
+#include <QDragEnterEvent>
+#include <QFileDialog>
+#include <QtGui/QImage>
+#include <QMainWindow>
+#include <QMessageBox>
+#include <QMimeData>
+#include <QSettings>
 
 #include "allheaders.h"
 #include "ui_mainwindow.h"
@@ -20,12 +22,16 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     QImage* image;
+    static const char *qString2Char(QString string);
+    void openImage(const QString& imageFileName);
 
 public slots:
     QImage PixToQImage(PIX *pixs);
 
 protected:
-  QGraphicsScene* imageScene;
+    QGraphicsScene* imageScene;
+    void dragEnterEvent(QDragEnterEvent* event);
+    void dropEvent(QDropEvent* event);
 };
 
 #endif // MAINWINDOW_H

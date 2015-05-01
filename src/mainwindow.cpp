@@ -3,15 +3,10 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent) {
     setupUi(this);
-
-
-    PIX    *pixs;
-    pixs = pixRead("test/building.jpg");
-    QImage _image2 = PixToQImage(pixs);
+    setAcceptDrops(true);
 
     gViewResult->viewport()->setGeometry(QRect(0,0,0,0));
     imageScene = new QGraphicsScene;
-    imageScene->addPixmap(QPixmap::fromImage(_image2));
 
     qDebug() << "_image2 rect:" << imageScene->sceneRect();
     gViewResult->setScene(imageScene);
@@ -29,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
     qDebug() << "gViewResult zoom_fa..." << gViewResult->transform().m11();
     qDebug() << "gViewResult frameGeometry..." << gViewResult->frameGeometry();
     qDebug() << "sceneRect size..." << gViewResult->sceneRect().size();
+    openImage("test/building.jpg");
 }
 
 QImage MainWindow::PixToQImage(PIX *pixs)
@@ -100,4 +96,51 @@ QImage MainWindow::PixToQImage(PIX *pixs)
 
 MainWindow::~MainWindow()
 {
+}
+
+/*
+ * QString to const char
+ */
+const char *MainWindow::qString2Char(QString string) {
+    QByteArray byteArray = string.toUtf8();
+    const char * constChar = byteArray.data();
+    return constChar;
+}
+
+/*
+ * openImage with leptonica
+ */
+void MainWindow::openImage(const QString& imageFileName) {
+    if (!imageFileName.isEmpty()) {
+        QString canonicalImageFileName =
+                QFileInfo(imageFileName).canonicalFilePath();
+
+        PIX    *pixs;
+        pixs = pixRead(qString2Char(imageFileName));
+        if (!pixs) {
+            this->statusBar()->showMessage(
+                        tr("Cannot open input file: %1").arg(imageFileName),
+                        4000);
+            return;
+        }
+
+        QImage _image2 = PixToQImage(pixs);
+        imageScene->addPixmap(QPixmap::fromImage(_image2));
+        this->setWindowTitle(canonicalImageFileName);
+    }
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *event) {
+  if (event->mimeData()->hasFormat("text/uri-list")) {
+    event->acceptProposedAction();
+  }
+}
+
+void MainWindow::dropEvent(QDropEvent *event) {
+  QList<QUrl> urls = event->mimeData()->urls();
+  if (urls.count()) {
+    QString filename = urls[0].toLocalFile();
+    openImage(filename);
+    event->acceptProposedAction();
+  }
 }
