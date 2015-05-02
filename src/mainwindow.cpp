@@ -1,8 +1,10 @@
 #include "mainwindow.h"
+#include "settings.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent) {
     setupUi(this);
+    readSettings(true);
     setAcceptDrops(true);
 
     fileWatcher = 0;
@@ -178,4 +180,38 @@ void MainWindow::slotfileChanged(const QString &fileName) {
                     tr("Source image was modified! Reloading..."), 4000);
         openImage(fileName);
     }
+}
+
+/*
+ * Read settings
+ */
+void MainWindow::readSettings(bool init) {
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope,
+                       SETTING_ORGANIZATION, SETTING_APPLICATION);
+
+    // run this section only during initializaiton time
+    if (init) {
+        settings.beginGroup("mainWindow");
+        restoreGeometry(settings.value("geometry").toByteArray());
+        restoreState(settings.value("state").toByteArray());
+        settings.endGroup();
+    }
+}
+
+/*
+ * Write settings
+ */
+void MainWindow::writeSettings() {
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope,
+                       SETTING_ORGANIZATION, SETTING_APPLICATION);
+
+    settings.beginGroup("mainWindow");
+    settings.setValue("geometry", saveGeometry());
+    settings.setValue("state", saveState());
+    settings.endGroup();
+}
+
+void MainWindow::closeEvent(QCloseEvent* event) {
+    writeSettings();
+    event->accept();
 }

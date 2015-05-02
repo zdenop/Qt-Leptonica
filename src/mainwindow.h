@@ -34,13 +34,16 @@ public slots:
 protected:
     QGraphicsScene *imageScene;
     QGraphicsItem *imageItem;
+    bool modified;
     void dragEnterEvent(QDragEnterEvent* event);
     void dropEvent(QDropEvent* event);
-    bool modified;
+    void closeEvent(QCloseEvent* event);
 
 private:
     QFileSystemWatcher *fileWatcher;
     void setFileWatcher(const QString & fileName);
+    void readSettings(bool init);
+    void writeSettings();
 
 private slots:
     void slotfileChanged(const QString& fileName);

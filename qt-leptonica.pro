@@ -25,7 +25,8 @@ RCC_DIR     += temp
 SOURCES += src/main.cpp\
         src/mainwindow.cpp
 
-HEADERS += src/mainwindow.h
+HEADERS += src/mainwindow.h \
+           src/settings.h
 
 FORMS   += src/mainwindow.ui
 
