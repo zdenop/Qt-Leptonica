@@ -5,6 +5,9 @@ MainWindow::MainWindow(QWidget *parent)
     setupUi(this);
     setAcceptDrops(true);
 
+    fileWatcher = 0;
+    imageItem = 0;
+
     gViewResult->viewport()->setGeometry(QRect(0,0,0,0));
     imageScene = new QGraphicsScene;
 
@@ -115,7 +118,7 @@ void MainWindow::openImage(const QString& imageFileName) {
         QString canonicalImageFileName =
                 QFileInfo(imageFileName).canonicalFilePath();
 
-        PIX    *pixs;
+        PIX *pixs;
         pixs = pixRead(qString2Char(imageFileName));
         if (!pixs) {
             this->statusBar()->showMessage(
@@ -124,9 +127,16 @@ void MainWindow::openImage(const QString& imageFileName) {
             return;
         }
 
-        QImage _image2 = PixToQImage(pixs);
-        imageScene->addPixmap(QPixmap::fromImage(_image2));
+        if (imageItem) {
+            imageScene->removeItem(static_cast<QGraphicsItem*>(imageItem));
+            delete imageItem;
+        }
+        QImage image = PixToQImage(pixs);
+        imageItem = imageScene->addPixmap(QPixmap::fromImage(image));
         this->setWindowTitle(canonicalImageFileName);
+        modified = false;
+        setFileWatcher(imageFileName);
+        pixDestroy(&pixs);
     }
 }
 
@@ -143,4 +153,29 @@ void MainWindow::dropEvent(QDropEvent *event) {
     openImage(filename);
     event->acceptProposedAction();
   }
+}
+
+/*
+ * monitor opened file
+ */
+void MainWindow::setFileWatcher(const QString & fileName) {
+  if (fileWatcher) {
+    fileWatcher->removePaths(fileWatcher->files());
+  } else {
+    fileWatcher = new QFileSystemWatcher(this);
+    connect(fileWatcher, SIGNAL(fileChanged(const QString &)),
+            this, SLOT(slotfileChanged(const QString &)));
+  }
+  fileWatcher->addPath(fileName);
+}
+
+/*
+ * reload if file was changed
+ */
+void MainWindow::slotfileChanged(const QString &fileName) {
+    if (!modified) {
+        this->statusBar()->showMessage(
+                    tr("Source image was modified! Reloading..."), 4000);
+        openImage(fileName);
+    }
 }
