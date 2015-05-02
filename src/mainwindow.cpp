@@ -29,7 +29,13 @@ MainWindow::MainWindow(QWidget *parent)
     qDebug() << "gViewResult zoom_fa..." << gViewResult->transform().m11();
     qDebug() << "gViewResult frameGeometry..." << gViewResult->frameGeometry();
     qDebug() << "sceneRect size..." << gViewResult->sceneRect().size();
-    openImage("test/building.jpg");
+
+    // Open last file on init
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope,
+                       SETTING_ORGANIZATION, SETTING_APPLICATION);
+    QStringList recentFiles = settings.value("recentFileList").toStringList();
+    if (recentFiles.size())
+        openImage(recentFiles.at(0));
 }
 
 QImage MainWindow::PixToQImage(PIX *pixs)
@@ -139,6 +145,20 @@ void MainWindow::openImage(const QString& imageFileName) {
         modified = false;
         setFileWatcher(imageFileName);
         pixDestroy(&pixs);
+
+        // save path of open image file
+        QSettings settings(QSettings::IniFormat, QSettings::UserScope,
+                           SETTING_ORGANIZATION, SETTING_APPLICATION);
+        QString filePath = QFileInfo(imageFileName).absolutePath();
+        settings.setValue("last_path", filePath);
+
+        QStringList files = settings.value("recentFileList").toStringList();
+        files.removeAll(imageFileName);
+        files.prepend(imageFileName);
+        while (files.size() > MaxRecentFiles)
+          files.removeLast();
+
+        settings.setValue("recentFileList", files);
     }
 }
 

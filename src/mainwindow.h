@@ -44,6 +44,7 @@ private:
     void setFileWatcher(const QString & fileName);
     void readSettings(bool init);
     void writeSettings();
+    enum { MaxRecentFiles = 8 };
 
 private slots:
     void slotfileChanged(const QString& fileName);
