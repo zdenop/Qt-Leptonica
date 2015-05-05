@@ -11,7 +11,7 @@
 #include <QMimeData>
 #include <QSettings>
 
-#include "allheaders.h"
+#include <leptonica/allheaders.h>
 #include "ui_mainwindow.h"
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)

@@ -31,13 +31,13 @@ HEADERS += src/mainwindow.h \
 FORMS   += src/mainwindow.ui
 
 unix: {
-    INCLUDEPATH += /usr/include/leptonica /usr/local/include/leptonica
+    INCLUDEPATH += /usr/include /usr/local/include
     LIBS        += -L/usr/lib64 -L/usr/local/lib64 -llept
 }
 
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../lib/ -lliblept168
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../lib/ -lliblept168d
+
 win32: {
-    DESTDIR = ./
-    DIR_SEPARATOR = \
-    INCLUDEPATH += $$quote(c:/usr/projects/BuildFolder/include/leptonica)
-    LIBS        += -Lc:\\usr\\projects\\BuildFolder\\lib -lliblept168
-}
+    INCLUDEPATH += $$PWD/../include
+    }
