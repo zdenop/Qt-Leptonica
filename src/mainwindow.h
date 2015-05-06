@@ -48,6 +48,8 @@ private:
 
 private slots:
     void slotfileChanged(const QString& fileName);
+    void about();
+    void aboutQt();
 };
 
 #endif // MAINWINDOW_H

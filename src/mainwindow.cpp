@@ -1,3 +1,6 @@
+#include <QUrl>
+
+
 #include "mainwindow.h"
 #include "settings.h"
 
@@ -36,6 +39,8 @@ MainWindow::MainWindow(QWidget *parent)
     QStringList recentFiles = settings.value("recentFileList").toStringList();
     if (recentFiles.size())
         openImage(recentFiles.at(0));
+    connect(actionAbout, SIGNAL(triggered()), this, SLOT(about()));
+    connect(actionAbout_Qt, SIGNAL(triggered()), this, SLOT(aboutQt()));
 }
 
 QImage MainWindow::PixToQImage(PIX *pixs)
@@ -107,6 +112,35 @@ QImage MainWindow::PixToQImage(PIX *pixs)
 
 MainWindow::~MainWindow()
 {
+}
+
+/*
+ * Provide information about application
+ */
+void MainWindow::about() {
+  QString abouttext =
+    tr("<h1>%1 %2</h1>").arg(SETTING_APPLICATION).arg(VERSION);
+
+  abouttext.append(tr("<p>playground for leptonica and "));
+  abouttext.append(tr("<a href=\"http://www.qt.io/\">Qt</a></p>"));
+  abouttext.append(tr("<p><b>Leptonica version:</b><br/> %1<br/>").arg(
+                       getLeptonicaVersion()));
+  abouttext.append(tr("<b>Image libraries in Leptonica:</b><br/> %1</p>").arg(
+                       getImagelibVersions()));
+  abouttext.append(tr("<p>Project page: <a href=%1>%2</a></p>").
+                   arg(PROJECT_URL).arg(PROJECT_URL_NAME));
+  abouttext.append(tr("Copyright 2015 Zdenko Podobný</p>"));
+  abouttext.append(tr("<p>This software is released under "
+                      "<a href=\"http://www.apache.org/licenses/LICENSE-2.0\"" \
+                      ">Apache License 2.0</a></p>"));
+  QMessageBox::about(this, tr("About application"), abouttext);
+}
+
+/*
+ * Provide information about Qt version
+ */
+void MainWindow::aboutQt() {
+  QMessageBox::aboutQt(this, tr("About Qt"));
 }
 
 /*
