@@ -8,7 +8,6 @@
 #include <QGraphicsItem>
 #include <QMainWindow>
 #include <QMessageBox>
-#include <QMimeData>
 #include <QSettings>
 
 #include <leptonica/allheaders.h>
@@ -26,7 +25,6 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     static const char *qString2Char(QString string);
-    void openImage(const QString& imageFileName);
 
 public slots:
     QImage PixToQImage(PIX *pixs);
@@ -47,6 +45,7 @@ private:
     enum { MaxRecentFiles = 8 };
 
 private slots:
+    void openImage(const QString& imageFileName);
     void slotfileChanged(const QString& fileName);
     void about();
     void aboutQt();

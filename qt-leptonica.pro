@@ -23,10 +23,12 @@ UI_DIR      += temp
 RCC_DIR     += temp
 
 SOURCES += src/main.cpp\
-        src/mainwindow.cpp
+           src/mainwindow.cpp \
+           src/scene.cpp
 
 HEADERS += src/mainwindow.h \
-           src/settings.h
+           src/settings.h \
+           src/scene.h
 
 FORMS   += src/mainwindow.ui
 

@@ -1,8 +1,10 @@
+#include <QMimeData>
 #include <QUrl>
 
 
 #include "mainwindow.h"
 #include "settings.h"
+#include "scene.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent) {
@@ -14,7 +16,9 @@ MainWindow::MainWindow(QWidget *parent)
     imageItem = 0;
 
     gViewResult->viewport()->setGeometry(QRect(0,0,0,0));
-    imageScene = new QGraphicsScene;
+    imageScene = new Scene();
+    connect(imageScene, SIGNAL(dropedFilename(QString)),
+            this, SLOT(openImage(QString)));
 
     qDebug() << "_image2 rect:" << imageScene->sceneRect();
     gViewResult->setScene(imageScene);
