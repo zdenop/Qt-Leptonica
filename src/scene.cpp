@@ -6,6 +6,7 @@
 #include <QtDebug>
 
 Scene::Scene() {
+  setBackgroundBrush(Qt::gray);
 }
 
 void Scene::dragEnterEvent(QGraphicsSceneDragDropEvent * event) {

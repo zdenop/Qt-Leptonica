@@ -42,9 +42,14 @@ private:
     void setFileWatcher(const QString & fileName);
     void readSettings(bool init);
     void writeSettings();
+
+    void updateRecentFileActions();
     enum { MaxRecentFiles = 8 };
+    QAction* fSeparatorAct;
+    QAction* recentFileActs[MaxRecentFiles];
 
 private slots:
+    void openRecentFile();
     void openImage(const QString& imageFileName);
     void slotfileChanged(const QString& fileName);
     void about();

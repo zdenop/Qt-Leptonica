@@ -37,14 +37,51 @@ MainWindow::MainWindow(QWidget *parent)
     qDebug() << "gViewResult frameGeometry..." << gViewResult->frameGeometry();
     qDebug() << "sceneRect size..." << gViewResult->sceneRect().size();
 
-    // Open last file on init
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope,
-                       SETTING_ORGANIZATION, SETTING_APPLICATION);
-    QStringList recentFiles = settings.value("recentFileList").toStringList();
-    if (recentFiles.size())
-        openImage(recentFiles.at(0));
     connect(actionAbout, SIGNAL(triggered()), this, SLOT(about()));
     connect(actionAbout_Qt, SIGNAL(triggered()), this, SLOT(aboutQt()));
+
+    for (int i = 0; i < MaxRecentFiles; ++i) {
+      recentFileActs[i] = new QAction(this);
+      recentFileActs[i]->setVisible(false);
+      connect(recentFileActs[i], SIGNAL(triggered()),
+              this, SLOT(openRecentFile()));
+    }
+
+    fSeparatorAct = menuFile->addSeparator();
+    for (int i = 0; i < MaxRecentFiles; ++i)
+      menuFile->addAction(recentFileActs[i]);
+    updateRecentFileActions();
+    // Open last file on init
+    QString recentFile = recentFileActs[0]->data().toString();
+    if (!recentFile.isEmpty())
+        openImage(recentFile);
+}
+
+void MainWindow::updateRecentFileActions() {
+  QSettings settings(QSettings::IniFormat, QSettings::UserScope,
+                     SETTING_ORGANIZATION, SETTING_APPLICATION);
+  QStringList files = settings.value("recentFileList").toStringList();
+
+  int numRecentFiles = qMin(files.size(), static_cast<int>(MaxRecentFiles));
+
+  for (int i = 0; i < numRecentFiles; ++i) {
+    QString text = tr("&%1 %2").arg(i + 1).arg(QFileInfo(files[i]).fileName());
+
+    recentFileActs[i]->setText(text);
+    recentFileActs[i]->setData(files[i]);
+    recentFileActs[i]->setVisible(true);
+  }
+  for (int j = numRecentFiles; j < MaxRecentFiles; ++j)
+    recentFileActs[j]->setVisible(false);
+
+  fSeparatorAct->setVisible(numRecentFiles > 0);
+}
+
+void MainWindow::openRecentFile() {
+  QAction* action = qobject_cast<QAction*>(sender());
+
+  if (action)
+    openImage(action->data().toString());
 }
 
 QImage MainWindow::PixToQImage(PIX *pixs)
@@ -197,6 +234,7 @@ void MainWindow::openImage(const QString& imageFileName) {
           files.removeLast();
 
         settings.setValue("recentFileList", files);
+        updateRecentFileActions();
     }
 }
 
