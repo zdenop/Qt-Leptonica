@@ -52,7 +52,7 @@ MainWindow::MainWindow(QWidget *parent)
       menuFile->addAction(recentFileActs[i]);
     updateRecentFileActions();
     // Open last file on init
-    QString recentFile = recentFileActs[0]->data().toString();
+    recentFile = recentFileActs[0]->data().toString();
     if (!recentFile.isEmpty())
         openImage(recentFile);
 }
@@ -198,10 +198,6 @@ const char *MainWindow::qString2Char(QString string) {
  */
 void MainWindow::openImage(const QString& imageFileName) {
     if (!imageFileName.isEmpty()) {
-        QString canonicalImageFileName =
-                QFileInfo(imageFileName).canonicalFilePath();
-
-        PIX *pixs;
         pixs = pixRead(qString2Char(imageFileName));
         if (!pixs) {
             this->statusBar()->showMessage(
@@ -216,25 +212,97 @@ void MainWindow::openImage(const QString& imageFileName) {
         }
         QImage image = PixToQImage(pixs);
         imageItem = imageScene->addPixmap(QPixmap::fromImage(image));
-        this->setWindowTitle(canonicalImageFileName);
         modified = false;
-        setFileWatcher(imageFileName);
-        pixDestroy(&pixs);
+        addToResentFiles(imageFileName);
+    }
+}
 
-        // save path of open image file
-        QSettings settings(QSettings::IniFormat, QSettings::UserScope,
-                           SETTING_ORGANIZATION, SETTING_APPLICATION);
-        QString filePath = QFileInfo(imageFileName).absolutePath();
-        settings.setValue("last_path", filePath);
+void MainWindow::addToResentFiles(QString filename){
+    recentFile = filename;
+    setFileWatcher(filename);
+    this->setWindowTitle(filename);
 
-        QStringList files = settings.value("recentFileList").toStringList();
-        files.removeAll(imageFileName);
-        files.prepend(imageFileName);
-        while (files.size() > MaxRecentFiles)
-          files.removeLast();
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope,
+                       SETTING_ORGANIZATION, SETTING_APPLICATION);
+    QStringList files = settings.value("recentFileList").toStringList();
+    files.removeAll(filename);
+    files.prepend(filename);
+    while (files.size() > MaxRecentFiles)
+      files.removeLast();
 
-        settings.setValue("recentFileList", files);
-        updateRecentFileActions();
+    settings.setValue("recentFileList", files);
+    updateRecentFileActions();
+}
+
+void MainWindow::on_actionOpenFile_triggered() {
+    QString filetype = "Image files (*.bmp *.png *.jpeg *.jpg *.tif *.tiff);;";
+    filetype += "Tiff files (*.tif *.tiff);;All files (*.*)";
+    QString last_path = QFileInfo(recentFile).absolutePath();
+    QString fileName = QFileDialog::getOpenFileName(
+                          this,
+                          tr("Select image file..."),
+                          last_path,
+                          filetype);
+  if(!fileName.isEmpty()) {
+    openImage(fileName);
+  }
+}
+
+void MainWindow::on_actionSave_triggered() {
+    l_int32  ret;
+    l_int32 format = pixs->informat;
+    char * cFilename = recentFile.toLatin1().data();
+    ret = pixWrite(cFilename, pixs, format);
+    if (ret) {
+        statusBar()->showMessage(tr("Saving failed with error code %1").arg(ret), 2000);
+    }
+    else {
+        statusBar()->showMessage(tr("File saved"), 2000);
+    }
+}
+
+void MainWindow::on_actionSaveAs_triggered() {
+    l_int32  ret;
+    l_int32 format;
+    QString fileName = QFileDialog::getSaveFileName(this,
+                                                    tr("Save image as..."),
+                                                    recentFile,
+                                                    tr("All files (*)"));
+
+    if (fileName.isEmpty())
+        return;
+    QStringList myOptions;
+    myOptions << "bmp" << "jpg" << "png" << "tif" << "gif";
+    QString ext = QFileInfo(fileName).suffix();
+    switch (myOptions.indexOf(ext)) {
+    case 0:
+        format = IFF_BMP;
+        break;
+    case 1:
+        format = IFF_JFIF_JPEG;
+        break;
+    case 2:
+        format = IFF_PNG;
+        break;
+    case 3:
+        format = IFF_TIFF_LZW;
+        break;
+    case 4:
+        format = IFF_GIF;
+        break;
+    default:
+        format = pixs->informat;
+        break;
+    }
+
+    char * cFilename = fileName.toLatin1().data();
+    ret = pixWrite(cFilename, pixs, format);
+    if (ret) {
+        statusBar()->showMessage(tr("Saving failed with error code %1").arg(ret), 2000);
+    }
+    else {
+        statusBar()->showMessage(tr("File saved as %1").arg(fileName), 2000);
+        addToResentFiles(fileName);
     }
 }
 

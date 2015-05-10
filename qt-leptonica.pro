@@ -9,8 +9,8 @@ QT          += core gui
 greaterThan(QT_MAJOR_VERSION, 4) {
     message(Qt $$[QT_VERSION] was detected.)
     QT += widgets
-    unix:INCLUDEPATH += /opt/include/
-    unix:LIBS        += -L/opt/lib
+#    unix:INCLUDEPATH += /opt/include/
+#    unix:LIBS        += -L/opt/lib
 }
 
 TARGET      = qt-leptonica

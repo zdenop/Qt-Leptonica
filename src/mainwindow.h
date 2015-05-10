@@ -43,10 +43,18 @@ private:
     void readSettings(bool init);
     void writeSettings();
 
+    void addToResentFiles(QString filename);
     void updateRecentFileActions();
     enum { MaxRecentFiles = 8 };
     QAction* fSeparatorAct;
     QAction* recentFileActs[MaxRecentFiles];
+    QString recentFile;
+    PIX *pixs;
+
+private Q_SLOTS:
+    void on_actionOpenFile_triggered();
+    void on_actionSave_triggered();
+    void on_actionSaveAs_triggered();
 
 private slots:
     void openRecentFile();
