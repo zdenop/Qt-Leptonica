@@ -29,22 +29,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(imageScene, SIGNAL(sceneScaleChanged(qreal)),
             this, SLOT(changeSceneScale(qreal)));
 
-    qDebug() << "_image2 rect:" << imageScene->sceneRect();
     gViewResult->setScene(imageScene);
-
     gViewResult->setRenderHint(QPainter::Antialiasing);
     gViewResult->setCacheMode(QGraphicsView::CacheBackground);
     gViewResult->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
     gViewResult->setOptimizationFlags( QGraphicsView::DontSavePainterState | QGraphicsView::DontAdjustForAntialiasing);
-
-    qDebug() << "gViewResult size..." << gViewResult->sceneRect().size().toSize();
     gViewResult->viewport()->setSizeIncrement(gViewResult->sceneRect().width(),gViewResult->sceneRect().height());
     gViewResult->viewport()->setSizeIncrement(gViewResult->sceneRect().width(),gViewResult->sceneRect().height());
-    qDebug() << "viewport size..." << gViewResult->viewport()->size();
-    qDebug() << "gViewResult geometry..." << gViewResult->geometry();
-    qDebug() << "gViewResult zoom_fa..." << gViewResult->transform().m11();
-    qDebug() << "gViewResult frameGeometry..." << gViewResult->frameGeometry();
-    qDebug() << "sceneRect size..." << gViewResult->sceneRect().size();
 
     connect(actionAbout, SIGNAL(triggered()), this, SLOT(about()));
     connect(actionAbout_Qt, SIGNAL(triggered()), this, SLOT(aboutQt()));
@@ -114,7 +105,6 @@ QImage MainWindow::PixToQImage(PIX *pixs)
     int depth = pixGetDepth(pixs);
     int bytesPerLine = pixGetWpl(pixs) * 4;
 
-    qDebug() << "  depth:" << depth;
     QImage::Format format;
     if (depth == 1)
             format = QImage::Format_Mono;
@@ -123,19 +113,13 @@ QImage MainWindow::PixToQImage(PIX *pixs)
     else
             format = QImage::Format_RGB32;
 
-    qDebug() << "format:" << format;
-
-    qDebug() << "Creating QImage...";
     QImage result((uchar*)s_data, width, height, bytesPerLine, format);
     if (depth == 1) {
         result.setColorTable(_bwCT);
-        qDebug() << "  setting B&W palette...";
     }  else if (depth == 8)  {
         result.setColorTable(_grayscaleCT);
-        qDebug() << "  setting _grayscaleCT palette...";
     } else {
         result.setColorTable(_grayscaleCT);
-        qDebug() << "  setting palette...";
     }
 
     if (result.isNull())
@@ -145,18 +129,8 @@ QImage MainWindow::PixToQImage(PIX *pixs)
         return none;
     }
 
-    qDebug() << "pix->qimage:";
-    qDebug() << "W x H:" << result.width() << " x " <<  result.height();
-    qDebug() << "format:" << result.format();
-    qDebug() << "bytesPerLine: " << result.bytesPerLine();
-
     QRgb *line = (QRgb*)(result.scanLine(0));
-    qDebug() << "line 0: " << line;
-
-    qDebug() << "pixel 0,0 : " << result.pixel(0,0);
     QColor color = QColor::fromRgb(result.pixel(0,0));
-    qDebug() << "color pixel 0,0: " << color;
-
     return result.rgbSwapped();
 }
 
@@ -358,7 +332,6 @@ void MainWindow::slotfileChanged(const QString &fileName) {
 }
 
 void MainWindow::setZoom(float scale) {
-  qDebug() << "Setting zoom: " << scale;
   QTransform transform;
   transform.scale(scale, scale);
   gViewResult->setTransform(transform);

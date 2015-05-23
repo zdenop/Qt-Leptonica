@@ -3,7 +3,6 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QMimeData>
 #include <QUrl>
-#include <QtDebug>
 
 Scene::Scene() {
   setBackgroundBrush(Qt::gray);
