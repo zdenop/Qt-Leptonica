@@ -4,7 +4,7 @@
 #include <QGraphicsScene>
 
 class Scene: public QGraphicsScene {
-    Q_OBJECT
+  Q_OBJECT
 
  public:
   Scene();

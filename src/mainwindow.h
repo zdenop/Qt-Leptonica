@@ -20,70 +20,69 @@
 
 #include "scene.h"
 
-class MainWindow : public QMainWindow, public Ui::MainWindow
-{
-    Q_OBJECT
+class MainWindow : public QMainWindow, public Ui::MainWindow {
+  Q_OBJECT
 
-public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
-    static const char *qString2Char(QString string);
+ public:
+  explicit MainWindow(QWidget *parent = 0);
+  ~MainWindow();
+  static const char *qString2Char(QString string);
 
-public slots:
-    QImage PixToQImage(PIX *pixs);
+ public slots:
+  QImage PixToQImage(PIX *pixs);
 
-protected:
-    Scene *imageScene;
-    QGraphicsItem *imageItem;
-    bool modified;
-    void dragEnterEvent(QDragEnterEvent* event);
-    void dropEvent(QDropEvent* event);
-    void closeEvent(QCloseEvent* event);
+ protected:
+  Scene *imageScene;
+  QGraphicsItem *imageItem;
+  bool modified;
+  void dragEnterEvent(QDragEnterEvent* event);
+  void dropEvent(QDropEvent* event);
+  void closeEvent(QCloseEvent* event);
 
-private:
-    QFileSystemWatcher *fileWatcher;
-    void setFileWatcher(const QString & fileName);
-    void readSettings(bool init);
-    void writeSettings();
+ private:
+  QFileSystemWatcher *fileWatcher;
+  void setFileWatcher(const QString & fileName);
+  void readSettings(bool init);
+  void writeSettings();
 
-    void addToResentFiles(QString filename);
-    void updateRecentFileActions();
-    enum { MaxRecentFiles = 8 };
-    QAction* fSeparatorAct;
-    QAction* recentFileActs[MaxRecentFiles];
-    QString recentFile;
-    PIX *pixs;
+  void addToResentFiles(QString filename);
+  void updateRecentFileActions();
+  enum { MaxRecentFiles = 8 };
+  QAction* fSeparatorAct;
+  QAction* recentFileActs[MaxRecentFiles];
+  QString recentFile;
+  PIX *pixs;
 
-    QLabel* _zoom;
-    void zoomOriginal();
-    void zoomIn();
-    void zoomOut();
-    void zoomToSelection();
-    void zoomToFit();
-    void zoomToHeight();
-    void zoomToWidth();
-    void setZoomStatus();
-    void setZoom(float scale);
+  QLabel* _zoom;
+  void zoomOriginal();
+  void zoomIn();
+  void zoomOut();
+  void zoomToSelection();
+  void zoomToFit();
+  void zoomToHeight();
+  void zoomToWidth();
+  void setZoomStatus();
+  void setZoom(float scale);
 
-private Q_SLOTS:
-    void on_actionOpenFile_triggered();
-    void on_actionSave_triggered();
-    void on_actionSaveAs_triggered();
+ private Q_SLOTS:
+  void on_actionOpenFile_triggered();
+  void on_actionSave_triggered();
+  void on_actionSaveAs_triggered();
 
-    void on_actionZoom_to_original_triggered();
-    void on_actionZoom_in_triggered();
-    void on_actionZoom_out_triggered();
-    void on_actionFit_to_window_triggered();
-    void on_actionFit_to_height_triggered();
-    void on_actionFit_to_width_triggered();
-    void changeSceneScale(qreal scale);
+  void on_actionZoom_to_original_triggered();
+  void on_actionZoom_in_triggered();
+  void on_actionZoom_out_triggered();
+  void on_actionFit_to_window_triggered();
+  void on_actionFit_to_height_triggered();
+  void on_actionFit_to_width_triggered();
+  void changeSceneScale(qreal scale);
 
-private slots:
-    void openRecentFile();
-    void openImage(const QString& imageFileName);
-    void slotfileChanged(const QString& fileName);
-    void about();
-    void aboutQt();
+ private slots:
+  void openRecentFile();
+  void openImage(const QString& imageFileName);
+  void slotfileChanged(const QString& fileName);
+  void about();
+  void aboutQt();
 };
 
 #endif // MAINWINDOW_H

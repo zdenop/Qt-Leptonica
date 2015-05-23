@@ -38,9 +38,9 @@ bool Scene::eventFilter(QObject* object, QEvent* event) {
       int delta = wheelEvent->delta();
       qreal scale = 1.00;
       if (delta > 0) {
-          scale = 1.10;
+        scale = 1.10;
       } else {
-          scale = 1/1.10;
+        scale = 1/1.10;
       }
       emit sceneScaleChanged(scale);
       wheelEvent->accept();

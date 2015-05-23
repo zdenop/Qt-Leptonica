@@ -6,55 +6,55 @@
 #include "settings.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent) {
-    setupUi(this);
+  : QMainWindow(parent) {
+  setupUi(this);
 
-    _zoom = new QLabel();
-    _zoom->setToolTip(QString("Zoom factor"));
-    _zoom->setFrameStyle(QFrame::Sunken);
-    _zoom->setAlignment(Qt::AlignHCenter);
-    _zoom->setMaximumWidth(50);
-    this->statusBar()->addPermanentWidget(_zoom, 1);
+  _zoom = new QLabel();
+  _zoom->setToolTip(QString("Zoom factor"));
+  _zoom->setFrameStyle(QFrame::Sunken);
+  _zoom->setAlignment(Qt::AlignHCenter);
+  _zoom->setMaximumWidth(50);
+  this->statusBar()->addPermanentWidget(_zoom, 1);
 
-    readSettings(true);
-    setAcceptDrops(true);
+  readSettings(true);
+  setAcceptDrops(true);
 
-    fileWatcher = 0;
-    imageItem = 0;
+  fileWatcher = 0;
+  imageItem = 0;
 
-    gViewResult->viewport()->setGeometry(QRect(0,0,0,0));
-    imageScene = new Scene();
-    connect(imageScene, SIGNAL(dropedFilename(QString)),
-            this, SLOT(openImage(QString)));
-    connect(imageScene, SIGNAL(sceneScaleChanged(qreal)),
-            this, SLOT(changeSceneScale(qreal)));
+  gViewResult->viewport()->setGeometry(QRect(0,0,0,0));
+  imageScene = new Scene();
+  connect(imageScene, SIGNAL(dropedFilename(QString)),
+          this, SLOT(openImage(QString)));
+  connect(imageScene, SIGNAL(sceneScaleChanged(qreal)),
+          this, SLOT(changeSceneScale(qreal)));
 
-    gViewResult->setScene(imageScene);
-    gViewResult->setRenderHint(QPainter::Antialiasing);
-    gViewResult->setCacheMode(QGraphicsView::CacheBackground);
-    gViewResult->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
-    gViewResult->setOptimizationFlags( QGraphicsView::DontSavePainterState | QGraphicsView::DontAdjustForAntialiasing);
-    gViewResult->viewport()->setSizeIncrement(gViewResult->sceneRect().width(),gViewResult->sceneRect().height());
-    gViewResult->viewport()->setSizeIncrement(gViewResult->sceneRect().width(),gViewResult->sceneRect().height());
+  gViewResult->setScene(imageScene);
+  gViewResult->setRenderHint(QPainter::Antialiasing);
+  gViewResult->setCacheMode(QGraphicsView::CacheBackground);
+  gViewResult->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
+  gViewResult->setOptimizationFlags(QGraphicsView::DontSavePainterState | QGraphicsView::DontAdjustForAntialiasing);
+  gViewResult->viewport()->setSizeIncrement(gViewResult->sceneRect().width(),gViewResult->sceneRect().height());
+  gViewResult->viewport()->setSizeIncrement(gViewResult->sceneRect().width(),gViewResult->sceneRect().height());
 
-    connect(actionAbout, SIGNAL(triggered()), this, SLOT(about()));
-    connect(actionAbout_Qt, SIGNAL(triggered()), this, SLOT(aboutQt()));
+  connect(actionAbout, SIGNAL(triggered()), this, SLOT(about()));
+  connect(actionAbout_Qt, SIGNAL(triggered()), this, SLOT(aboutQt()));
 
-    for (int i = 0; i < MaxRecentFiles; ++i) {
-      recentFileActs[i] = new QAction(this);
-      recentFileActs[i]->setVisible(false);
-      connect(recentFileActs[i], SIGNAL(triggered()),
-              this, SLOT(openRecentFile()));
-    }
+  for (int i = 0; i < MaxRecentFiles; ++i) {
+    recentFileActs[i] = new QAction(this);
+    recentFileActs[i]->setVisible(false);
+    connect(recentFileActs[i], SIGNAL(triggered()),
+            this, SLOT(openRecentFile()));
+  }
 
-    fSeparatorAct = menuFile->addSeparator();
-    for (int i = 0; i < MaxRecentFiles; ++i)
-      menuFile->addAction(recentFileActs[i]);
-    updateRecentFileActions();
-    // Open last file on init
-    recentFile = recentFileActs[0]->data().toString();
-    if (!recentFile.isEmpty())
-        openImage(recentFile);
+  fSeparatorAct = menuFile->addSeparator();
+  for (int i = 0; i < MaxRecentFiles; ++i)
+    menuFile->addAction(recentFileActs[i]);
+  updateRecentFileActions();
+  // Open last file on init
+  recentFile = recentFileActs[0]->data().toString();
+  if (!recentFile.isEmpty())
+    openImage(recentFile);
 }
 
 void MainWindow::updateRecentFileActions() {
@@ -84,58 +84,55 @@ void MainWindow::openRecentFile() {
     openImage(action->data().toString());
 }
 
-QImage MainWindow::PixToQImage(PIX *pixs)
-{
-    // TODO: first check if pixs is PIX ;-) inputFormat(pix)
+QImage MainWindow::PixToQImage(PIX *pixs) {
+  // TODO: first check if pixs is PIX ;-) inputFormat(pix)
 
-    // create color tables
-    QVector<QRgb> _bwCT;
-    _bwCT.append(qRgb(255,255,255));
-    _bwCT.append(qRgb(0,0,0));
+  // create color tables
+  QVector<QRgb> _bwCT;
+  _bwCT.append(qRgb(255,255,255));
+  _bwCT.append(qRgb(0,0,0));
 
-    QVector<QRgb> _grayscaleCT(256);
-    for (int i = 0; i < 256; i++)  {
-        _grayscaleCT.append(qRgb(i, i, i));
-       }
+  QVector<QRgb> _grayscaleCT(256);
+  for (int i = 0; i < 256; i++)  {
+    _grayscaleCT.append(qRgb(i, i, i));
+  }
 
-    l_uint32 * s_data = pixGetData(pixEndianByteSwapNew(pixs));
+  l_uint32 * s_data = pixGetData(pixEndianByteSwapNew(pixs));
 
-    int width = pixGetWidth(pixs);
-    int height = pixGetHeight(pixs);
-    int depth = pixGetDepth(pixs);
-    int bytesPerLine = pixGetWpl(pixs) * 4;
+  int width = pixGetWidth(pixs);
+  int height = pixGetHeight(pixs);
+  int depth = pixGetDepth(pixs);
+  int bytesPerLine = pixGetWpl(pixs) * 4;
 
-    QImage::Format format;
-    if (depth == 1)
-            format = QImage::Format_Mono;
-    else if (depth == 8)
-            format = QImage::Format_Indexed8;
-    else
-            format = QImage::Format_RGB32;
+  QImage::Format format;
+  if (depth == 1)
+    format = QImage::Format_Mono;
+  else if (depth == 8)
+    format = QImage::Format_Indexed8;
+  else
+    format = QImage::Format_RGB32;
 
-    QImage result((uchar*)s_data, width, height, bytesPerLine, format);
-    if (depth == 1) {
-        result.setColorTable(_bwCT);
-    }  else if (depth == 8)  {
-        result.setColorTable(_grayscaleCT);
-    } else {
-        result.setColorTable(_grayscaleCT);
-    }
+  QImage result((uchar*)s_data, width, height, bytesPerLine, format);
+  if (depth == 1) {
+    result.setColorTable(_bwCT);
+  }  else if (depth == 8)  {
+    result.setColorTable(_grayscaleCT);
+  } else {
+    result.setColorTable(_grayscaleCT);
+  }
 
-    if (result.isNull())
-    {
-        static QImage none(0,0,QImage::Format_Invalid);
-        qDebug() << "***Invalid format!!!";
-        return none;
-    }
+  if (result.isNull()) {
+    static QImage none(0,0,QImage::Format_Invalid);
+    qDebug() << "***Invalid format!!!";
+    return none;
+  }
 
-    QRgb *line = (QRgb*)(result.scanLine(0));
-    QColor color = QColor::fromRgb(result.pixel(0,0));
-    return result.rgbSwapped();
+  QRgb *line = (QRgb*)(result.scanLine(0));
+  QColor color = QColor::fromRgb(result.pixel(0,0));
+  return result.rgbSwapped();
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
 }
 
 /*
@@ -148,9 +145,9 @@ void MainWindow::about() {
   abouttext.append(tr("<p>playground for leptonica and "));
   abouttext.append(tr("<a href=\"http://www.qt.io/\">Qt</a></p>"));
   abouttext.append(tr("<p><b>Leptonica version:</b><br/> %1<br/>").arg(
-                       getLeptonicaVersion()));
+                     getLeptonicaVersion()));
   abouttext.append(tr("<b>Image libraries in Leptonica:</b><br/> %1</p>").arg(
-                       getImagelibVersions()));
+                     getImagelibVersions()));
   abouttext.append(tr("<p>Project page: <a href=%1>%2</a></p>").
                    arg(PROJECT_URL).arg(PROJECT_URL_NAME));
   abouttext.append(tr("Copyright 2015 Zdenko Podobný</p>"));
@@ -171,124 +168,122 @@ void MainWindow::aboutQt() {
  * QString to const char
  */
 const char *MainWindow::qString2Char(QString string) {
-    QByteArray byteArray = string.toUtf8();
-    const char * constChar = byteArray.data();
-    return constChar;
+  QByteArray byteArray = string.toUtf8();
+  const char * constChar = byteArray.data();
+  return constChar;
 }
 
 /*
  * openImage with leptonica
  */
 void MainWindow::openImage(const QString& imageFileName) {
-    if (!imageFileName.isEmpty()) {
-        pixs = pixRead(qString2Char(imageFileName));
-        if (!pixs) {
-            this->statusBar()->showMessage(
-                        tr("Cannot open input file: %1").arg(imageFileName),
-                        4000);
-            return;
-        }
-
-        if (imageItem) {
-            imageScene->removeItem(static_cast<QGraphicsItem*>(imageItem));
-            delete imageItem;
-        }
-        QImage image = PixToQImage(pixs);
-        imageItem = imageScene->addPixmap(QPixmap::fromImage(image));
-        modified = false;
-        addToResentFiles(imageFileName);
-        on_actionZoom_to_original_triggered();
-        setZoomStatus();
+  if (!imageFileName.isEmpty()) {
+    pixs = pixRead(qString2Char(imageFileName));
+    if (!pixs) {
+      this->statusBar()->showMessage(
+        tr("Cannot open input file: %1").arg(imageFileName),
+        4000);
+      return;
     }
+
+    if (imageItem) {
+      imageScene->removeItem(static_cast<QGraphicsItem*>(imageItem));
+      delete imageItem;
+    }
+    QImage image = PixToQImage(pixs);
+    imageItem = imageScene->addPixmap(QPixmap::fromImage(image));
+    modified = false;
+    addToResentFiles(imageFileName);
+    on_actionZoom_to_original_triggered();
+    setZoomStatus();
+  }
 }
 
-void MainWindow::addToResentFiles(QString filename){
-    recentFile = filename;
-    setFileWatcher(filename);
-    this->setWindowTitle(filename);
+void MainWindow::addToResentFiles(QString filename) {
+  recentFile = filename;
+  setFileWatcher(filename);
+  this->setWindowTitle(filename);
 
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope,
-                       SETTING_ORGANIZATION, SETTING_APPLICATION);
-    QStringList files = settings.value("recentFileList").toStringList();
-    files.removeAll(filename);
-    files.prepend(filename);
-    while (files.size() > MaxRecentFiles)
-      files.removeLast();
+  QSettings settings(QSettings::IniFormat, QSettings::UserScope,
+                     SETTING_ORGANIZATION, SETTING_APPLICATION);
+  QStringList files = settings.value("recentFileList").toStringList();
+  files.removeAll(filename);
+  files.prepend(filename);
+  while (files.size() > MaxRecentFiles)
+    files.removeLast();
 
-    settings.setValue("recentFileList", files);
-    updateRecentFileActions();
+  settings.setValue("recentFileList", files);
+  updateRecentFileActions();
 }
 
 void MainWindow::on_actionOpenFile_triggered() {
-    QString filetype = "Image files (*.bmp *.png *.jpeg *.jpg *.tif *.tiff);;";
-    filetype += "Tiff files (*.tif *.tiff);;All files (*.*)";
-    QString last_path = QFileInfo(recentFile).absolutePath();
-    QString fileName = QFileDialog::getOpenFileName(
-                          this,
-                          tr("Select image file..."),
-                          last_path,
-                          filetype);
-  if(!fileName.isEmpty()) {
+  QString filetype = "Image files (*.bmp *.png *.jpeg *.jpg *.tif *.tiff);;";
+  filetype += "Tiff files (*.tif *.tiff);;All files (*.*)";
+  QString last_path = QFileInfo(recentFile).absolutePath();
+  QString fileName = QFileDialog::getOpenFileName(
+                       this,
+                       tr("Select image file..."),
+                       last_path,
+                       filetype);
+  if (!fileName.isEmpty()) {
     openImage(fileName);
   }
 }
 
 void MainWindow::on_actionSave_triggered() {
-    l_int32  ret;
-    l_int32 format = pixs->informat;
-    char * cFilename = recentFile.toLatin1().data();
-    ret = pixWrite(cFilename, pixs, format);
-    if (ret) {
-        statusBar()->showMessage(tr("Saving failed with error code %1").arg(ret), 2000);
-    }
-    else {
-        statusBar()->showMessage(tr("File saved"), 2000);
-    }
+  l_int32  ret;
+  l_int32 format = pixs->informat;
+  char * cFilename = recentFile.toLatin1().data();
+  ret = pixWrite(cFilename, pixs, format);
+  if (ret) {
+    statusBar()->showMessage(tr("Saving failed with error code %1").arg(ret), 2000);
+  } else {
+    statusBar()->showMessage(tr("File saved"), 2000);
+  }
 }
 
 void MainWindow::on_actionSaveAs_triggered() {
-    l_int32  ret;
-    l_int32 format;
-    QString fileName = QFileDialog::getSaveFileName(this,
-                                                    tr("Save image as..."),
-                                                    recentFile,
-                                                    tr("All files (*)"));
+  l_int32  ret;
+  l_int32 format;
+  QString fileName = QFileDialog::getSaveFileName(this,
+                     tr("Save image as..."),
+                     recentFile,
+                     tr("All files (*)"));
 
-    if (fileName.isEmpty())
-        return;
-    QStringList myOptions;
-    myOptions << "bmp" << "jpg" << "png" << "tif" << "gif";
-    QString ext = QFileInfo(fileName).suffix();
-    switch (myOptions.indexOf(ext)) {
-    case 0:
-        format = IFF_BMP;
-        break;
-    case 1:
-        format = IFF_JFIF_JPEG;
-        break;
-    case 2:
-        format = IFF_PNG;
-        break;
-    case 3:
-        format = IFF_TIFF_LZW;
-        break;
-    case 4:
-        format = IFF_GIF;
-        break;
-    default:
-        format = pixs->informat;
-        break;
-    }
+  if (fileName.isEmpty())
+    return;
+  QStringList myOptions;
+  myOptions << "bmp" << "jpg" << "png" << "tif" << "gif";
+  QString ext = QFileInfo(fileName).suffix();
+  switch (myOptions.indexOf(ext)) {
+  case 0:
+    format = IFF_BMP;
+    break;
+  case 1:
+    format = IFF_JFIF_JPEG;
+    break;
+  case 2:
+    format = IFF_PNG;
+    break;
+  case 3:
+    format = IFF_TIFF_LZW;
+    break;
+  case 4:
+    format = IFF_GIF;
+    break;
+  default:
+    format = pixs->informat;
+    break;
+  }
 
-    char * cFilename = fileName.toLatin1().data();
-    ret = pixWrite(cFilename, pixs, format);
-    if (ret) {
-        statusBar()->showMessage(tr("Saving failed with error code %1").arg(ret), 2000);
-    }
-    else {
-        statusBar()->showMessage(tr("File saved as %1").arg(fileName), 2000);
-        addToResentFiles(fileName);
-    }
+  char * cFilename = fileName.toLatin1().data();
+  ret = pixWrite(cFilename, pixs, format);
+  if (ret) {
+    statusBar()->showMessage(tr("Saving failed with error code %1").arg(ret), 2000);
+  } else {
+    statusBar()->showMessage(tr("File saved as %1").arg(fileName), 2000);
+    addToResentFiles(fileName);
+  }
 }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event) {
@@ -324,11 +319,11 @@ void MainWindow::setFileWatcher(const QString & fileName) {
  * reload if file was changed
  */
 void MainWindow::slotfileChanged(const QString &fileName) {
-    if (!modified) {
-        this->statusBar()->showMessage(
-                    tr("Source image was modified! Reloading..."), 4000);
-        openImage(fileName);
-    }
+  if (!modified) {
+    this->statusBar()->showMessage(
+      tr("Source image was modified! Reloading..."), 4000);
+    openImage(fileName);
+  }
 }
 
 void MainWindow::setZoom(float scale) {
@@ -391,32 +386,32 @@ void MainWindow::setZoomStatus() {
  * Read settings
  */
 void MainWindow::readSettings(bool init) {
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope,
-                       SETTING_ORGANIZATION, SETTING_APPLICATION);
+  QSettings settings(QSettings::IniFormat, QSettings::UserScope,
+                     SETTING_ORGANIZATION, SETTING_APPLICATION);
 
-    // run this section only during initializaiton time
-    if (init) {
-        settings.beginGroup("mainWindow");
-        restoreGeometry(settings.value("geometry").toByteArray());
-        restoreState(settings.value("state").toByteArray());
-        settings.endGroup();
-    }
+  // run this section only during initializaiton time
+  if (init) {
+    settings.beginGroup("mainWindow");
+    restoreGeometry(settings.value("geometry").toByteArray());
+    restoreState(settings.value("state").toByteArray());
+    settings.endGroup();
+  }
 }
 
 /*
  * Write settings
  */
 void MainWindow::writeSettings() {
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope,
-                       SETTING_ORGANIZATION, SETTING_APPLICATION);
+  QSettings settings(QSettings::IniFormat, QSettings::UserScope,
+                     SETTING_ORGANIZATION, SETTING_APPLICATION);
 
-    settings.beginGroup("mainWindow");
-    settings.setValue("geometry", saveGeometry());
-    settings.setValue("state", saveState());
-    settings.endGroup();
+  settings.beginGroup("mainWindow");
+  settings.setValue("geometry", saveGeometry());
+  settings.setValue("state", saveState());
+  settings.endGroup();
 }
 
 void MainWindow::closeEvent(QCloseEvent* event) {
-    writeSettings();
-    event->accept();
+  writeSettings();
+  event->accept();
 }
