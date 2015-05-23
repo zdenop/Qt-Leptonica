@@ -7,6 +7,7 @@
 
 Scene::Scene() {
   setBackgroundBrush(Qt::gray);
+  this->installEventFilter(this);
 }
 
 void Scene::dragEnterEvent(QGraphicsSceneDragDropEvent * event) {
@@ -26,7 +27,27 @@ void Scene::dropEvent(QGraphicsSceneDragDropEvent * event) {
   if (urls.count()) {
     QString filename = urls[0].toLocalFile();
     emit dropedFilename(filename);
-    qDebug() << "scene drop "  << filename;
     event->acceptProposedAction();
   }
+}
+
+bool Scene::eventFilter(QObject* object, QEvent* event) {
+  if (event->type() == QEvent::GraphicsSceneWheel) {
+    QGraphicsSceneWheelEvent *wheelEvent =
+      static_cast<QGraphicsSceneWheelEvent*>(event);
+    if (wheelEvent->modifiers().testFlag(Qt::ControlModifier)) {
+      int delta = wheelEvent->delta();
+      qreal scale = 1.00;
+      if (delta > 0) {
+          scale = 1.10;
+      } else {
+          scale = 1/1.10;
+      }
+      emit sceneScaleChanged(scale);
+      wheelEvent->accept();
+      return true;
+    }
+  }
+
+  return false;
 }

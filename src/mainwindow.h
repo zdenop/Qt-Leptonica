@@ -6,6 +6,7 @@
 #include <QFileDialog>
 #include <QFileSystemWatcher>
 #include <QGraphicsItem>
+#include <QLabel>
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QSettings>
@@ -16,6 +17,8 @@
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #include <QGuiApplication>
 #endif
+
+#include "scene.h"
 
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {
@@ -30,7 +33,7 @@ public slots:
     QImage PixToQImage(PIX *pixs);
 
 protected:
-    QGraphicsScene *imageScene;
+    Scene *imageScene;
     QGraphicsItem *imageItem;
     bool modified;
     void dragEnterEvent(QDragEnterEvent* event);
@@ -51,10 +54,29 @@ private:
     QString recentFile;
     PIX *pixs;
 
+    QLabel* _zoom;
+    void zoomOriginal();
+    void zoomIn();
+    void zoomOut();
+    void zoomToSelection();
+    void zoomToFit();
+    void zoomToHeight();
+    void zoomToWidth();
+    void setZoomStatus();
+    void setZoom(float scale);
+
 private Q_SLOTS:
     void on_actionOpenFile_triggered();
     void on_actionSave_triggered();
     void on_actionSaveAs_triggered();
+
+    void on_actionZoom_to_original_triggered();
+    void on_actionZoom_in_triggered();
+    void on_actionZoom_out_triggered();
+    void on_actionFit_to_window_triggered();
+    void on_actionFit_to_height_triggered();
+    void on_actionFit_to_width_triggered();
+    void changeSceneScale(qreal scale);
 
 private slots:
     void openRecentFile();

@@ -4,11 +4,18 @@
 
 #include "mainwindow.h"
 #include "settings.h"
-#include "scene.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent) {
     setupUi(this);
+
+    _zoom = new QLabel();
+    _zoom->setToolTip(QString("Zoom factor"));
+    _zoom->setFrameStyle(QFrame::Sunken);
+    _zoom->setAlignment(Qt::AlignHCenter);
+    _zoom->setMaximumWidth(50);
+    this->statusBar()->addPermanentWidget(_zoom, 1);
+
     readSettings(true);
     setAcceptDrops(true);
 
@@ -19,6 +26,8 @@ MainWindow::MainWindow(QWidget *parent)
     imageScene = new Scene();
     connect(imageScene, SIGNAL(dropedFilename(QString)),
             this, SLOT(openImage(QString)));
+    connect(imageScene, SIGNAL(sceneScaleChanged(qreal)),
+            this, SLOT(changeSceneScale(qreal)));
 
     qDebug() << "_image2 rect:" << imageScene->sceneRect();
     gViewResult->setScene(imageScene);
@@ -214,6 +223,8 @@ void MainWindow::openImage(const QString& imageFileName) {
         imageItem = imageScene->addPixmap(QPixmap::fromImage(image));
         modified = false;
         addToResentFiles(imageFileName);
+        on_actionZoom_to_original_triggered();
+        setZoomStatus();
     }
 }
 
@@ -344,6 +355,63 @@ void MainWindow::slotfileChanged(const QString &fileName) {
                     tr("Source image was modified! Reloading..."), 4000);
         openImage(fileName);
     }
+}
+
+void MainWindow::setZoom(float scale) {
+  qDebug() << "Setting zoom: " << scale;
+  QTransform transform;
+  transform.scale(scale, scale);
+  gViewResult->setTransform(transform);
+  setZoomStatus();
+}
+
+void MainWindow::changeSceneScale(qreal scale) {
+  gViewResult->scale(scale, scale);
+  setZoomStatus();
+}
+
+void MainWindow::on_actionZoom_to_original_triggered() {
+  setZoom(1);
+}
+
+void MainWindow::on_actionZoom_in_triggered() {
+  changeSceneScale(1.2);
+}
+
+void MainWindow::on_actionZoom_out_triggered() {
+  changeSceneScale(1/1.2);
+}
+
+void MainWindow::on_actionFit_to_window_triggered() {
+  float viewWidth = gViewResult->viewport()->width();
+  float viewHeight = gViewResult->viewport()->height();
+  float zoomFactor;
+  float ratio = viewWidth / viewHeight;
+  float aspectRatio = static_cast<float>(pixs->w / pixs->h);
+
+  if (ratio > aspectRatio) {
+    zoomFactor = viewHeight / pixs->h;
+  } else {
+    zoomFactor = viewWidth / pixs->w;
+  }
+  setZoom(zoomFactor);
+}
+
+void MainWindow::on_actionFit_to_height_triggered() {
+  float viewHeight = gViewResult->viewport()->height();
+  float zoomFactor = viewHeight / pixs->h;
+  setZoom(zoomFactor);
+}
+
+void MainWindow::on_actionFit_to_width_triggered() {
+  float viewWidth = gViewResult->viewport()->width();
+  float zoomFactor = viewWidth / pixs->w;
+  setZoom(zoomFactor);
+}
+
+void MainWindow::setZoomStatus() {
+  qreal zoomratio = gViewResult->transform().m11();
+  _zoom->setText(QString("%1%").arg(qRound(zoomratio * 100)));
 }
 
 /*
