@@ -63,6 +63,7 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
   void zoomToWidth();
   void setZoomStatus();
   void setZoom(float scale);
+  bool setPixToScene();
 
  private Q_SLOTS:
   void on_actionOpenFile_triggered();
@@ -76,8 +77,10 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
   void on_actionFit_to_height_triggered();
   void on_actionFit_to_width_triggered();
   void changeSceneScale(qreal scale);
+  void rotate(int quads);
 
  private slots:
+  void imageInfo();
   void openRecentFile();
   void openImage(const QString& imageFileName);
   void slotfileChanged(const QString& fileName);

@@ -28,6 +28,9 @@ MainWindow::MainWindow(QWidget *parent)
           this, SLOT(openImage(QString)));
   connect(imageScene, SIGNAL(sceneScaleChanged(qreal)),
           this, SLOT(changeSceneScale(qreal)));
+  connect(imageScene, SIGNAL(rotateImage(int)),
+          this, SLOT(rotate(int)));
+  connect(imageScene, SIGNAL(imageInfoTriggered()), this, SLOT(imageInfo()));
 
   gViewResult->setScene(imageScene);
   gViewResult->setRenderHint(QPainter::Antialiasing);
@@ -127,8 +130,8 @@ QImage MainWindow::PixToQImage(PIX *pixs) {
     return none;
   }
 
-  QRgb *line = (QRgb*)(result.scanLine(0));
-  QColor color = QColor::fromRgb(result.pixel(0,0));
+  // QRgb *line = (QRgb*)(result.scanLine(0));
+  // QColor color = QColor::fromRgb(result.pixel(0,0));
   return result.rgbSwapped();
 }
 
@@ -185,18 +188,24 @@ void MainWindow::openImage(const QString& imageFileName) {
         4000);
       return;
     }
+  }
 
+  if (setPixToScene()) {
+    addToResentFiles(imageFileName);
+    modified = false;
+  }
+}
+
+bool MainWindow::setPixToScene() {
     if (imageItem) {
       imageScene->removeItem(static_cast<QGraphicsItem*>(imageItem));
       delete imageItem;
     }
     QImage image = PixToQImage(pixs);
     imageItem = imageScene->addPixmap(QPixmap::fromImage(image));
-    modified = false;
-    addToResentFiles(imageFileName);
     on_actionZoom_to_original_triggered();
     setZoomStatus();
-  }
+    return true;
 }
 
 void MainWindow::addToResentFiles(QString filename) {
@@ -239,6 +248,7 @@ void MainWindow::on_actionSave_triggered() {
     statusBar()->showMessage(tr("Saving failed with error code %1").arg(ret), 2000);
   } else {
     statusBar()->showMessage(tr("File saved"), 2000);
+    modified = false;
   }
 }
 
@@ -283,6 +293,7 @@ void MainWindow::on_actionSaveAs_triggered() {
   } else {
     statusBar()->showMessage(tr("File saved as %1").arg(fileName), 2000);
     addToResentFiles(fileName);
+    modified = false;
   }
 }
 
@@ -380,6 +391,29 @@ void MainWindow::on_actionFit_to_width_triggered() {
 void MainWindow::setZoomStatus() {
   qreal zoomratio = gViewResult->transform().m11();
   _zoom->setText(QString("%1%").arg(qRound(zoomratio * 100)));
+}
+
+void MainWindow::imageInfo() {
+    QString aboutImage = tr("<h1>Image info</h1>");
+    aboutImage.append(tr("<p style='color:blue'>"));
+    aboutImage.append(tr("width: %1<br/>").arg(pixs->w));
+    aboutImage.append(tr("height: %1<br/>").arg(pixs->h));
+    aboutImage.append(tr("x-DPI: %1 y-DPI: %2<br/>").arg(pixs->xres).arg(pixs->yres));
+    aboutImage.append(tr("spp: %1<br/>").arg(pixs->spp));
+    aboutImage.append(tr("informat: %1</p>").arg(pixs->informat));
+    QMessageBox::about(this, tr("About image"), aboutImage);
+}
+
+/*
+ * Rotate pixs by number of 90 degree cw rotations
+ */
+void MainWindow::rotate(int quads) {
+    PIX *pixd;
+    pixd = pixRotateOrth(pixs, quads);
+    pixs = pixCopy(NULL, pixd);
+    setPixToScene();
+    pixDestroy(&pixd);
+    modified = true;
 }
 
 /*

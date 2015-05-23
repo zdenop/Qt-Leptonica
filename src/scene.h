@@ -12,14 +12,24 @@ class Scene: public QGraphicsScene {
  signals:
   void dropedFilename(QString filename);
   void sceneScaleChanged(qreal scale);
+  void imageInfoTriggered();
+  void rotateImage(int);
 
  protected:
   virtual void dragEnterEvent(QGraphicsSceneDragDropEvent * event);
   virtual void dragLeaveEvent(QGraphicsSceneDragDropEvent * event);
   virtual void dragMoveEvent(QGraphicsSceneDragDropEvent * event);
   virtual void dropEvent(QGraphicsSceneDragDropEvent * event);
+  virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent * event);
 
   virtual bool eventFilter(QObject* object, QEvent* event);
+
+ private slots:
+  void imageInfo();
+  void rotateCW();
+  void rotateCCW();
+  void rotateHalf();
+
 };
 
 #endif // SCENE_H
