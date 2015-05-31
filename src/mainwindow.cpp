@@ -16,7 +16,6 @@ MainWindow::MainWindow(QWidget *parent)
   _zoom->setMaximumWidth(50);
   this->statusBar()->addPermanentWidget(_zoom, 1);
 
-  readSettings(true);
   setAcceptDrops(true);
 
   fileWatcher = 0;
@@ -58,6 +57,7 @@ MainWindow::MainWindow(QWidget *parent)
   recentFile = recentFileActs[0]->data().toString();
   if (!recentFile.isEmpty())
     openImage(recentFile);
+  readSettings(true);
 }
 
 void MainWindow::updateRecentFileActions() {
@@ -428,6 +428,8 @@ void MainWindow::readSettings(bool init) {
     settings.beginGroup("mainWindow");
     restoreGeometry(settings.value("geometry").toByteArray());
     restoreState(settings.value("state").toByteArray());
+    if (!recentFile.isEmpty())
+        setZoom(settings.value("zoom").toFloat());
     settings.endGroup();
   }
 }
@@ -442,6 +444,7 @@ void MainWindow::writeSettings() {
   settings.beginGroup("mainWindow");
   settings.setValue("geometry", saveGeometry());
   settings.setValue("state", saveState());
+  settings.setValue("zoom", gViewResult->transform().m11());
   settings.endGroup();
 }
 
