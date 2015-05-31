@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="/">
+    <file alias="info.svg">images/address-book-new.svg</file>
+    <file alias="rotateCW.svg">images/object-rotate-right.svg</file>
+    <file alias="rotateCCW.svg">images/object-rotate-left.svg</file>
+  </qresource>
+</RCC>

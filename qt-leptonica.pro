@@ -32,6 +32,8 @@ HEADERS += src/mainwindow.h \
 
 FORMS   += src/mainwindow.ui
 
+RESOURCES += resources/application.qrc
+
 unix: {
     INCLUDEPATH += /usr/include /usr/local/include
     LIBS        += -L/usr/lib64 -L/usr/local/lib64 -llept

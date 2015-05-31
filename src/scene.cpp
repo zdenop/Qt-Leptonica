@@ -74,20 +74,20 @@ bool Scene::eventFilter(QObject* object, QEvent* event) {
 void Scene::contextMenuEvent(QGraphicsSceneContextMenuEvent * event) {
   event->accept();
   QMenu* menu = new QMenu();
-  QAction *ImageInfoAction = menu->addAction(QIcon(":/info.png"),
+  QAction *ImageInfoAction = menu->addAction(QIcon(":/info.svg"),
                              tr("Image info"));
   connect(ImageInfoAction, SIGNAL(triggered()), this, SLOT(imageInfo()));
   menu->addSeparator();
 
-  QAction* rotateCWAction = menu->addAction(QIcon(":/rotateCW.png"),
+  QAction* rotateCWAction = menu->addAction(QIcon(":/rotateCW.svg"),
                             tr("Rotate CW"));
   connect(rotateCWAction, SIGNAL(triggered()), this, SLOT(rotateCW()));
 
-  QAction* rotateCCWAction = menu->addAction(QIcon(":/rotateCCW.png"),
+  QAction* rotateCCWAction = menu->addAction(QIcon(":/rotateCCW.svg"),
                              tr("Rotate CCW"));
   connect(rotateCCWAction, SIGNAL(triggered()), this, SLOT(rotateCCW()));
 
-  QAction* rotateHalfAction = menu->addAction(QIcon(":/rotateCCW.png"),
+  QAction* rotateHalfAction = menu->addAction(QIcon(":/rotateCCW.svg"),
                               tr("Rotate 180"));
   connect(rotateHalfAction, SIGNAL(triggered()), this, SLOT(rotateHalf()));
   menu->exec(event->screenPos());
