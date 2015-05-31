@@ -5,7 +5,7 @@
 #include "mainwindow.h"
 #include "settings.h"
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(QWidget *parent, const QString &fileName)
   : QMainWindow(parent) {
   setupUi(this);
 
@@ -53,11 +53,17 @@ MainWindow::MainWindow(QWidget *parent)
   for (int i = 0; i < MaxRecentFiles; ++i)
     menuFile->addAction(recentFileActs[i]);
   updateRecentFileActions();
-  // Open last file on init
-  recentFile = recentFileActs[0]->data().toString();
+
+  readSettings(true);
+  if (fileName.isEmpty()) {
+    // Open last file on init if there was no argument
+    recentFile = recentFileActs[0]->data().toString();
+  } else {
+    recentFile = fileName;
+    setZoom(1.0);
+  }
   if (!recentFile.isEmpty())
     openImage(recentFile);
-  readSettings(true);
 }
 
 void MainWindow::updateRecentFileActions() {
@@ -429,7 +435,7 @@ void MainWindow::readSettings(bool init) {
     restoreGeometry(settings.value("geometry").toByteArray());
     restoreState(settings.value("state").toByteArray());
     if (!recentFile.isEmpty())
-        setZoom(settings.value("zoom").toFloat());
+        setZoom(settings.value("lastZoom").toFloat());
     settings.endGroup();
   }
 }
@@ -444,7 +450,7 @@ void MainWindow::writeSettings() {
   settings.beginGroup("mainWindow");
   settings.setValue("geometry", saveGeometry());
   settings.setValue("state", saveState());
-  settings.setValue("zoom", gViewResult->transform().m11());
+  settings.setValue("lastZoom", gViewResult->transform().m11());
   settings.endGroup();
 }
 

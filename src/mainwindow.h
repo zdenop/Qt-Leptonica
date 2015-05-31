@@ -24,7 +24,7 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
   Q_OBJECT
 
  public:
-  explicit MainWindow(QWidget *parent = 0);
+  explicit MainWindow(QWidget *parent = 0, const QString &fileName=QString());
   ~MainWindow();
   static const char *qString2Char(QString string);
 
