@@ -71,6 +71,24 @@
    <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="viewBar">
+   <property name="windowTitle">
+    <string>ViewTools</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionFit_to_window"/>
+   <addaction name="actionFit_to_height"/>
+   <addaction name="actionFit_to_width"/>
+   <addaction name="separator"/>
+   <addaction name="actionZoom_to_original"/>
+   <addaction name="actionZoom_in"/>
+   <addaction name="actionZoom_out"/>
+  </widget>
   <action name="actionAbout">
    <property name="text">
     <string>About...</string>
@@ -111,6 +129,10 @@
    </property>
   </action>
   <action name="actionFit_to_window">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/images/zoom-fit-best.svg</normaloff>:/images/zoom-fit-best.svg</iconset>
+   </property>
    <property name="text">
     <string>Fit to window</string>
    </property>
@@ -119,16 +141,28 @@
    </property>
   </action>
   <action name="actionFit_to_height">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/images/zoom-fit-height.svg</normaloff>:/images/zoom-fit-height.svg</iconset>
+   </property>
    <property name="text">
     <string>Fit to height</string>
    </property>
   </action>
   <action name="actionFit_to_width">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/images/zoom-fit-width.svg</normaloff>:/images/zoom-fit-width.svg</iconset>
+   </property>
    <property name="text">
     <string>Fit to width</string>
    </property>
   </action>
   <action name="actionZoom_in">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/images/zoom-in.svg</normaloff>:/images/zoom-in.svg</iconset>
+   </property>
    <property name="text">
     <string>Zoom in</string>
    </property>
@@ -137,6 +171,10 @@
    </property>
   </action>
   <action name="actionZoom_out">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/images/zoom-out.svg</normaloff>:/images/zoom-out.svg</iconset>
+   </property>
    <property name="text">
     <string>Zoom out</string>
    </property>
@@ -145,6 +183,10 @@
    </property>
   </action>
   <action name="actionZoom_to_original">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/images/zoom-original.svg</normaloff>:/images/zoom-original.svg</iconset>
+   </property>
    <property name="text">
     <string>Zoom to original</string>
    </property>
@@ -153,7 +195,9 @@
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resources/application.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>actionQuit</sender>
