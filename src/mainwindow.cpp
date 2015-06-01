@@ -247,7 +247,7 @@ void MainWindow::on_actionOpenFile_triggered() {
 
 void MainWindow::on_actionSave_triggered() {
   l_int32  ret;
-  l_int32 format = pixs->informat;
+  l_int32 format = pixGetInputFormat(pixs);
   char * cFilename = recentFile.toLatin1().data();
   ret = pixWrite(cFilename, pixs, format);
   if (ret) {
