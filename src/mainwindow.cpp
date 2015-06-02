@@ -402,11 +402,19 @@ void MainWindow::setZoomStatus() {
 void MainWindow::imageInfo() {
     QString aboutImage = tr("<h1>Image info</h1>");
     aboutImage.append(tr("<p style='color:blue'>"));
-    aboutImage.append(tr("width: %1<br/>").arg(pixs->w));
-    aboutImage.append(tr("height: %1<br/>").arg(pixs->h));
-    aboutImage.append(tr("x-DPI: %1 y-DPI: %2<br/>").arg(pixs->xres).arg(pixs->yres));
-    aboutImage.append(tr("spp: %1<br/>").arg(pixs->spp));
-    aboutImage.append(tr("informat: %1</p>").arg(pixs->informat));
+    aboutImage.append(tr("width in pixels: %1<br/>").arg(pixs->w));
+    aboutImage.append(tr("height in pixels: %1<br/>").arg(pixs->h));
+    aboutImage.append(tr("depth in bits (bpp): %1<br/>").arg(pixs->d));
+    aboutImage.append(tr("number of samples per pixel [spp]: %1<br/>")
+                      .arg(pixs->spp));
+    aboutImage.append(tr("32-bit words/line [wpl]: %1<br/>").arg(pixs->wpl));
+    aboutImage.append(tr("resolution: %1x%2<br/>").arg(pixs->xres)
+                      .arg(pixs->yres));
+    aboutImage.append(tr("input format: %1</p>").arg(pixGetInputFormat(pixs)));
+    char *text = pixGetText(pixs);
+    if (text)
+      aboutImage.append(tr("text string associated with pix: %1</p>")
+                        .arg(text));
     QMessageBox::about(this, tr("About image"), aboutImage);
 }
 
