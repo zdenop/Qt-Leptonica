@@ -79,6 +79,9 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
   void changeSceneScale(qreal scale);
   void rotate(int quads);
 
+  void on_actionChange_resolution_triggered();
+  void on_actionToBinary_triggered();
+
  private slots:
   void imageInfo();
   void openRecentFile();

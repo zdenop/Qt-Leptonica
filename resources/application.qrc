@@ -9,5 +9,6 @@
         <file>images/zoom-in.svg</file>
         <file>images/zoom-original.svg</file>
         <file>images/zoom-out.svg</file>
+        <file>images/binary-icon.png</file>
     </qresource>
 </RCC>

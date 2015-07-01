@@ -430,6 +430,45 @@ void MainWindow::rotate(int quads) {
     modified = true;
 }
 
+void MainWindow::on_actionChange_resolution_triggered() {
+    qDebug() << "To be implemented";
+    modified = true;
+}
+
+void MainWindow::on_actionToBinary_triggered() {
+    PIX *pixc, *pixg, *pixb, *pixsg, *pixsm, *pixd;
+    /* Convert the RGB image to grayscale. */
+    pixsg = pixConvertRGBToLuminance(pixs);
+
+    /* Remove the text in the fg. */
+    pixc = pixCloseGray(pixsg, 25, 25);
+
+    /* Smooth the bg with a convolution. */
+    // pixsm = pixBlockconv(pixc, 15, 15);
+    // pixDestroy(&pixsm);
+
+    /* Normalize for uneven illumination on gray image. */
+    pixBackgroundNormGrayArrayMorph(pixsg, NULL, 4, 5, 200, &pixg);
+    pixc = pixApplyInvBackgroundGrayMap(pixsg, pixg, 4, 4);
+    pixDestroy(&pixsg);
+    pixDestroy(&pixg);
+
+    /* Increase the dynamic range. */
+    // make dark gray *black* and light gray *white*
+    pixd = pixGammaTRC(NULL, pixc, 1.0, 50, 220);
+    pixDestroy(&pixc);
+
+    /* Threshold to 1 bpp. */
+    pixs = pixThresholdToBinary(pixd, 120);
+    pixDestroy(&pixd);
+
+    //pixs = pixCopy(NULL, pixb);
+    setPixToScene();
+    pixDestroy(&pixb);
+
+    modified = true;
+}
+
 /*
  * Read settings
  */

@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>QT-leptonica</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../resources/application.qrc">
+    <normaloff>:/images/binary-icon.png</normaloff>:/images/binary-icon.png</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
@@ -34,7 +38,7 @@
      <x>0</x>
      <y>0</y>
      <width>568</width>
-     <height>19</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuAbout">
@@ -66,7 +70,15 @@
     <addaction name="actionZoom_in"/>
     <addaction name="actionZoom_out"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionChange_resolution"/>
+    <addaction name="actionToBinary"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuView"/>
    <addaction name="menuAbout"/>
   </widget>
@@ -88,6 +100,18 @@
    <addaction name="actionZoom_to_original"/>
    <addaction name="actionZoom_in"/>
    <addaction name="actionZoom_out"/>
+  </widget>
+  <widget class="QToolBar" name="editBar">
+   <property name="windowTitle">
+    <string>editBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionToBinary"/>
   </widget>
   <action name="actionAbout">
    <property name="text">
@@ -192,6 +216,20 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+*</string>
+   </property>
+  </action>
+  <action name="actionToBinary">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/images/binary-icon.png</normaloff>:/images/binary-icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>ToBinary</string>
+   </property>
+  </action>
+  <action name="actionChange_resolution">
+   <property name="text">
+    <string>Change resolution...</string>
    </property>
   </action>
  </widget>
