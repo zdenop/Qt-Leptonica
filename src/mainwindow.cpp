@@ -463,20 +463,37 @@ void MainWindow::detectOrientation() {
     if ((upconf1 < -1) && abs(upconf1) > abs(leftconf1)) alt_rot = 180;
     if ((leftconf1 < -1) && abs(leftconf1) > abs(upconf1)) alt_rot = 270;
 
-    if (orient == L_TEXT_ORIENT_UNKNOWN)
+    if (orient == L_TEXT_ORIENT_UNKNOWN) {
         statusBar()->showMessage(
                     tr("Confidence is low; no determination is made. "
                        "But maybe there is %1 deg rotation.").arg(alt_rot),
                     4000);
-    else if (orient == L_TEXT_ORIENT_UP)
+    } else if (orient == L_TEXT_ORIENT_UP) {
         statusBar()->showMessage(tr("Text is rightside-up"), 4000);
-    else if (orient == L_TEXT_ORIENT_LEFT)
+        alt_rot = 0;
+    } else if (orient == L_TEXT_ORIENT_LEFT) {
         statusBar()->showMessage(tr("Text is rotated 90 deg ccw"), 4000);
-    else if (orient == L_TEXT_ORIENT_DOWN)
+        alt_rot = 90;
+    } else if (orient == L_TEXT_ORIENT_DOWN) {
         statusBar()->showMessage(tr("Text is upside-down"), 4000);
-    else   /* orient == L_TEXT_ORIENT_RIGHT */
+        alt_rot = 180;
+    } else {  /* orient == L_TEXT_ORIENT_RIGHT */
         statusBar()->showMessage(tr("Text is rotated 90 deg cw"), 4000);
+        alt_rot = 270;
+    }
     pixDestroy(&fpixs);
+
+    if (alt_rot) {
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, tr("Fix orientation?"),
+                                      tr("Rotate image by %1 degrees?").
+                                      arg(alt_rot),
+                                      QMessageBox::Yes|QMessageBox::No);
+        if (reply == QMessageBox::Yes) {
+            rotate(alt_rot/90);
+            qDebug() << "Yes was clicked " << alt_rot/90;
+        }
+    }
 }
 
 void MainWindow::on_actionChange_resolution_triggered() {
