@@ -185,6 +185,17 @@ const char *MainWindow::qString2Char(QString string) {
 }
 
 /*
+ * Add "*" to filename if file was modified, otherwise windows title is set to
+ * filename
+ */
+void MainWindow::updateTitle() {
+  QString title = recentFile;
+  if (modified)
+    title += " *";
+  this->setWindowTitle(title);
+}
+
+/*
  * openImage with leptonica
  */
 void MainWindow::openImage(const QString& imageFileName) {
@@ -219,7 +230,7 @@ bool MainWindow::setPixToScene() {
 void MainWindow::addToResentFiles(QString filename) {
   recentFile = filename;
   setFileWatcher(filename);
-  this->setWindowTitle(filename);
+  updateTitle();
 
   QSettings settings(QSettings::IniFormat, QSettings::UserScope,
                      SETTING_ORGANIZATION, SETTING_APPLICATION);
@@ -257,6 +268,7 @@ void MainWindow::on_actionSave_triggered() {
   } else {
     statusBar()->showMessage(tr("File saved"), 2000);
     modified = false;
+    updateTitle();
   }
 }
 
@@ -302,6 +314,7 @@ void MainWindow::on_actionSaveAs_triggered() {
     statusBar()->showMessage(tr("File saved as %1").arg(fileName), 2000);
     addToResentFiles(fileName);
     modified = false;
+    updateTitle();
   }
 }
 
@@ -430,6 +443,7 @@ void MainWindow::rotate(int quads) {
     setPixToScene();
     pixDestroy(&pixd);
     modified = true;
+    updateTitle();
 }
 
 /*
@@ -475,6 +489,7 @@ void MainWindow::on_actionChange_resolution_triggered() {
           modified = true;
           pixs->xres = x_dpi;
           pixs->yres = y_dpi;
+          updateTitle();
       }
     }
 }
@@ -511,6 +526,7 @@ void MainWindow::on_actionToBinary_triggered() {
     pixDestroy(&pixb);
 
     modified = true;
+    updateTitle();
 }
 
 /*

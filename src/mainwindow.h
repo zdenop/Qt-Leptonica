@@ -44,6 +44,7 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
   void setFileWatcher(const QString & fileName);
   void readSettings(bool init);
   void writeSettings();
+  void updateTitle();
 
   void addToResentFiles(QString filename);
   void updateRecentFileActions();
