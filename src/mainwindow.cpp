@@ -3,6 +3,7 @@
 
 #include "mainwindow.h"
 #include "settings.h"
+#include "dialogs/dpidialog.h"
 
 MainWindow::MainWindow(QWidget *parent, const QString &fileName)
   : QMainWindow(parent) {
@@ -465,8 +466,17 @@ void MainWindow::detectOrientation() {
 }
 
 void MainWindow::on_actionChange_resolution_triggered() {
-    qDebug() << "To be implemented";
-    modified = true;
+    DPIDialog dpi_dialog(this, pixs->xres, pixs->yres);
+
+    if (dpi_dialog.exec()) {
+      int x_dpi = dpi_dialog.xDPI->value();
+      int y_dpi = dpi_dialog.yDPI->value();
+      if (x_dpi != pixs->xres || y_dpi != pixs->yres) {
+          modified = true;
+          pixs->xres = x_dpi;
+          pixs->yres = y_dpi;
+      }
+    }
 }
 
 void MainWindow::on_actionToBinary_triggered() {
