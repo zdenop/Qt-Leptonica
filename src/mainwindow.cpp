@@ -1,7 +1,6 @@
 #include <QMimeData>
 #include <QUrl>
 
-
 #include "mainwindow.h"
 #include "settings.h"
 
@@ -30,6 +29,8 @@ MainWindow::MainWindow(QWidget *parent, const QString &fileName)
   connect(imageScene, SIGNAL(rotateImage(int)),
           this, SLOT(rotate(int)));
   connect(imageScene, SIGNAL(imageInfoTriggered()), this, SLOT(imageInfo()));
+  connect(imageScene, SIGNAL(detectOrientationSignal()), this,
+          SLOT(detectOrientation()));
 
   gViewResult->setScene(imageScene);
   gViewResult->setRenderHint(QPainter::Antialiasing);
@@ -430,13 +431,46 @@ void MainWindow::rotate(int quads) {
     modified = true;
 }
 
+/*
+ * Page orientation detection (four 90 degree angles) Rasterop implementation
+ */
+void MainWindow::detectOrientation() {
+    l_int32   orient, alt_rot;
+    l_float32 upconf1, leftconf1;
+    PIX       *fpixs;
+
+    fpixs = pixConvertTo1(pixs, 130);
+    pixOrientDetect(fpixs, &upconf1, &leftconf1, 0, 0);
+    makeOrientDecision(upconf1, leftconf1, 0, 0, &orient, 1);
+
+    if ((upconf1 > 1) && abs(upconf1) > abs(leftconf1)) alt_rot = 0;
+    if ((leftconf1 > 1) && abs(leftconf1) > abs(upconf1)) alt_rot = 90;
+    if ((upconf1 < -1) && abs(upconf1) > abs(leftconf1)) alt_rot = 180;
+    if ((leftconf1 < -1) && abs(leftconf1) > abs(upconf1)) alt_rot = 270;
+
+    if (orient == L_TEXT_ORIENT_UNKNOWN)
+        statusBar()->showMessage(
+                    tr("Confidence is low; no determination is made. "
+                       "But maybe there is %1 deg rotation.").arg(alt_rot),
+                    4000);
+    else if (orient == L_TEXT_ORIENT_UP)
+        statusBar()->showMessage(tr("Text is rightside-up"), 4000);
+    else if (orient == L_TEXT_ORIENT_LEFT)
+        statusBar()->showMessage(tr("Text is rotated 90 deg ccw"), 4000);
+    else if (orient == L_TEXT_ORIENT_DOWN)
+        statusBar()->showMessage(tr("Text is upside-down"), 4000);
+    else   /* orient == L_TEXT_ORIENT_RIGHT */
+        statusBar()->showMessage(tr("Text is rotated 90 deg cw"), 4000);
+    pixDestroy(&fpixs);
+}
+
 void MainWindow::on_actionChange_resolution_triggered() {
     qDebug() << "To be implemented";
     modified = true;
 }
 
 void MainWindow::on_actionToBinary_triggered() {
-    PIX *pixc, *pixg, *pixb, *pixsg, *pixsm, *pixd;
+    PIX *pixc, *pixg, *pixb, *pixsg, *pixd;
     /* Convert the RGB image to grayscale. */
     pixsg = pixConvertRGBToLuminance(pixs);
 

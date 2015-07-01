@@ -29,6 +29,10 @@ void Scene::rotateHalf() {
   emit rotateImage(2);
 }
 
+void Scene::detectOrientation() {
+  emit detectOrientationSignal();
+}
+
 void Scene::dragEnterEvent(QGraphicsSceneDragDropEvent * event) {
   event->acceptProposedAction();
 }
@@ -90,6 +94,11 @@ void Scene::contextMenuEvent(QGraphicsSceneContextMenuEvent * event) {
   QAction* rotateHalfAction = menu->addAction(QIcon(":/rotateCCW.svg"),
                               tr("Rotate 180"));
   connect(rotateHalfAction, SIGNAL(triggered()), this, SLOT(rotateHalf()));
+  QAction* detectOrientationAction = menu->addAction(tr("Detect orientation"));
+  detectOrientationAction->setToolTip(
+              tr("Page orientation detection (four 90 degree angles)"));
+  connect(detectOrientationAction, SIGNAL(triggered()), this,
+          SLOT(detectOrientation()));
   menu->exec(event->screenPos());
   menu->deleteLater();
 }

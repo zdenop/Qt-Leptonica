@@ -14,6 +14,7 @@ class Scene: public QGraphicsScene {
   void sceneScaleChanged(qreal scale);
   void imageInfoTriggered();
   void rotateImage(int);
+  void detectOrientationSignal();
 
  protected:
   virtual void dragEnterEvent(QGraphicsSceneDragDropEvent * event);
@@ -29,6 +30,7 @@ class Scene: public QGraphicsScene {
   void rotateCW();
   void rotateCCW();
   void rotateHalf();
+  void detectOrientation();
 
 };
 
