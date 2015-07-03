@@ -1,6 +1,9 @@
 /Makefile
+/Makefile.*
 /temp/*
 /Debug/
 /Release/
+/help/*
+/test/*
+*.patch
 qt-leptonica.pro.*
-
