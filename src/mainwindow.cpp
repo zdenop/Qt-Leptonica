@@ -499,13 +499,12 @@ void MainWindow::detectOrientation() {
 void MainWindow::on_actionChange_resolution_triggered() {
     DPIDialog dpi_dialog(this, pixs->xres, pixs->yres);
 
-    if (dpi_dialog.exec()) {
+    if (dpi_dialog.exec() == QDialog::Accepted) {
       int x_dpi = dpi_dialog.xDPI->value();
       int y_dpi = dpi_dialog.yDPI->value();
       if (x_dpi != pixs->xres || y_dpi != pixs->yres) {
           modified = true;
-          pixs->xres = x_dpi;
-          pixs->yres = y_dpi;
+          pixSetResolution(pixs, x_dpi, y_dpi);
           updateTitle();
       }
     }
