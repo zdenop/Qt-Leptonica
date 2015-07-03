@@ -212,6 +212,7 @@ void MainWindow::openImage(const QString& imageFileName) {
   if (setPixToScene()) {
     addToResentFiles(imageFileName);
     modified = false;
+    updateTitle();
   }
 }
 
@@ -224,9 +225,12 @@ bool MainWindow::setPixToScene(PIX *lep_pix) {
       imageScene->removeItem(static_cast<QGraphicsItem*>(imageItem));
       delete imageItem;
     }
+    imageScene->clear();
     QImage image = PixToQImage(lep_pix);
     imageItem = imageScene->addPixmap(QPixmap::fromImage(image));
     on_actionZoom_to_original_triggered();
+    imageScene->setSceneRect(0, 0, lep_pix->w, lep_pix->h);
+    gViewResult->setSceneRect(0, 0, lep_pix->w, lep_pix->h);
     setZoomStatus();
     return true;
 }
@@ -552,7 +556,7 @@ void MainWindow::on_actionToBinary_triggered() {
     pixDestroy(&pixd);
     setPixToScene();
 
-    this->statusBar()->showMessage(tr("Finished...", 200));
+    this->statusBar()->showMessage(tr("Finished..."), 2000);
     modified = true;
     updateTitle();
     QApplication::restoreOverrideCursor();
