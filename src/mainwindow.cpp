@@ -216,11 +216,15 @@ void MainWindow::openImage(const QString& imageFileName) {
 }
 
 bool MainWindow::setPixToScene() {
+    return setPixToScene(pixs);
+}
+
+bool MainWindow::setPixToScene(PIX *lep_pix) {
     if (imageItem) {
       imageScene->removeItem(static_cast<QGraphicsItem*>(imageItem));
       delete imageItem;
     }
-    QImage image = PixToQImage(pixs);
+    QImage image = PixToQImage(lep_pix);
     imageItem = imageScene->addPixmap(QPixmap::fromImage(image));
     on_actionZoom_to_original_triggered();
     setZoomStatus();
@@ -511,38 +515,47 @@ void MainWindow::on_actionChange_resolution_triggered() {
 }
 
 void MainWindow::on_actionToBinary_triggered() {
-    PIX *pixc, *pixg, *pixb, *pixsg, *pixd;
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    PIX *pixc, *pixg, *pixsg, *pixd;
+
     /* Convert the RGB image to grayscale. */
+    this->statusBar()->showMessage(tr("Convert the RGB image to grayscale."));
     pixsg = pixConvertRGBToLuminance(pixs);
+    setPixToScene(pixsg);
 
     /* Remove the text in the fg. */
+    this->statusBar()->showMessage(tr("Remove the text in the fg."));
     pixc = pixCloseGray(pixsg, 25, 25);
+    setPixToScene(pixc);
 
     /* Smooth the bg with a convolution. */
     // pixsm = pixBlockconv(pixc, 15, 15);
     // pixDestroy(&pixsm);
 
     /* Normalize for uneven illumination on gray image. */
+    this->statusBar()->showMessage(tr("Normalize for uneven illumination on gray image."));
     pixBackgroundNormGrayArrayMorph(pixsg, NULL, 4, 5, 200, &pixg);
     pixc = pixApplyInvBackgroundGrayMap(pixsg, pixg, 4, 4);
     pixDestroy(&pixsg);
     pixDestroy(&pixg);
+    setPixToScene(pixc);
 
     /* Increase the dynamic range. */
     // make dark gray *black* and light gray *white*
+    this->statusBar()->showMessage(tr("Increase the dynamic range."));
     pixd = pixGammaTRC(NULL, pixc, 1.0, 50, 220);
-    pixDestroy(&pixc);
+    setPixToScene(pixd);
 
     /* Threshold to 1 bpp. */
+    this->statusBar()->showMessage(tr("Threshold to 1 bpp."));
     pixs = pixThresholdToBinary(pixd, 120);
     pixDestroy(&pixd);
-
-    //pixs = pixCopy(NULL, pixb);
     setPixToScene();
-    pixDestroy(&pixb);
 
+    this->statusBar()->showMessage(tr("Finished...", 200));
     modified = true;
     updateTitle();
+    QApplication::restoreOverrideCursor();
 }
 
 /*

@@ -65,6 +65,7 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
   void setZoomStatus();
   void setZoom(float scale);
   bool setPixToScene();
+  bool setPixToScene(PIX *lep_pix);
 
  private Q_SLOTS:
   void on_actionOpenFile_triggered();
