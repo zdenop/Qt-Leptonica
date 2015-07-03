@@ -42,8 +42,8 @@ unix: {
     LIBS        += -L/usr/lib64 -L/usr/local/lib64 -llept
 }
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../lib/ -lliblept168
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../lib/ -lliblept168d
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../lib/ -lliblept171
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../lib/ -lliblept171d
 
 win32: {
     INCLUDEPATH += $$PWD/../include
