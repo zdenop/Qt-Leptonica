@@ -83,7 +83,7 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
   void detectOrientation();
 
   void on_actionChange_resolution_triggered();
-  void on_actionToBinary_triggered();
+  void on_actionBinarizeUnIl_triggered();
 
  private slots:
   void imageInfo();

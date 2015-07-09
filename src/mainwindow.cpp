@@ -518,7 +518,10 @@ void MainWindow::on_actionChange_resolution_triggered() {
     }
 }
 
-void MainWindow::on_actionToBinary_triggered() {
+/*
+ * Binarize and fix uneven illumination
+ */
+void MainWindow::on_actionBinarizeUnIl_triggered() {
     QApplication::setOverrideCursor(Qt::WaitCursor);
     PIX *pixc, *pixg, *pixsg, *pixd;
 

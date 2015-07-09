@@ -22,11 +22,7 @@
     <item row="0" column="0">
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <widget class="QGraphicsView" name="gViewResult">
-        <property name="dragMode">
-         <enum>QGraphicsView::ScrollHandDrag</enum>
-        </property>
-       </widget>
+       <widget class="QGraphicsView" name="gViewResult"/>
       </item>
      </layout>
     </item>
@@ -75,7 +71,7 @@
      <string>Edit</string>
     </property>
     <addaction name="actionChange_resolution"/>
-    <addaction name="actionToBinary"/>
+    <addaction name="actionBinarizeUnIl"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -111,7 +107,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionToBinary"/>
+   <addaction name="actionBinarizeUnIl"/>
   </widget>
   <action name="actionAbout">
    <property name="text">
@@ -218,13 +214,16 @@
     <string>Ctrl+*</string>
    </property>
   </action>
-  <action name="actionToBinary">
+  <action name="actionBinarizeUnIl">
    <property name="icon">
     <iconset resource="../resources/application.qrc">
      <normaloff>:/images/binary-icon.png</normaloff>:/images/binary-icon.png</iconset>
    </property>
    <property name="text">
-    <string>ToBinary</string>
+    <string>Binarize and fix illumination</string>
+   </property>
+   <property name="toolTip">
+    <string>Binarize and fix uneven illumination</string>
    </property>
   </action>
   <action name="actionChange_resolution">
