@@ -71,6 +71,7 @@
      <string>Edit</string>
     </property>
     <addaction name="actionChange_resolution"/>
+    <addaction name="actionDetectOrientation"/>
     <addaction name="actionBinarizeUnIl"/>
     <addaction name="actionDewarp"/>
    </widget>
@@ -108,6 +109,8 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionChange_resolution"/>
+   <addaction name="actionDetectOrientation"/>
    <addaction name="actionBinarizeUnIl"/>
    <addaction name="actionDewarp"/>
   </widget>
@@ -229,13 +232,30 @@
    </property>
   </action>
   <action name="actionChange_resolution">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/images/change_dpi.png</normaloff>:/images/change_dpi.png</iconset>
+   </property>
    <property name="text">
-    <string>Change resolution...</string>
+    <string>Change resolution (DPI)...</string>
    </property>
   </action>
   <action name="actionDewarp">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/images/dewarp.png</normaloff>:/images/dewarp.png</iconset>
+   </property>
    <property name="text">
     <string>Dewarp</string>
+   </property>
+  </action>
+  <action name="actionDetectOrientation">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/resolution.svg</normaloff>:/resolution.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Detect Orientation...</string>
    </property>
   </action>
  </widget>
