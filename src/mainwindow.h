@@ -84,6 +84,7 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
 
   void on_actionChange_resolution_triggered();
   void on_actionBinarizeUnIl_triggered();
+  void on_actionDewarp_triggered();
 
  private slots:
   void imageInfo();

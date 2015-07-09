@@ -566,6 +566,23 @@ void MainWindow::on_actionBinarizeUnIl_triggered() {
 }
 
 /*
+ * Dewarp image
+ * todo: test: https://github.com/renard314/leptonica-samples/blob/master/src/Examples.cpp
+ */
+void MainWindow::on_actionDewarp_triggered() {
+    Pix* pixd;
+    dewarpSinglePage(pixs, 1, 100, 1, &pixd, NULL, 0);
+    pixs = pixCopy(NULL, pixd);
+    pixDestroy(&pixd);
+    setPixToScene();
+
+    this->statusBar()->showMessage(tr("Finished..."), 2000);
+    modified = true;
+    updateTitle();
+    QApplication::restoreOverrideCursor();
+}
+
+/*
  * Read settings
  */
 void MainWindow::readSettings(bool init) {
