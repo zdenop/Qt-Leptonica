@@ -31,7 +31,7 @@ MainWindow::MainWindow(QWidget *parent, const QString &fileName)
           this, SLOT(rotate(int)));
   connect(imageScene, SIGNAL(imageInfoTriggered()), this, SLOT(imageInfo()));
   connect(imageScene, SIGNAL(detectOrientationSignal()), this,
-          SLOT(detectOrientation()));
+          SLOT(on_actionDetectOrientation_triggered()));
 
   gViewResult->setScene(imageScene);
   gViewResult->setRenderHint(QPainter::Antialiasing);
@@ -457,7 +457,7 @@ void MainWindow::rotate(int quads) {
 /*
  * Page orientation detection (four 90 degree angles) Rasterop implementation
  */
-void MainWindow::detectOrientation() {
+void MainWindow::on_actionDetectOrientation_triggered() {
     l_int32   orient, alt_rot;
     l_float32 upconf1, leftconf1;
     PIX       *fpixs;
@@ -499,7 +499,6 @@ void MainWindow::detectOrientation() {
                                       QMessageBox::Yes|QMessageBox::No);
         if (reply == QMessageBox::Yes) {
             rotate(alt_rot/90);
-            qDebug() << "Yes was clicked " << alt_rot/90;
         }
     }
 }
