@@ -75,6 +75,7 @@
     <addaction name="actionBinarizeUnIl"/>
     <addaction name="actionDewarp"/>
     <addaction name="actionDeskew"/>
+    <addaction name="actionCleanDarkBackground"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -115,6 +116,7 @@
    <addaction name="actionBinarizeUnIl"/>
    <addaction name="actionDewarp"/>
    <addaction name="actionDeskew"/>
+   <addaction name="actionCleanDarkBackground"/>
   </widget>
   <action name="actionAbout">
    <property name="text">
@@ -267,6 +269,15 @@
    </property>
    <property name="text">
     <string>Deskew</string>
+   </property>
+  </action>
+  <action name="actionCleanDarkBackground">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/images/clean_background.svg</normaloff>:/images/clean_background.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Clean dark background</string>
    </property>
   </action>
  </widget>

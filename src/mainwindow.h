@@ -86,6 +86,7 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
   void on_actionBinarizeUnIl_triggered();
   void on_actionDewarp_triggered();
   void on_actionDeskew_triggered();
+  void on_actionCleanDarkBackground_triggered();
 
  private slots:
   void imageInfo();

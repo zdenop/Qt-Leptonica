@@ -581,9 +581,13 @@ void MainWindow::on_actionDewarp_triggered() {
     QApplication::restoreOverrideCursor();
 }
 
+/*
+ * Deskew image
+ * based on leptonica skew_reg.c
+ */
 void MainWindow::on_actionDeskew_triggered() {
   Pix* pixd;
-#define   DESKEW_REDUCTION      4      /* 1, 2 or 4 */
+  #define DESKEW_REDUCTION  4      /* 1, 2 or 4 */
   pixd = pixDeskew(pixs, DESKEW_REDUCTION);
   pixs = pixCopy(NULL, pixd);
   pixDestroy(&pixd);
@@ -593,6 +597,34 @@ void MainWindow::on_actionDeskew_triggered() {
   modified = true;
   updateTitle();
   QApplication::restoreOverrideCursor();
+}
+
+/*
+ * Clean dark background of image
+ * based on leptonica adaptmap_dark.c
+ */
+void MainWindow::on_actionCleanDarkBackground_triggered() {
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+
+    PIX     *pix1, *pix2;
+    l_int32  blackval, whiteval, thresh;
+
+    blackval = 70;
+    whiteval = 180;
+    thresh = 60;
+
+    pix1 = pixBackgroundNorm(pixs, NULL, NULL, 10, 15, thresh, 25, 200, 2, 1);
+    setPixToScene(pix1);
+    pix2 = pixGammaTRC(NULL, pix1, 1.0, blackval, whiteval);
+    pixs = pixCopy(NULL, pix2);
+    setPixToScene();
+    pixDestroy(&pix1);
+    pixDestroy(&pix2);
+
+    this->statusBar()->showMessage(tr("Finished..."), 2000);
+    modified = true;
+    updateTitle();
+    QApplication::restoreOverrideCursor();
 }
 
 /*
