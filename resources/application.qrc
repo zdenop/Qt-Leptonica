@@ -2,7 +2,8 @@
   <qresource prefix="/">
     <file>images/dewarp.png</file>
     <file>images/change_dpi.png</file>
-    <file alias="resolution.svg">images/screen-rotation.svg</file>
+    <file alias="deskew.svg">images/screen-rotation.svg</file>
+    <file alias="orientation.svg">images/orientation.svg</file>
     <file alias="info.svg">images/address-book-new.svg</file>
     <file alias="rotateCW.svg">images/object-rotate-right.svg</file>
     <file alias="rotateCCW.svg">images/object-rotate-left.svg</file>

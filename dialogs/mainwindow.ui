@@ -34,7 +34,7 @@
      <x>0</x>
      <y>0</y>
      <width>568</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuAbout">
@@ -74,6 +74,7 @@
     <addaction name="actionDetectOrientation"/>
     <addaction name="actionBinarizeUnIl"/>
     <addaction name="actionDewarp"/>
+    <addaction name="actionDeskew"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -113,6 +114,7 @@
    <addaction name="actionDetectOrientation"/>
    <addaction name="actionBinarizeUnIl"/>
    <addaction name="actionDewarp"/>
+   <addaction name="actionDeskew"/>
   </widget>
   <action name="actionAbout">
    <property name="text">
@@ -252,10 +254,19 @@
   <action name="actionDetectOrientation">
    <property name="icon">
     <iconset resource="../resources/application.qrc">
-     <normaloff>:/resolution.svg</normaloff>:/resolution.svg</iconset>
+     <normaloff>:/orientation.svg</normaloff>:/orientation.svg</iconset>
    </property>
    <property name="text">
     <string>Detect Orientation...</string>
+   </property>
+  </action>
+  <action name="actionDeskew">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/deskew.svg</normaloff>:/deskew.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Deskew</string>
    </property>
   </action>
  </widget>

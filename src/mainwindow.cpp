@@ -581,6 +581,20 @@ void MainWindow::on_actionDewarp_triggered() {
     QApplication::restoreOverrideCursor();
 }
 
+void MainWindow::on_actionDeskew_triggered() {
+  Pix* pixd;
+#define   DESKEW_REDUCTION      4      /* 1, 2 or 4 */
+  pixd = pixDeskew(pixs, DESKEW_REDUCTION);
+  pixs = pixCopy(NULL, pixd);
+  pixDestroy(&pixd);
+  setPixToScene();
+
+  this->statusBar()->showMessage(tr("Finished..."), 2000);
+  modified = true;
+  updateTitle();
+  QApplication::restoreOverrideCursor();
+}
+
 /*
  * Read settings
  */
