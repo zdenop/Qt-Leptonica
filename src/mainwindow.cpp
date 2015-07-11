@@ -271,6 +271,15 @@ void MainWindow::on_actionOpenFile_triggered() {
   }
 }
 
+void MainWindow::on_actionReloadFile_triggered() {
+  qDebug() << "reload";
+  if (modified)  // reload only if file was modified...
+      statusBar()->showMessage(tr("Reloading file...."));
+      openImage(recentFile);
+      statusBar()->showMessage(tr("File reloaded."), 2000);
+
+}
+
 void MainWindow::on_actionSave_triggered() {
   l_int32  ret;
   l_int32 format = pixGetInputFormat(pixs);

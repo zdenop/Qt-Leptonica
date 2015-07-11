@@ -34,7 +34,7 @@
      <x>0</x>
      <y>0</y>
      <width>568</width>
-     <height>20</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuAbout">
@@ -49,6 +49,8 @@
      <string>File</string>
     </property>
     <addaction name="actionOpenFile"/>
+    <addaction name="actionReloadFile"/>
+    <addaction name="separator"/>
     <addaction name="actionSave"/>
     <addaction name="actionSaveAs"/>
     <addaction name="separator"/>
@@ -278,6 +280,14 @@
    </property>
    <property name="text">
     <string>Clean dark background</string>
+   </property>
+  </action>
+  <action name="actionReloadFile">
+   <property name="text">
+    <string>Reload file</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
  </widget>

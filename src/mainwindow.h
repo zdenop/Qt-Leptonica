@@ -71,6 +71,7 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
 
  private Q_SLOTS:
   void on_actionOpenFile_triggered();
+  void on_actionReloadFile_triggered();
   void on_actionSave_triggered();
   void on_actionSaveAs_triggered();
 
