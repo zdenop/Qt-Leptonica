@@ -30,10 +30,10 @@
 class DPIDialog : public QDialog, public Ui::DPIDialog {
   Q_OBJECT
 
-  public:
-    explicit DPIDialog(QWidget* parent = 0, int x_dpi=0, int y_dpi=0);
+ public:
+  explicit DPIDialog(QWidget* parent = 0, int x_dpi=0, int y_dpi=0);
 
-protected:
+ protected:
   void closeEvent(QCloseEvent* event);
 };
 

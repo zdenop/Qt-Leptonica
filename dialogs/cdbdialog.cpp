@@ -30,14 +30,14 @@ CDBDialog::CDBDialog(QWidget* parent)
 }
 
 void CDBDialog::setValues(int blackval, int whiteval, int thresh) {
-    this->blackVal->setValue(blackval);
-    this->whiteVal->setValue(whiteval);
-    this->treshold->setValue(thresh);
-    this->lcdNumber->display(thresh);
+  this->blackVal->setValue(blackval);
+  this->whiteVal->setValue(whiteval);
+  this->treshold->setValue(thresh);
+  this->lcdNumber->display(thresh);
 }
 
 void CDBDialog::on_blackVal_valueChanged(int value) {
-    emit cdbParamsChanged(blackVal->value(), whiteVal->value(),
+  emit cdbParamsChanged(blackVal->value(), whiteVal->value(),
                         treshold->value());
 }
 

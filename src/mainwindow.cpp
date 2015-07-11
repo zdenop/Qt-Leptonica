@@ -218,21 +218,21 @@ void MainWindow::openImage(const QString& imageFileName) {
 }
 
 bool MainWindow::setPixToScene() {
-    return setPixToScene(pixs);
+  return setPixToScene(pixs);
 }
 
 bool MainWindow::setPixToScene(PIX *lep_pix) {
-    if (imageItem) {
-      imageScene->removeItem(static_cast<QGraphicsItem*>(imageItem));
-      delete imageItem;
-    }
-    imageScene->clear();
-    QImage image = PixToQImage(lep_pix);
-    imageItem = imageScene->addPixmap(QPixmap::fromImage(image));
-    imageScene->setSceneRect(0, 0, lep_pix->w, lep_pix->h);
-    gViewResult->setSceneRect(0, 0, lep_pix->w, lep_pix->h);
-    setZoomStatus();
-    return true;
+  if (imageItem) {
+    imageScene->removeItem(static_cast<QGraphicsItem*>(imageItem));
+    delete imageItem;
+  }
+  imageScene->clear();
+  QImage image = PixToQImage(lep_pix);
+  imageItem = imageScene->addPixmap(QPixmap::fromImage(image));
+  imageScene->setSceneRect(0, 0, lep_pix->w, lep_pix->h);
+  gViewResult->setSceneRect(0, 0, lep_pix->w, lep_pix->h);
+  setZoomStatus();
+  return true;
 }
 
 void MainWindow::addToResentFiles(QString filename) {
@@ -423,145 +423,145 @@ void MainWindow::setZoomStatus() {
 }
 
 void MainWindow::imageInfo() {
-    QString aboutImage = tr("<h1>Image info</h1>");
-    aboutImage.append(tr("<p style='color:blue'>"));
-    aboutImage.append(tr("width in pixels: %1<br/>").arg(pixs->w));
-    aboutImage.append(tr("height in pixels: %1<br/>").arg(pixs->h));
-    aboutImage.append(tr("depth in bits (bpp): %1<br/>").arg(pixs->d));
-    aboutImage.append(tr("number of samples per pixel [spp]: %1<br/>")
-                      .arg(pixs->spp));
-    aboutImage.append(tr("32-bit words/line [wpl]: %1<br/>").arg(pixs->wpl));
-    aboutImage.append(tr("resolution: %1x%2<br/>").arg(pixs->xres)
-                      .arg(pixs->yres));
-    aboutImage.append(tr("input format: %1</p>").arg(pixGetInputFormat(pixs)));
-    char *text = pixGetText(pixs);
-    if (text)
-      aboutImage.append(tr("text string associated with pix: %1</p>")
-                        .arg(text));
-    QMessageBox::about(this, tr("About image"), aboutImage);
+  QString aboutImage = tr("<h1>Image info</h1>");
+  aboutImage.append(tr("<p style='color:blue'>"));
+  aboutImage.append(tr("width in pixels: %1<br/>").arg(pixs->w));
+  aboutImage.append(tr("height in pixels: %1<br/>").arg(pixs->h));
+  aboutImage.append(tr("depth in bits (bpp): %1<br/>").arg(pixs->d));
+  aboutImage.append(tr("number of samples per pixel [spp]: %1<br/>")
+                    .arg(pixs->spp));
+  aboutImage.append(tr("32-bit words/line [wpl]: %1<br/>").arg(pixs->wpl));
+  aboutImage.append(tr("resolution: %1x%2<br/>").arg(pixs->xres)
+                    .arg(pixs->yres));
+  aboutImage.append(tr("input format: %1</p>").arg(pixGetInputFormat(pixs)));
+  char *text = pixGetText(pixs);
+  if (text)
+    aboutImage.append(tr("text string associated with pix: %1</p>")
+                      .arg(text));
+  QMessageBox::about(this, tr("About image"), aboutImage);
 }
 
 /*
  * Rotate pixs by number of 90 degree cw rotations
  */
 void MainWindow::rotate(int quads) {
-    PIX *pixd;
-    pixd = pixRotateOrth(pixs, quads);
-    pixs = pixCopy(NULL, pixd);
-    setPixToScene();
-    pixDestroy(&pixd);
-    modified = true;
-    updateTitle();
+  PIX *pixd;
+  pixd = pixRotateOrth(pixs, quads);
+  pixs = pixCopy(NULL, pixd);
+  setPixToScene();
+  pixDestroy(&pixd);
+  modified = true;
+  updateTitle();
 }
 
 /*
  * Page orientation detection (four 90 degree angles) Rasterop implementation
  */
 void MainWindow::on_actionDetectOrientation_triggered() {
-    l_int32   orient, alt_rot;
-    l_float32 upconf1, leftconf1;
-    PIX       *fpixs;
+  l_int32   orient, alt_rot;
+  l_float32 upconf1, leftconf1;
+  PIX       *fpixs;
 
-    fpixs = pixConvertTo1(pixs, 130);
-    pixOrientDetect(fpixs, &upconf1, &leftconf1, 0, 0);
-    makeOrientDecision(upconf1, leftconf1, 0, 0, &orient, 1);
+  fpixs = pixConvertTo1(pixs, 130);
+  pixOrientDetect(fpixs, &upconf1, &leftconf1, 0, 0);
+  makeOrientDecision(upconf1, leftconf1, 0, 0, &orient, 1);
 
-    if ((upconf1 > 1) && abs(upconf1) > abs(leftconf1)) alt_rot = 0;
-    if ((leftconf1 > 1) && abs(leftconf1) > abs(upconf1)) alt_rot = 90;
-    if ((upconf1 < -1) && abs(upconf1) > abs(leftconf1)) alt_rot = 180;
-    if ((leftconf1 < -1) && abs(leftconf1) > abs(upconf1)) alt_rot = 270;
+  if ((upconf1 > 1) && abs(upconf1) > abs(leftconf1)) alt_rot = 0;
+  if ((leftconf1 > 1) && abs(leftconf1) > abs(upconf1)) alt_rot = 90;
+  if ((upconf1 < -1) && abs(upconf1) > abs(leftconf1)) alt_rot = 180;
+  if ((leftconf1 < -1) && abs(leftconf1) > abs(upconf1)) alt_rot = 270;
 
-    if (orient == L_TEXT_ORIENT_UNKNOWN) {
-        statusBar()->showMessage(
-                    tr("Confidence is low; no determination is made. "
-                       "But maybe there is %1 deg rotation.").arg(alt_rot),
-                    4000);
-    } else if (orient == L_TEXT_ORIENT_UP) {
-        statusBar()->showMessage(tr("Text is rightside-up"), 4000);
-        alt_rot = 0;
-    } else if (orient == L_TEXT_ORIENT_LEFT) {
-        statusBar()->showMessage(tr("Text is rotated 90 deg ccw"), 4000);
-        alt_rot = 90;
-    } else if (orient == L_TEXT_ORIENT_DOWN) {
-        statusBar()->showMessage(tr("Text is upside-down"), 4000);
-        alt_rot = 180;
-    } else {  /* orient == L_TEXT_ORIENT_RIGHT */
-        statusBar()->showMessage(tr("Text is rotated 90 deg cw"), 4000);
-        alt_rot = 270;
+  if (orient == L_TEXT_ORIENT_UNKNOWN) {
+    statusBar()->showMessage(
+      tr("Confidence is low; no determination is made. "
+         "But maybe there is %1 deg rotation.").arg(alt_rot),
+      4000);
+  } else if (orient == L_TEXT_ORIENT_UP) {
+    statusBar()->showMessage(tr("Text is rightside-up"), 4000);
+    alt_rot = 0;
+  } else if (orient == L_TEXT_ORIENT_LEFT) {
+    statusBar()->showMessage(tr("Text is rotated 90 deg ccw"), 4000);
+    alt_rot = 90;
+  } else if (orient == L_TEXT_ORIENT_DOWN) {
+    statusBar()->showMessage(tr("Text is upside-down"), 4000);
+    alt_rot = 180;
+  } else {  /* orient == L_TEXT_ORIENT_RIGHT */
+    statusBar()->showMessage(tr("Text is rotated 90 deg cw"), 4000);
+    alt_rot = 270;
+  }
+  pixDestroy(&fpixs);
+
+  if (alt_rot) {
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, tr("Fix orientation?"),
+                                  tr("Rotate image by %1 degrees?").
+                                  arg(alt_rot),
+                                  QMessageBox::Yes|QMessageBox::No);
+    if (reply == QMessageBox::Yes) {
+      rotate(alt_rot/90);
     }
-    pixDestroy(&fpixs);
-
-    if (alt_rot) {
-        QMessageBox::StandardButton reply;
-        reply = QMessageBox::question(this, tr("Fix orientation?"),
-                                      tr("Rotate image by %1 degrees?").
-                                      arg(alt_rot),
-                                      QMessageBox::Yes|QMessageBox::No);
-        if (reply == QMessageBox::Yes) {
-            rotate(alt_rot/90);
-        }
-    }
+  }
 }
 
 void MainWindow::on_actionChange_resolution_triggered() {
-    DPIDialog dpi_dialog(this, pixs->xres, pixs->yres);
+  DPIDialog dpi_dialog(this, pixs->xres, pixs->yres);
 
-    if (dpi_dialog.exec() == QDialog::Accepted) {
-      int x_dpi = dpi_dialog.xDPI->value();
-      int y_dpi = dpi_dialog.yDPI->value();
-      if (x_dpi != pixs->xres || y_dpi != pixs->yres) {
-          modified = true;
-          pixSetResolution(pixs, x_dpi, y_dpi);
-          updateTitle();
-      }
+  if (dpi_dialog.exec() == QDialog::Accepted) {
+    int x_dpi = dpi_dialog.xDPI->value();
+    int y_dpi = dpi_dialog.yDPI->value();
+    if (x_dpi != pixs->xres || y_dpi != pixs->yres) {
+      modified = true;
+      pixSetResolution(pixs, x_dpi, y_dpi);
+      updateTitle();
     }
+  }
 }
 
 /*
  * Binarize and fix uneven illumination
  */
 void MainWindow::on_actionBinarizeUnIl_triggered() {
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    PIX *pixc, *pixg, *pixsg, *pixd;
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+  PIX *pixc, *pixg, *pixsg, *pixd;
 
-    /* Convert the RGB image to grayscale. */
-    this->statusBar()->showMessage(tr("Convert the RGB image to grayscale."));
-    pixsg = pixConvertRGBToLuminance(pixs);
-    setPixToScene(pixsg);
+  /* Convert the RGB image to grayscale. */
+  this->statusBar()->showMessage(tr("Convert the RGB image to grayscale."));
+  pixsg = pixConvertRGBToLuminance(pixs);
+  setPixToScene(pixsg);
 
-    /* Remove the text in the fg. */
-    this->statusBar()->showMessage(tr("Remove the text in the fg."));
-    pixc = pixCloseGray(pixsg, 25, 25);
-    setPixToScene(pixc);
+  /* Remove the text in the fg. */
+  this->statusBar()->showMessage(tr("Remove the text in the fg."));
+  pixc = pixCloseGray(pixsg, 25, 25);
+  setPixToScene(pixc);
 
-    /* Smooth the bg with a convolution. */
-    // pixsm = pixBlockconv(pixc, 15, 15);
-    // pixDestroy(&pixsm);
+  /* Smooth the bg with a convolution. */
+  // pixsm = pixBlockconv(pixc, 15, 15);
+  // pixDestroy(&pixsm);
 
-    /* Normalize for uneven illumination on gray image. */
-    this->statusBar()->showMessage(tr("Normalize for uneven illumination on gray image."));
-    pixBackgroundNormGrayArrayMorph(pixsg, NULL, 4, 5, 200, &pixg);
-    pixc = pixApplyInvBackgroundGrayMap(pixsg, pixg, 4, 4);
-    pixDestroy(&pixsg);
-    pixDestroy(&pixg);
-    setPixToScene(pixc);
+  /* Normalize for uneven illumination on gray image. */
+  this->statusBar()->showMessage(tr("Normalize for uneven illumination on gray image."));
+  pixBackgroundNormGrayArrayMorph(pixsg, NULL, 4, 5, 200, &pixg);
+  pixc = pixApplyInvBackgroundGrayMap(pixsg, pixg, 4, 4);
+  pixDestroy(&pixsg);
+  pixDestroy(&pixg);
+  setPixToScene(pixc);
 
-    /* Increase the dynamic range. */
-    // make dark gray *black* and light gray *white*
-    this->statusBar()->showMessage(tr("Increase the dynamic range."));
-    pixd = pixGammaTRC(NULL, pixc, 1.0, 50, 220);
-    setPixToScene(pixd);
+  /* Increase the dynamic range. */
+  // make dark gray *black* and light gray *white*
+  this->statusBar()->showMessage(tr("Increase the dynamic range."));
+  pixd = pixGammaTRC(NULL, pixc, 1.0, 50, 220);
+  setPixToScene(pixd);
 
-    /* Threshold to 1 bpp. */
-    this->statusBar()->showMessage(tr("Threshold to 1 bpp."));
-    pixs = pixThresholdToBinary(pixd, 120);
-    pixDestroy(&pixd);
-    setPixToScene();
+  /* Threshold to 1 bpp. */
+  this->statusBar()->showMessage(tr("Threshold to 1 bpp."));
+  pixs = pixThresholdToBinary(pixd, 120);
+  pixDestroy(&pixd);
+  setPixToScene();
 
-    this->statusBar()->showMessage(tr("Finished..."), 2000);
-    modified = true;
-    updateTitle();
-    QApplication::restoreOverrideCursor();
+  this->statusBar()->showMessage(tr("Finished..."), 2000);
+  modified = true;
+  updateTitle();
+  QApplication::restoreOverrideCursor();
 }
 
 /*
@@ -569,17 +569,17 @@ void MainWindow::on_actionBinarizeUnIl_triggered() {
  * todo: test: https://github.com/renard314/leptonica-samples/blob/master/src/Examples.cpp
  */
 void MainWindow::on_actionDewarp_triggered() {
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    Pix* pixd;
-    dewarpSinglePage(pixs, 1, 100, 1, &pixd, NULL, 0);
-    pixs = pixCopy(NULL, pixd);
-    pixDestroy(&pixd);
-    setPixToScene();
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+  Pix* pixd;
+  dewarpSinglePage(pixs, 1, 100, 1, &pixd, NULL, 0);
+  pixs = pixCopy(NULL, pixd);
+  pixDestroy(&pixd);
+  setPixToScene();
 
-    this->statusBar()->showMessage(tr("Finished..."), 2000);
-    modified = true;
-    updateTitle();
-    QApplication::restoreOverrideCursor();
+  this->statusBar()->showMessage(tr("Finished..."), 2000);
+  modified = true;
+  updateTitle();
+  QApplication::restoreOverrideCursor();
 }
 
 /*
@@ -589,7 +589,7 @@ void MainWindow::on_actionDewarp_triggered() {
 void MainWindow::on_actionDeskew_triggered() {
   QApplication::setOverrideCursor(Qt::WaitCursor);
   Pix* pixd;
-  #define DESKEW_REDUCTION  4      /* 1, 2 or 4 */
+#define DESKEW_REDUCTION  4      /* 1, 2 or 4 */
   pixd = pixDeskew(pixs, DESKEW_REDUCTION);
   pixs = pixCopy(NULL, pixd);
   pixDestroy(&pixd);
@@ -605,39 +605,39 @@ void MainWindow::on_actionDeskew_triggered() {
  * Clean dark background action handling
  */
 void MainWindow::on_actionCleanDarkBackground_triggered() {
-    PIX *pixt;
-    int blackval, whiteval, thresh;
-    blackval = 70;
-    whiteval = 180;
-    thresh = 60;
-    CDBDialog cdb_dialog(this);
-    cdb_dialog.setValues(blackval, whiteval, thresh);
-    connect(&cdb_dialog, SIGNAL(cdbParamsChanged(int, int, int)),
-            this, SLOT(slotCleanDarkBackground(int, int , int)));
+  PIX *pixt;
+  int blackval, whiteval, thresh;
+  blackval = 70;
+  whiteval = 180;
+  thresh = 60;
+  CDBDialog cdb_dialog(this);
+  cdb_dialog.setValues(blackval, whiteval, thresh);
+  connect(&cdb_dialog, SIGNAL(cdbParamsChanged(int, int, int)),
+          this, SLOT(slotCleanDarkBackground(int, int , int)));
 
-    if (cdb_dialog.exec() == QDialog::Accepted) {
-        blackval = cdb_dialog.blackVal->value();
-        whiteval = cdb_dialog.whiteVal->value();
-        thresh = cdb_dialog.treshold->value();
-        pixt = cleanDarkBackground(blackval, whiteval, thresh);
-        pixs = pixCopy(NULL, pixt);
-        pixDestroy(&pixt);
-        setPixToScene();
-        modified = true;
-        updateTitle();
-        this->statusBar()->showMessage(tr("Finished..."), 2000);
-    } else {
-        setPixToScene();
-    }
+  if (cdb_dialog.exec() == QDialog::Accepted) {
+    blackval = cdb_dialog.blackVal->value();
+    whiteval = cdb_dialog.whiteVal->value();
+    thresh = cdb_dialog.treshold->value();
+    pixt = cleanDarkBackground(blackval, whiteval, thresh);
+    pixs = pixCopy(NULL, pixt);
+    pixDestroy(&pixt);
+    setPixToScene();
+    modified = true;
+    updateTitle();
+    this->statusBar()->showMessage(tr("Finished..."), 2000);
+  } else {
+    setPixToScene();
+  }
 }
 
 void MainWindow::slotCleanDarkBackground(int blackval, int whiteval,
-                                         int thresh) {
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    PIX *pixt;
-    pixt = cleanDarkBackground(blackval, whiteval, thresh);
-    pixDestroy(&pixt);
-    QApplication::restoreOverrideCursor();
+    int thresh) {
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+  PIX *pixt;
+  pixt = cleanDarkBackground(blackval, whiteval, thresh);
+  pixDestroy(&pixt);
+  QApplication::restoreOverrideCursor();
 }
 
 /*
@@ -645,14 +645,14 @@ void MainWindow::slotCleanDarkBackground(int blackval, int whiteval,
  * based on leptonica adaptmap_dark.c
  */
 PIX* MainWindow::cleanDarkBackground(int blackval, int whiteval, int thresh) {
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    PIX     *pix1, *pix2;
-    pix1 = pixBackgroundNorm(pixs, NULL, NULL, 10, 15, thresh, 25, 200, 2, 1);
-    pix2 = pixGammaTRC(NULL, pix1, 1.0, blackval, whiteval);
-    setPixToScene(pix2);
-    pixDestroy(&pix1);
-    QApplication::restoreOverrideCursor();
-    return pix2;
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+  PIX     *pix1, *pix2;
+  pix1 = pixBackgroundNorm(pixs, NULL, NULL, 10, 15, thresh, 25, 200, 2, 1);
+  pix2 = pixGammaTRC(NULL, pix1, 1.0, blackval, whiteval);
+  setPixToScene(pix2);
+  pixDestroy(&pix1);
+  QApplication::restoreOverrideCursor();
+  return pix2;
 }
 
 /*
@@ -668,7 +668,7 @@ void MainWindow::readSettings(bool init) {
     restoreGeometry(settings.value("geometry").toByteArray());
     restoreState(settings.value("state").toByteArray());
     if (!recentFile.isEmpty())
-        setZoom(settings.value("lastZoom").toFloat());
+      setZoom(settings.value("lastZoom").toFloat());
     settings.endGroup();
   }
 }

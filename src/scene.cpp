@@ -96,7 +96,7 @@ void Scene::contextMenuEvent(QGraphicsSceneContextMenuEvent * event) {
   connect(rotateHalfAction, SIGNAL(triggered()), this, SLOT(rotateHalf()));
   QAction* detectOrientationAction = menu->addAction(tr("Detect orientation"));
   detectOrientationAction->setToolTip(
-              tr("Page orientation detection (four 90 degree angles)"));
+    tr("Page orientation detection (four 90 degree angles)"));
   connect(detectOrientationAction, SIGNAL(triggered()), this,
           SLOT(detectOrientation()));
   menu->exec(event->screenPos());
