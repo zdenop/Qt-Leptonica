@@ -67,6 +67,7 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
   bool setPixToScene();
   bool setPixToScene(PIX *lep_pix);
   PIX *cleanDarkBackground(int blackval, int whiteval, int thresh);
+  int blackval, whiteval, thresh;
 
  private Q_SLOTS:
   void on_actionOpenFile_triggered();

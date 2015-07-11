@@ -67,6 +67,11 @@ MainWindow::MainWindow(QWidget *parent, const QString &fileName)
   }
   if (!recentFile.isEmpty())
     openImage(recentFile);
+
+  // default values for Clean Dark Background
+  blackval = 70;
+  whiteval = 180;
+  thresh = 60;
 }
 
 void MainWindow::updateRecentFileActions() {
@@ -606,10 +611,6 @@ void MainWindow::on_actionDeskew_triggered() {
  */
 void MainWindow::on_actionCleanDarkBackground_triggered() {
   PIX *pixt;
-  int blackval, whiteval, thresh;
-  blackval = 70;
-  whiteval = 180;
-  thresh = 60;
   CDBDialog cdb_dialog(this);
   cdb_dialog.setValues(blackval, whiteval, thresh);
   connect(&cdb_dialog, SIGNAL(cdbParamsChanged(int, int, int)),
