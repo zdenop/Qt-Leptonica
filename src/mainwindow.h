@@ -66,6 +66,7 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
   void setZoom(float scale);
   bool setPixToScene();
   bool setPixToScene(PIX *lep_pix);
+  PIX *cleanDarkBackground(int blackval, int whiteval, int thresh);
 
  private Q_SLOTS:
   void on_actionOpenFile_triggered();
@@ -87,6 +88,7 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
   void on_actionDewarp_triggered();
   void on_actionDeskew_triggered();
   void on_actionCleanDarkBackground_triggered();
+  void slotCleanDarkBackground(int blackval, int whiteval, int thresh);
 
  private slots:
   void imageInfo();

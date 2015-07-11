@@ -4,6 +4,7 @@
 #include "mainwindow.h"
 #include "settings.h"
 #include "dialogs/dpidialog.h"
+#include "dialogs/cdbdialog.h"
 
 MainWindow::MainWindow(QWidget *parent, const QString &fileName)
   : QMainWindow(parent) {
@@ -600,31 +601,53 @@ void MainWindow::on_actionDeskew_triggered() {
 }
 
 /*
- * Clean dark background of image
- * based on leptonica adaptmap_dark.c
+ * Clean dark background action handling
  */
 void MainWindow::on_actionCleanDarkBackground_triggered() {
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-
-    PIX     *pix1, *pix2;
-    l_int32  blackval, whiteval, thresh;
-
+    PIX *pixt;
+    int blackval, whiteval, thresh;
     blackval = 70;
     whiteval = 180;
     thresh = 60;
+    CDBDialog cdb_dialog(this);
+    cdb_dialog.setValues(blackval, whiteval, thresh);
+    connect(&cdb_dialog, SIGNAL(cdbParamsChanged(int, int, int)),
+            this, SLOT(slotCleanDarkBackground(int, int , int)));
 
+    if (cdb_dialog.exec() == QDialog::Accepted) {
+        blackval = cdb_dialog.blackVal->value();
+        whiteval = cdb_dialog.whiteVal->value();
+        thresh = cdb_dialog.treshold->value();
+        pixt = cleanDarkBackground(blackval, whiteval, thresh);
+        pixs = pixCopy(NULL, pixt);
+        pixDestroy(&pixt);
+        setPixToScene();
+        modified = true;
+        updateTitle();
+        this->statusBar()->showMessage(tr("Finished..."), 2000);
+    } else {
+        setPixToScene();
+    }
+}
+
+void MainWindow::slotCleanDarkBackground(int blackval, int whiteval,
+                                         int thresh) {
+    PIX *pixt;
+    pixt = cleanDarkBackground(blackval, whiteval, thresh);
+    pixDestroy(&pixt);
+}
+
+/*
+ * Clean dark background of image
+ * based on leptonica adaptmap_dark.c
+ */
+PIX* MainWindow::cleanDarkBackground(int blackval, int whiteval, int thresh) {
+    PIX     *pix1, *pix2;
     pix1 = pixBackgroundNorm(pixs, NULL, NULL, 10, 15, thresh, 25, 200, 2, 1);
-    setPixToScene(pix1);
     pix2 = pixGammaTRC(NULL, pix1, 1.0, blackval, whiteval);
-    pixs = pixCopy(NULL, pix2);
-    setPixToScene();
+    setPixToScene(pix2);
     pixDestroy(&pix1);
-    pixDestroy(&pix2);
-
-    this->statusBar()->showMessage(tr("Finished..."), 2000);
-    modified = true;
-    updateTitle();
-    QApplication::restoreOverrideCursor();
+    return pix2;
 }
 
 /*
