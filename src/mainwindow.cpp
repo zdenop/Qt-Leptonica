@@ -229,7 +229,6 @@ bool MainWindow::setPixToScene(PIX *lep_pix) {
     imageScene->clear();
     QImage image = PixToQImage(lep_pix);
     imageItem = imageScene->addPixmap(QPixmap::fromImage(image));
-    on_actionZoom_to_original_triggered();
     imageScene->setSceneRect(0, 0, lep_pix->w, lep_pix->h);
     gViewResult->setSceneRect(0, 0, lep_pix->w, lep_pix->h);
     setZoomStatus();
@@ -570,6 +569,7 @@ void MainWindow::on_actionBinarizeUnIl_triggered() {
  * todo: test: https://github.com/renard314/leptonica-samples/blob/master/src/Examples.cpp
  */
 void MainWindow::on_actionDewarp_triggered() {
+    QApplication::setOverrideCursor(Qt::WaitCursor);
     Pix* pixd;
     dewarpSinglePage(pixs, 1, 100, 1, &pixd, NULL, 0);
     pixs = pixCopy(NULL, pixd);
@@ -587,6 +587,7 @@ void MainWindow::on_actionDewarp_triggered() {
  * based on leptonica skew_reg.c
  */
 void MainWindow::on_actionDeskew_triggered() {
+  QApplication::setOverrideCursor(Qt::WaitCursor);
   Pix* pixd;
   #define DESKEW_REDUCTION  4      /* 1, 2 or 4 */
   pixd = pixDeskew(pixs, DESKEW_REDUCTION);
@@ -632,9 +633,11 @@ void MainWindow::on_actionCleanDarkBackground_triggered() {
 
 void MainWindow::slotCleanDarkBackground(int blackval, int whiteval,
                                          int thresh) {
+    QApplication::setOverrideCursor(Qt::WaitCursor);
     PIX *pixt;
     pixt = cleanDarkBackground(blackval, whiteval, thresh);
     pixDestroy(&pixt);
+    QApplication::restoreOverrideCursor();
 }
 
 /*
@@ -642,11 +645,13 @@ void MainWindow::slotCleanDarkBackground(int blackval, int whiteval,
  * based on leptonica adaptmap_dark.c
  */
 PIX* MainWindow::cleanDarkBackground(int blackval, int whiteval, int thresh) {
+    QApplication::setOverrideCursor(Qt::WaitCursor);
     PIX     *pix1, *pix2;
     pix1 = pixBackgroundNorm(pixs, NULL, NULL, 10, 15, thresh, 25, 200, 2, 1);
     pix2 = pixGammaTRC(NULL, pix1, 1.0, blackval, whiteval);
     setPixToScene(pix2);
     pixDestroy(&pix1);
+    QApplication::restoreOverrideCursor();
     return pix2;
 }
 
