@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT          += core gui
+QT          += core gui svg
 
 greaterThan(QT_MAJOR_VERSION, 4) {
     message(Qt $$[QT_VERSION] was detected.)
@@ -49,5 +49,8 @@ win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../lib/ -lliblept171
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../lib/ -lliblept171d
 
 win32: {
+    DESTDIR = ./win32
+    CONFIG += release embed_manifest_exe
+    RC_FILE = resources/win.rc
     INCLUDEPATH += $$PWD/../include
     }
