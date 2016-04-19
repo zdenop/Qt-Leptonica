@@ -5,5 +5,8 @@
 /Release/
 /help/*
 /test/*
+win32/*
 *.patch
 qt-leptonica.pro.*
+*.Debug
+*.Release

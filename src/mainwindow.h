@@ -83,6 +83,9 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
   void on_actionFit_to_width_triggered();
   void changeSceneScale(qreal scale);
   void rotate(int quads);
+  void on_actionRotateCW_triggered();
+  void on_actionRotateCCW_triggered();
+  void on_actionRotate180_triggered();
   void on_actionDetectOrientation_triggered();
 
   void on_actionChange_resolution_triggered();

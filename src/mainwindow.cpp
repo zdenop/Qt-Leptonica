@@ -469,6 +469,27 @@ void MainWindow::rotate(int quads) {
 }
 
 /*
+ * Rotate pixs by 90 degree clockwise
+ */
+void MainWindow::on_actionRotateCW_triggered() {
+  rotate(1);
+}
+
+/*
+ * Rotate pixs by 90 degree counterclockwise
+ */
+void MainWindow::on_actionRotateCCW_triggered() {
+  rotate(3);
+}
+
+/*
+ * Rotate pixs by 180 degree
+ */
+void MainWindow::on_actionRotate180_triggered() {
+  rotate(2);
+}
+
+/*
  * Page orientation detection (four 90 degree angles) Rasterop implementation
  */
 void MainWindow::on_actionDetectOrientation_triggered() {
