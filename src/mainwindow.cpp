@@ -284,6 +284,7 @@ void MainWindow::on_actionSave_triggered() {
   l_int32  ret;
   l_int32 format = pixGetInputFormat(pixs);
   char * cFilename = recentFile.toLatin1().data();
+  // char * cFilename = recentFile.toStdString().c_str();
   ret = pixWrite(cFilename, pixs, format);
   if (ret) {
     statusBar()->showMessage(tr("Saving failed with error code %1").arg(ret), 2000);
@@ -329,6 +330,7 @@ void MainWindow::on_actionSaveAs_triggered() {
   }
 
   char * cFilename = fileName.toLatin1().data();
+  // char * cFilename = recentFile.toStdString().c_str();
   ret = pixWrite(cFilename, pixs, format);
   if (ret) {
     statusBar()->showMessage(tr("Saving failed with error code %1").arg(ret), 2000);
@@ -585,7 +587,11 @@ void MainWindow::on_actionBinarizeUnIl_triggered() {
 void MainWindow::on_actionDewarp_triggered() {
   QApplication::setOverrideCursor(Qt::WaitCursor);
   Pix* pixd;
-  dewarpSinglePage(pixs, 1, 100, 1, &pixd, NULL, 0);
+  #if (LIBLEPT_MAJOR_VERSION >= 1) && (LIBLEPT_MINOR_VERSION >= 73)
+    dewarpSinglePage(pixs, 1, 100, 1, 1, &pixd, NULL, 0);
+  #else
+    dewarpSinglePage(pixs, 1, 100, 1, &pixd, NULL, 0);
+  #endif
   pixs = pixCopy(NULL, pixd);
   pixDestroy(&pixd);
   setPixToScene();
