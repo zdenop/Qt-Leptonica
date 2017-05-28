@@ -130,6 +130,14 @@ QImage MainWindow::PixToQImage(PIX *pixs) {
     format = QImage::Format_RGB32;
 
   QImage result((uchar*)s_data, width, height, bytesPerLine, format);
+
+  // Set resolution
+  l_int32 	xres, yres;
+  pixGetResolution(pixs, &xres, &yres);
+  const qreal toDPM = 1.0 / 0.0254;
+  result.setDotsPerMeterX(xres * toDPM);
+  result.setDotsPerMeterY(yres * toDPM);
+
   if (depth == 1) {
     result.setColorTable(_bwCT);
   }  else if (depth == 8)  {
