@@ -138,12 +138,15 @@ QImage MainWindow::PixToQImage(PIX *pixs) {
   result.setDotsPerMeterX(xres * toDPM);
   result.setDotsPerMeterY(yres * toDPM);
 
-  if (depth == 1) {
-    result.setColorTable(_bwCT);
-  }  else if (depth == 8)  {
-    result.setColorTable(_grayscaleCT);
-  } else {
-    result.setColorTable(_grayscaleCT);
+  switch (depth) {
+    case 1:
+      result.setColorTable(_bwCT);
+      break;
+    case 8:
+      result.setColorTable(_grayscaleCT);
+      break;
+    default:
+      result.setColorTable(_grayscaleCT);
   }
 
   if (result.isNull()) {
