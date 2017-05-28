@@ -111,7 +111,7 @@ QImage MainWindow::PixToQImage(PIX *pixs) {
 
   QVector<QRgb> _grayscaleCT(256);
   for (int i = 0; i < 256; i++)  {
-    _grayscaleCT.append(qRgb(i, i, i));
+    _grayscaleCT[i] = qRgb(i, i, i);
   }
 
   l_uint32 * s_data = pixGetData(pixEndianByteSwapNew(pixs));
