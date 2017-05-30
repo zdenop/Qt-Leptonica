@@ -178,7 +178,7 @@ void MainWindow::about() {
                      getImagelibVersions()));
   abouttext.append(tr("<p>Project page: <a href=%1>%2</a></p>").
                    arg(PROJECT_URL).arg(PROJECT_URL_NAME));
-  abouttext.append(tr("Copyright 2015 Zdenko Podobný</p>"));
+  abouttext.append(tr("Copyright 2015-2017 Zdenko Podobný</p>"));
   abouttext.append(tr("<p>This software is released under "
                       "<a href=\"http://www.apache.org/licenses/LICENSE-2.0\"" \
                       ">Apache License 2.0</a></p>"));
