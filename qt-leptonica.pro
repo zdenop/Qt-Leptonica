@@ -45,12 +45,12 @@ unix: {
     LIBS        += -L/usr/lib64 -L/usr/local/lib64 -llept
 }
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../lib/ -lliblept171
+win32:CONFIG(release, debug|release): LIBS += -L"c:\Program Files (x86)\leptonica\lib" -lleptonica-1.74.2
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../lib/ -lliblept171d
 
 win32: {
     DESTDIR = ./win32
     CONFIG += release embed_manifest_exe
     RC_FILE = resources/win.rc
-    INCLUDEPATH += $$PWD/../include
+    INCLUDEPATH += "c:\Program Files (x86)\leptonica\include"
     }
