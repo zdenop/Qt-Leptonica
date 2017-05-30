@@ -238,12 +238,14 @@ bool MainWindow::setPixToScene() {
 }
 
 bool MainWindow::setPixToScene(PIX *lep_pix) {
+  QImage image = PixToQImage(lep_pix);
+  if (image.isNull())
+    return false;
   if (imageItem) {
     imageScene->removeItem(static_cast<QGraphicsItem*>(imageItem));
     delete imageItem;
   }
   imageScene->clear();
-  QImage image = PixToQImage(lep_pix);
   imageItem = imageScene->addPixmap(QPixmap::fromImage(image));
   imageScene->setSceneRect(0, 0, lep_pix->w, lep_pix->h);
   gViewResult->setSceneRect(0, 0, lep_pix->w, lep_pix->h);
