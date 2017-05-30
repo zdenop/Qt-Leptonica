@@ -576,8 +576,20 @@ void MainWindow::on_actionBinarizeUnIl_triggered() {
 
   /* Convert the RGB image to grayscale. */
   this->statusBar()->showMessage(tr("Convert the RGB image to grayscale."));
-  pixsg = pixConvertRGBToLuminance(pixs);
-  setPixToScene(pixsg);
+  qDebug() << "depth" << pixs->d;
+  if (pixs->d == 32) {
+    pixsg = pixConvertRGBToLuminance(pixs);
+    if (!pixsg) {
+        this->statusBar()->showMessage(tr("Convert the RGB image to grayscale failed!"));
+        QApplication::restoreOverrideCursor();
+        return;
+    }
+    setPixToScene(pixsg);
+  } else {
+    this->statusBar()->showMessage(tr("Function need input image with 32 bit depth."));
+    QApplication::restoreOverrideCursor();
+    return;
+  }
 
   /* Remove the text in the fg. */
   this->statusBar()->showMessage(tr("Remove the text in the fg."));
