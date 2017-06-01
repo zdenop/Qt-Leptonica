@@ -20,7 +20,6 @@ MainWindow::MainWindow(QWidget *parent, const QString &fileName)
   setAcceptDrops(true);
 
   fileWatcher = 0;
-  imageItem = 0;
 
   gViewResult->viewport()->setGeometry(QRect(0,0,0,0));
   imageScene = new Scene();
@@ -241,12 +240,12 @@ bool MainWindow::setPixToScene(PIX *lep_pix) {
   QImage image = PixToQImage(lep_pix);
   if (image.isNull())
     return false;
-  if (imageItem) {
-    imageScene->removeItem(static_cast<QGraphicsItem*>(imageItem));
-    delete imageItem;
+  if (imageScene->m_image) {
+    imageScene->removeImage();
+    QPixmap::fromImage(image);
   }
   imageScene->clear();
-  imageItem = imageScene->addPixmap(QPixmap::fromImage(image));
+  imageScene->setImage(QPixmap::fromImage(image));
   imageScene->setSceneRect(0, 0, lep_pix->w, lep_pix->h);
   gViewResult->setSceneRect(0, 0, lep_pix->w, lep_pix->h);
   setZoomStatus();

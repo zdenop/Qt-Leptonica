@@ -33,7 +33,6 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
 
  protected:
   Scene *imageScene;
-  QGraphicsItem *imageItem;
   bool modified;
   void dragEnterEvent(QDragEnterEvent* event);
   void dropEvent(QDropEvent* event);

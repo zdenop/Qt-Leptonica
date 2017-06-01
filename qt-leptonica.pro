@@ -25,12 +25,14 @@ RCC_DIR     += temp
 SOURCES += src/main.cpp\
            src/mainwindow.cpp \
            src/scene.cpp \
+           src/areaitem.cpp \
            dialogs/dpidialog.cpp \
            dialogs/cdbdialog.cpp
 
 HEADERS += src/mainwindow.h \
            src/settings.h \
            src/scene.h \
+           src/areaitem.h \
            dialogs/dpidialog.h \
            dialogs/cdbdialog.h
 

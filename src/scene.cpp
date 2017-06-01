@@ -11,6 +11,21 @@
 Scene::Scene() {
   setBackgroundBrush(Qt::gray);
   this->installEventFilter(this);
+  sceneMode = NoMode;
+  itemToDraw = 0;
+  m_rubberBand = 0;
+  m_image = 0;
+  m_init = false;
+}
+
+void Scene::setImage(QPixmap pixmap) {
+  m_image = this->addPixmap(pixmap);
+}
+
+void Scene::removeImage() {
+  this->removeItem(static_cast<QGraphicsItem*>(m_image));
+  delete m_image;
+  m_image = 0;
 }
 
 void Scene::imageInfo() {
@@ -102,4 +117,51 @@ void Scene::contextMenuEvent(QGraphicsSceneContextMenuEvent * event) {
           SLOT(detectOrientation()));
   menu->exec(event->screenPos());
   menu->deleteLater();
+}
+
+void Scene::mousePressEvent(QGraphicsSceneMouseEvent *event){
+    if (event->modifiers() == Qt::ControlModifier &&
+                event->button() == Qt::LeftButton) {
+        origPoint = event->scenePos();
+    }
+    QGraphicsScene::mousePressEvent(event);
+}
+
+void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
+    if(!m_rubberBand && m_image) {
+        m_rubberBand = new AreaItem(m_image);
+        m_rubberBand->setAreaRect(QRectF(origPoint, event->scenePos()));
+        this->addItem(m_rubberBand);
+        m_init = true;
+    }
+    if(m_init) {
+        m_rubberBand->setAreaRect(QRectF(origPoint, event->scenePos()));
+    }
+     QGraphicsScene::mouseMoveEvent(event);
+}
+
+void Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
+    m_init = false;
+    QGraphicsScene::mouseReleaseEvent(event);
+}
+
+void Scene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
+    event->setAccepted(false);
+    if (m_rubberBand) {
+      delete(m_rubberBand);
+      m_rubberBand = 0;
+    }
+    if (!event->isAccepted())
+      QGraphicsScene::mouseDoubleClickEvent(event);
+}
+
+void Scene::keyPressEvent(QKeyEvent *event){
+    // Not working on m_rubberBand
+    if(event->key() == Qt::Key_Delete)
+        foreach(QGraphicsItem* item, selectedItems()){
+            removeItem(item);
+            delete item;
+        }
+    else
+        QGraphicsScene::keyPressEvent(event);
 }

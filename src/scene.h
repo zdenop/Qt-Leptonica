@@ -2,12 +2,17 @@
 #define SCENE_H
 
 #include <QGraphicsScene>
+#include "areaitem.h"
 
 class Scene: public QGraphicsScene {
   Q_OBJECT
 
  public:
+  enum Mode {NoMode, SelectObject, DrawLine};
   Scene();
+  void setImage(QPixmap pixmap);
+  void removeImage();
+  QGraphicsItem *m_image;
 
  signals:
   void dropedFilename(QString filename);
@@ -17,13 +22,26 @@ class Scene: public QGraphicsScene {
   void detectOrientationSignal();
 
  protected:
-  virtual void dragEnterEvent(QGraphicsSceneDragDropEvent * event);
-  virtual void dragLeaveEvent(QGraphicsSceneDragDropEvent * event);
-  virtual void dragMoveEvent(QGraphicsSceneDragDropEvent * event);
-  virtual void dropEvent(QGraphicsSceneDragDropEvent * event);
-  virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent * event);
+  AreaItem *m_rubberBand;
+  virtual void dragEnterEvent(QGraphicsSceneDragDropEvent *event);
+  virtual void dragLeaveEvent(QGraphicsSceneDragDropEvent *event);
+  virtual void dragMoveEvent(QGraphicsSceneDragDropEvent *event);
+  virtual void dropEvent(QGraphicsSceneDragDropEvent *event);
+  virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 
   virtual bool eventFilter(QObject* object, QEvent* event);
+
+  void mousePressEvent(QGraphicsSceneMouseEvent *event);
+  void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+  void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+  void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+  void keyPressEvent(QKeyEvent *event);
+
+ private:
+  Mode sceneMode;
+  QPointF origPoint;
+  QGraphicsLineItem* itemToDraw;
+  bool m_init;
 
  private slots:
   void imageInfo();
@@ -31,7 +49,6 @@ class Scene: public QGraphicsScene {
   void rotateCCW();
   void rotateHalf();
   void detectOrientation();
-
 };
 
 #endif // SCENE_H
