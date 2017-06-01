@@ -3,6 +3,7 @@
     <file>images/dewarp.png</file>
     <file>images/change_dpi.png</file>
     <file>images/clean_background.svg</file>
+    <file alias="crop.svg">images/crop-tool-button.svg</file>
     <file alias="deskew.svg">images/screen-rotation.svg</file>
     <file alias="orientation.svg">images/orientation.svg</file>
     <file alias="info.svg">images/address-book-new.svg</file>

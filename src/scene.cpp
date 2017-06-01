@@ -28,6 +28,10 @@ void Scene::removeImage() {
   m_image = 0;
 }
 
+void Scene::imageCrop() {
+  emit imageCropTriggered(m_rubberBand->areaRect());
+}
+
 void Scene::imageInfo() {
   emit imageInfoTriggered();
 }
@@ -91,32 +95,42 @@ bool Scene::eventFilter(QObject* object, QEvent* event) {
 }
 
 void Scene::contextMenuEvent(QGraphicsSceneContextMenuEvent * event) {
-  event->accept();
-  QMenu* menu = new QMenu();
-  QAction *ImageInfoAction = menu->addAction(QIcon(":/info.svg"),
-                             tr("Image info"));
-  connect(ImageInfoAction, SIGNAL(triggered()), this, SLOT(imageInfo()));
-  menu->addSeparator();
+    event->accept();
+    if (m_rubberBand) {
+        QMenu* menu = new QMenu();
+        QAction *ImageCropAction = menu->addAction(QIcon(":/crop.svg"),
+                                                   tr("Crop area"));
+        connect(ImageCropAction, SIGNAL(triggered()), this, SLOT(imageCrop()));
+        menu->addSeparator();
+        menu->exec(event->screenPos());
+        menu->deleteLater();
+    } else {
+        QMenu* menu = new QMenu();
+        QAction *ImageInfoAction = menu->addAction(QIcon(":/info.svg"),
+                                                   tr("Image info"));
+        connect(ImageInfoAction, SIGNAL(triggered()), this, SLOT(imageInfo()));
+        menu->addSeparator();
 
-  QAction* rotateCWAction = menu->addAction(QIcon(":/rotateCW.svg"),
-                            tr("Rotate CW"));
-  connect(rotateCWAction, SIGNAL(triggered()), this, SLOT(rotateCW()));
+        QAction* rotateCWAction = menu->addAction(QIcon(":/rotateCW.svg"),
+                                                  tr("Rotate CW"));
+        connect(rotateCWAction, SIGNAL(triggered()), this, SLOT(rotateCW()));
 
-  QAction* rotateCCWAction = menu->addAction(QIcon(":/rotateCCW.svg"),
-                             tr("Rotate CCW"));
-  connect(rotateCCWAction, SIGNAL(triggered()), this, SLOT(rotateCCW()));
+        QAction* rotateCCWAction = menu->addAction(QIcon(":/rotateCCW.svg"),
+                                                   tr("Rotate CCW"));
+        connect(rotateCCWAction, SIGNAL(triggered()), this, SLOT(rotateCCW()));
 
-  QAction* rotateHalfAction = menu->addAction(QIcon(":/rotateCCW.svg"),
-                              tr("Rotate 180°"));
-  connect(rotateHalfAction, SIGNAL(triggered()), this, SLOT(rotateHalf()));
-  QAction* detectOrientationAction = menu->addAction(QIcon(":/orientation.svg"),
-                                                     tr("Detect orientation"));
-  detectOrientationAction->setToolTip(
-    tr("Page orientation detection (four 90 degree angles)"));
-  connect(detectOrientationAction, SIGNAL(triggered()), this,
-          SLOT(detectOrientation()));
-  menu->exec(event->screenPos());
-  menu->deleteLater();
+        QAction* rotateHalfAction = menu->addAction(QIcon(":/rotateCCW.svg"),
+                                                    tr("Rotate 180°"));
+        connect(rotateHalfAction, SIGNAL(triggered()), this, SLOT(rotateHalf()));
+        QAction* detectOrientationAction = menu->addAction(QIcon(":/orientation.svg"),
+                                                           tr("Detect orientation"));
+        detectOrientationAction->setToolTip(
+                    tr("Page orientation detection (four 90 degree angles)"));
+        connect(detectOrientationAction, SIGNAL(triggered()), this,
+                SLOT(detectOrientation()));
+        menu->exec(event->screenPos());
+        menu->deleteLater();
+    }
 }
 
 void Scene::mousePressEvent(QGraphicsSceneMouseEvent *event){

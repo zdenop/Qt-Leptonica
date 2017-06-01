@@ -20,6 +20,7 @@ class Scene: public QGraphicsScene {
   void imageInfoTriggered();
   void rotateImage(int);
   void detectOrientationSignal();
+  void imageCropTriggered(QRectF rect);
 
  protected:
   AreaItem *m_rubberBand;
@@ -44,6 +45,7 @@ class Scene: public QGraphicsScene {
   bool m_init;
 
  private slots:
+  void imageCrop();
   void imageInfo();
   void rotateCW();
   void rotateCCW();

@@ -32,6 +32,8 @@ MainWindow::MainWindow(QWidget *parent, const QString &fileName)
   connect(imageScene, SIGNAL(imageInfoTriggered()), this, SLOT(imageInfo()));
   connect(imageScene, SIGNAL(detectOrientationSignal()), this,
           SLOT(on_actionDetectOrientation_triggered()));
+  connect(imageScene, SIGNAL(imageCropTriggered(QRectF)),
+          this, SLOT(crop(QRectF)));
 
   gViewResult->setScene(imageScene);
   gViewResult->setRenderHint(QPainter::Antialiasing);
@@ -483,6 +485,24 @@ void MainWindow::rotate(int quads) {
 }
 
 /*
+ * Crop image to selected rectangle
+ */
+void MainWindow::crop(QRectF rect) {
+  l_int32 x = rect.x();
+  l_int32 y = rect.y();
+  l_int32 w = rect.width();
+  l_int32 h = rect.height();
+  BOX *crop_box = boxCreate(x, y, w, h);
+  PIX *cropped = pixClipRectangle(pixs, crop_box, NULL);
+  pixs = pixCopy(NULL, cropped);
+  setPixToScene();
+  pixDestroy(&cropped);
+  boxDestroy(&crop_box);
+  modified = true;
+  updateTitle();
+}
+
+/*
  * Rotate pixs by 90 degree clockwise
  */
 void MainWindow::on_actionRotateCW_triggered() {
@@ -507,7 +527,7 @@ void MainWindow::on_actionRotate180_triggered() {
  * Page orientation detection (four 90 degree angles) Rasterop implementation
  */
 void MainWindow::on_actionDetectOrientation_triggered() {
-  l_int32   orient, alt_rot;
+  l_int32   orient, alt_rot = 0;
   l_float32 upconf1, leftconf1;
   PIX       *fpixs;
 
