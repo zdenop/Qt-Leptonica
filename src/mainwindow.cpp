@@ -386,8 +386,11 @@ void MainWindow::on_actionSaveAs_triggered() {
   }
 
   char * cFilename = fileName.toLatin1().data();
-  // char * cFilename = recentFile.toStdString().c_str();
-  ret = pixWrite(cFilename, pixs, format);
+  if (format == IFF_UNKNOWN){
+    ret = pixWriteAutoFormat(cFilename, pixs);
+  } else {
+    ret = pixWrite(cFilename, pixs, format);
+  }
   if (ret) {
     statusBar()->showMessage(tr("Saving failed with error code %1").arg(ret), 2000);
   } else {
