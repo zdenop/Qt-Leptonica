@@ -142,7 +142,7 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *event){
 }
 
 void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
-    if(!m_rubberBand && m_image) {
+    if(!m_rubberBand && m_image && event->modifiers() == Qt::ControlModifier) {
         m_rubberBand = new AreaItem(m_image);
         m_rubberBand->setAreaRect(QRectF(origPoint, event->scenePos()));
         this->addItem(m_rubberBand);
