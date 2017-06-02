@@ -3,6 +3,7 @@
 
 #include "mainwindow.h"
 #include "settings.h"
+#include "qleptonica.h"
 #include "dialogs/dpidialog.h"
 #include "dialogs/cdbdialog.h"
 
@@ -508,7 +509,9 @@ void MainWindow::imageInfo() {
   aboutImage.append(tr("32-bit words/line [wpl]: %1<br/>").arg(pixs->wpl));
   aboutImage.append(tr("resolution: %1x%2<br/>").arg(pixs->xres)
                     .arg(pixs->yres));
-  aboutImage.append(tr("input format: %1</p>").arg(pixGetInputFormat(pixs)));
+  int format = pixGetInputFormat(pixs);
+  QString desc = getFormatDesc(format);
+  aboutImage.append(tr("input format: %1 (%2)</p>").arg(desc).arg(format));
   char *text = pixGetText(pixs);
   if (text)
     aboutImage.append(tr("text string associated with pix: %1</p>")

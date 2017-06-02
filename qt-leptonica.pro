@@ -26,15 +26,17 @@ SOURCES += src/main.cpp\
            src/mainwindow.cpp \
            src/scene.cpp \
            src/areaitem.cpp \
+           src/qleptonica.cpp \
            dialogs/dpidialog.cpp \
-           dialogs/cdbdialog.cpp
+           dialogs/cdbdialog.cpp \
 
 HEADERS += src/mainwindow.h \
            src/settings.h \
            src/scene.h \
            src/areaitem.h \
+           src/qleptonica.h \
            dialogs/dpidialog.h \
-           dialogs/cdbdialog.h
+           dialogs/cdbdialog.h \
 
 FORMS   += dialogs/mainwindow.ui \
            dialogs/dpidialog.ui \
