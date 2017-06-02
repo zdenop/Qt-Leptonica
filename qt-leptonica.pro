@@ -29,6 +29,7 @@ SOURCES += src/main.cpp\
            src/qleptonica.cpp \
            dialogs/dpidialog.cpp \
            dialogs/cdbdialog.cpp \
+           dialogs/combodialog.cpp
 
 HEADERS += src/mainwindow.h \
            src/settings.h \
@@ -37,10 +38,12 @@ HEADERS += src/mainwindow.h \
            src/qleptonica.h \
            dialogs/dpidialog.h \
            dialogs/cdbdialog.h \
+           dialogs/combodialog.h
 
 FORMS   += dialogs/mainwindow.ui \
            dialogs/dpidialog.ui \
-           dialogs/cdbdialog.ui
+           dialogs/cdbdialog.ui \
+           dialogs/combodialog.ui
 
 RESOURCES += resources/application.qrc
 

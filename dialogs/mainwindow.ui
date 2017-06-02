@@ -76,6 +76,7 @@
     <addaction name="actionFixPasteFromPDF"/>
     <addaction name="separator"/>
     <addaction name="actionChange_resolution"/>
+    <addaction name="actionSetFormat"/>
     <addaction name="separator"/>
     <addaction name="actionRotateCW"/>
     <addaction name="actionRotateCCW"/>
@@ -351,6 +352,11 @@
    </property>
    <property name="shortcut">
     <string>Meta+V</string>
+   </property>
+  </action>
+  <action name="actionSetFormat">
+   <property name="text">
+    <string>Set fileformat...</string>
    </property>
   </action>
  </widget>

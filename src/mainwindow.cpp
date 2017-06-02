@@ -1,11 +1,13 @@
 #include <QMimeData>
 #include <QUrl>
+#include <QMap>
 
 #include "mainwindow.h"
 #include "settings.h"
 #include "qleptonica.h"
 #include "dialogs/dpidialog.h"
 #include "dialogs/cdbdialog.h"
+#include "dialogs/combodialog.h"
 
 MainWindow::MainWindow(QWidget *parent, const QString &fileName)
   : QMainWindow(parent) {
@@ -354,7 +356,7 @@ void MainWindow::on_actionSave_triggered() {
 
 void MainWindow::on_actionSaveAs_triggered() {
   l_int32  ret;
-  l_int32 format;
+  l_int32 format = pixGetInputFormat(pixs);
   QString fileName = QFileDialog::getSaveFileName(this,
                      tr("Save image as..."),
                      recentFile,
@@ -362,29 +364,6 @@ void MainWindow::on_actionSaveAs_triggered() {
 
   if (fileName.isEmpty())
     return;
-  QStringList myOptions;
-  myOptions << "bmp" << "jpg" << "png" << "tif" << "gif";
-  QString ext = QFileInfo(fileName).suffix();
-  switch (myOptions.indexOf(ext)) {
-  case 0:
-    format = IFF_BMP;
-    break;
-  case 1:
-    format = IFF_JFIF_JPEG;
-    break;
-  case 2:
-    format = IFF_PNG;
-    break;
-  case 3:
-    format = IFF_TIFF_LZW;
-    break;
-  case 4:
-    format = IFF_GIF;
-    break;
-  default:
-    format = pixs->informat;
-    break;
-  }
 
   char * cFilename = fileName.toLatin1().data();
   if (format == IFF_UNKNOWN){
@@ -674,6 +653,37 @@ void MainWindow::on_actionChange_resolution_triggered() {
       updateTitle();
     }
   }
+}
+
+/*
+ * Change leptonica output format
+ */
+void MainWindow::on_actionSetFormat_triggered() {
+    int format = pixGetInputFormat(pixs);
+    QMapIterator<int, QString> items(leptonicaFormats());
+
+    ComboBoxDialog comboDialog(this);
+    comboDialog.setWindowTitle("Select format for leptonica output:");
+    comboDialog.label->setText("Format:");
+
+    while (items.hasNext()) {
+        items.next();
+        comboDialog.comboBox->addItem(items.value(), items.key());
+    }
+    comboDialog.comboBox->setCurrentIndex(comboDialog.comboBox->findData(format));
+
+    if (comboDialog.exec() == QDialog::Accepted) {
+        format = comboDialog.comboBox->currentData().toInt();
+        pixSetInputFormat(pixs, format);
+        if (!recentFile.isEmpty()){
+            QString path = QFileInfo(recentFile).canonicalPath();
+            QString basename = QFileInfo(recentFile).completeBaseName();
+            const char * extention = getFormatExtension(format);
+            recentFile = QDir::cleanPath(path + QDir::separator() +
+                    QString("%1.%2").arg(basename).arg(extention));
+            updateTitle();
+        }
+     }
 }
 
 /*
