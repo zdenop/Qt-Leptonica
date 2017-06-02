@@ -30,6 +30,7 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
 
  public slots:
   QImage PixToQImage(PIX *pixs);
+  PIX* QImageToPIX(const QImage& qImage);
 
  protected:
   Scene *imageScene;
@@ -88,6 +89,7 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
   void on_actionRotate180_triggered();
   void on_actionDetectOrientation_triggered();
 
+  void on_actionPaste_triggered();
   void on_actionChange_resolution_triggered();
   void on_actionBinarizeUnIl_triggered();
   void on_actionDewarp_triggered();

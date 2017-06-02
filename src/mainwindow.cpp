@@ -75,6 +75,9 @@ MainWindow::MainWindow(QWidget *parent, const QString &fileName)
   thresh = 60;
 }
 
+MainWindow::~MainWindow() {
+}
+
 void MainWindow::updateRecentFileActions() {
   QSettings settings(QSettings::IniFormat, QSettings::UserScope,
                      SETTING_ORGANIZATION, SETTING_APPLICATION);
@@ -102,6 +105,9 @@ void MainWindow::openRecentFile() {
     openImage(action->data().toString());
 }
 
+/*
+ * Convert Leptonica PIX to QT QImage
+ */
 QImage MainWindow::PixToQImage(PIX *pixs) {
   // TODO: first check if pixs is PIX ;-) inputFormat(pix)
 
@@ -161,7 +167,40 @@ QImage MainWindow::PixToQImage(PIX *pixs) {
   return result.rgbSwapped();
 }
 
-MainWindow::~MainWindow() {
+/*
+ * Convert QT QImage to Leptonica PIX
+ */
+PIX* MainWindow::QImageToPIX(const QImage& qImage) {
+  PIX * pixs;
+
+  QImage myImage = qImage.rgbSwapped();
+  int width = myImage.width();
+  int height = myImage.height();
+  int depth = myImage.depth();
+  int wpl = myImage.bytesPerLine() / 4;
+
+  pixs = pixCreate(width, height, depth);
+  pixSetWpl(pixs, wpl);
+  pixSetColormap(pixs, NULL);
+  l_uint32 *datas = pixs->data;
+
+  for (int y = 0; y < height; y++) {
+    l_uint32 *lines = datas + y * wpl;
+    QByteArray a((const char*)myImage.scanLine(y), myImage.bytesPerLine());
+    for (int j = 0; j < a.size(); j++) {
+      *((l_uint8 *)lines + j) = a[j];
+    }
+  }
+
+  const qreal toDPM = 1.0 / 0.0254;
+  int resolutionX = myImage.dotsPerMeterX() / toDPM;
+  int resolutionY = myImage.dotsPerMeterY() / toDPM;
+
+  if (resolutionX < 300) resolutionX = 300;
+  if (resolutionY < 300) resolutionY = 300;
+  pixSetResolution(pixs, resolutionX, resolutionY);
+
+  return pixEndianByteSwapNew(pixs);
 }
 
 /*
@@ -297,8 +336,11 @@ void MainWindow::on_actionReloadFile_triggered() {
 void MainWindow::on_actionSave_triggered() {
   l_int32  ret;
   l_int32 format = pixGetInputFormat(pixs);
+  if (recentFile.isEmpty() || !format) {
+      on_actionSaveAs_triggered();
+      return;
+  }
   char * cFilename = recentFile.toLatin1().data();
-  // char * cFilename = recentFile.toStdString().c_str();
   ret = pixWrite(cFilename, pixs, format);
   if (ret) {
     statusBar()->showMessage(tr("Saving failed with error code %1").arg(ret), 2000);
@@ -572,6 +614,48 @@ void MainWindow::on_actionDetectOrientation_triggered() {
   }
 }
 
+static QImage clipboardImage() {
+    if (const QMimeData *mimeData = QGuiApplication::clipboard()->mimeData()) {
+        if (mimeData->hasImage()) {
+            const QImage image = qvariant_cast<QImage>(mimeData->imageData());
+            if (!image.isNull())
+                return image;
+        }
+    }
+    return QImage();
+}
+
+void MainWindow::on_actionPaste_triggered() {
+#ifndef QT_NO_CLIPBOARD
+    const QImage newImage = clipboardImage();
+    if (newImage.isNull()) {
+        statusBar()->showMessage(tr("No image in clipboard"));
+    } else {
+        const QString message = tr("Obtained image from clipboard, %1x%2, Depth: %3")
+            .arg(newImage.width()).arg(newImage.height()).arg(newImage.depth());
+        statusBar()->showMessage(message);
+        PIX * clipboard = QImageToPIX(newImage);
+        if (clipboard){
+            if(actionFixPasteFromPDF->isChecked()){
+                l_float32 scalex = (l_float32)clipboard->h/(l_float32)clipboard->w;
+                l_float32 scaley = (l_float32)clipboard->w/(l_float32)clipboard->h;
+                PIX * pixc = pixScale( clipboard, scalex, scaley);
+                pixs = pixCopy(NULL, pixc);
+                pixDestroy(&pixc);
+            } else {
+                pixs = pixCopy(NULL, clipboard);
+            }
+            setPixToScene();
+            modified = true;
+            setWindowFilePath(QString());
+            recentFile = "";
+            updateTitle();
+            pixDestroy(&clipboard);
+        }
+    }
+#endif // !QT_NO_CLIPBOARD
+}
+
 void MainWindow::on_actionChange_resolution_triggered() {
   DPIDialog dpi_dialog(this, pixs->xres, pixs->yres);
 
@@ -750,6 +834,7 @@ void MainWindow::readSettings(bool init) {
     restoreState(settings.value("state").toByteArray());
     if (!recentFile.isEmpty())
       setZoom(settings.value("lastZoom").toFloat());
+    actionFixPasteFromPDF->setChecked(settings.value("fixPasteFromPDF").toBool());
     settings.endGroup();
   }
 }
@@ -765,6 +850,7 @@ void MainWindow::writeSettings() {
   settings.setValue("geometry", saveGeometry());
   settings.setValue("state", saveState());
   settings.setValue("lastZoom", gViewResult->transform().m11());
+  settings.setValue("fixPasteFromPDF", actionFixPasteFromPDF->isChecked());
   settings.endGroup();
 }
 
