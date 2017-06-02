@@ -8,8 +8,8 @@ class Scene: public QGraphicsScene {
   Q_OBJECT
 
  public:
-  enum Mode {NoMode, SelectObject, DrawLine};
   Scene();
+  ~Scene();
   void setImage(QPixmap pixmap);
   void removeImage();
   QGraphicsItem *m_image;
@@ -39,10 +39,10 @@ class Scene: public QGraphicsScene {
   void keyPressEvent(QKeyEvent *event);
 
  private:
-  Mode sceneMode;
   QPointF origPoint;
   QGraphicsLineItem* itemToDraw;
   bool m_init;
+  void removeRubberBand();
 
  private slots:
   void imageCrop();

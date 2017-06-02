@@ -11,18 +11,33 @@
 Scene::Scene() {
   setBackgroundBrush(Qt::gray);
   this->installEventFilter(this);
-  sceneMode = NoMode;
-  itemToDraw = 0;
   m_rubberBand = 0;
   m_image = 0;
   m_init = false;
+}
+
+Scene::~Scene() {
+  if (m_rubberBand)
+    removeRubberBand();
+  if (m_image)
+    removeImage();
 }
 
 void Scene::setImage(QPixmap pixmap) {
   m_image = this->addPixmap(pixmap);
 }
 
+void Scene::removeRubberBand() {
+    if (m_rubberBand) {
+      this->removeItem(m_rubberBand);
+      delete(m_rubberBand);
+      m_rubberBand = 0;
+    }
+}
+
 void Scene::removeImage() {
+  if (m_rubberBand)
+    removeRubberBand();
   this->removeItem(static_cast<QGraphicsItem*>(m_image));
   delete m_image;
   m_image = 0;
@@ -161,10 +176,7 @@ void Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
 
 void Scene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
     event->setAccepted(false);
-    if (m_rubberBand) {
-      delete(m_rubberBand);
-      m_rubberBand = 0;
-    }
+    removeRubberBand();
     if (!event->isAccepted())
       QGraphicsScene::mouseDoubleClickEvent(event);
 }
