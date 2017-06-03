@@ -10,3 +10,5 @@ win32/*
 qt-leptonica.pro.*
 *.Debug
 *.Release
+qt-leptonica
+TODO

@@ -161,7 +161,6 @@ QImage MainWindow::PixToQImage(PIX *pixs) {
 
     if (result.isNull()) {
         static QImage none(0,0,QImage::Format_Invalid);
-        qDebug() << "***Invalid format!!!";
         return none;
     }
 
@@ -328,7 +327,6 @@ void MainWindow::on_actionOpenFile_triggered() {
 }
 
 void MainWindow::on_actionReloadFile_triggered() {
-    qDebug() << "reload";
     if (modified)  // reload only if file was modified...
         statusBar()->showMessage(tr("Reloading file...."));
     openImage(recentFile);
@@ -695,7 +693,6 @@ void MainWindow::on_actionBinarizeUnIl_triggered() {
 
     /* Convert the RGB image to grayscale. */
     this->statusBar()->showMessage(tr("Convert the RGB image to grayscale."));
-    qDebug() << "depth" << pixs->d;
     if (pixs->d == 32) {
         pixsg = pixConvertRGBToLuminance(pixs);
         if (!pixsg) {
