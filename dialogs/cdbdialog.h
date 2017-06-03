@@ -28,22 +28,22 @@
 #include "ui_cdbdialog.h"
 
 class CDBDialog : public QDialog, public Ui::CDBDialog {
-  Q_OBJECT
+    Q_OBJECT
 
- public:
-  explicit CDBDialog(QWidget* parent = 0);
-  void setValues(int blackval, int whiteval, int thresh);
+  public:
+    explicit CDBDialog(QWidget* parent = 0);
+    void setValues(int blackval, int whiteval, int thresh);
 
- signals:
-  void cdbParamsChanged(int blackval, int whiteval, int thresh);
+  signals:
+    void cdbParamsChanged(int blackval, int whiteval, int thresh);
 
- protected:
-  void closeEvent(QCloseEvent* event);
+  protected:
+    void closeEvent(QCloseEvent* event);
 
- private Q_SLOTS:
-  void on_blackVal_valueChanged(int value);
-  void on_whiteVal_valueChanged(int value);
-  void on_treshold_valueChanged(int value);
+  private Q_SLOTS:
+    void on_blackVal_valueChanged(int value);
+    void on_whiteVal_valueChanged(int value);
+    void on_treshold_valueChanged(int value);
 };
 
 #endif  // DIALOGS_CDBDIALOG_H_

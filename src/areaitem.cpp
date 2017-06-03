@@ -1,18 +1,16 @@
 #include "areaitem.h"
 
 AreaItem::AreaItem(QGraphicsItem *parent)
-    : QGraphicsItem(parent)
-{
+    : QGraphicsItem(parent) {
     _mousePress = false;
     _areaRect = QRectF();
     grabMouse();
 }
 
-AreaItem::~AreaItem()
-{
+AreaItem::~AreaItem() {
 }
 
-void AreaItem::setAreaRect(QRectF rectF){
+void AreaItem::setAreaRect(QRectF rectF) {
     _areaRect = QRectF(rectF);
 }
 
@@ -25,9 +23,8 @@ QRectF AreaItem::boundingRect (void) const {
 }
 
 void AreaItem::paint (QPainter *painter,
-                                const QStyleOptionGraphicsItem *option,
-                                QWidget *widget)
-{
+                      const QStyleOptionGraphicsItem *option,
+                      QWidget *widget) {
     Q_UNUSED(widget)
 
     painter->save();

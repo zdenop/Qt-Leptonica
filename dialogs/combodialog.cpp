@@ -1,11 +1,10 @@
 #include "combodialog.h"
 
 ComboBoxDialog::ComboBoxDialog(QWidget *parent) :
-    QDialog(parent){
+    QDialog(parent) {
     setupUi(this);
 }
 
-ComboBoxDialog::~ComboBoxDialog()
-{
+ComboBoxDialog::~ComboBoxDialog() {
 }
 

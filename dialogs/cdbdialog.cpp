@@ -23,35 +23,35 @@
 #include "dialogs/cdbdialog.h"
 
 CDBDialog::CDBDialog(QWidget* parent)
-  : QDialog(parent) {
-  setupUi(this);
-  connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-  connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    : QDialog(parent) {
+    setupUi(this);
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 }
 
 void CDBDialog::setValues(int blackval, int whiteval, int thresh) {
-  this->blackVal->setValue(blackval);
-  this->whiteVal->setValue(whiteval);
-  this->treshold->setValue(thresh);
-  this->lcdNumber->display(thresh);
+    this->blackVal->setValue(blackval);
+    this->whiteVal->setValue(whiteval);
+    this->treshold->setValue(thresh);
+    this->lcdNumber->display(thresh);
 }
 
 void CDBDialog::on_blackVal_valueChanged(int value) {
-  emit cdbParamsChanged(blackVal->value(), whiteVal->value(),
-                        treshold->value());
+    emit cdbParamsChanged(blackVal->value(), whiteVal->value(),
+                          treshold->value());
 }
 
 void CDBDialog::on_whiteVal_valueChanged(int value) {
-  emit cdbParamsChanged(blackVal->value(), whiteVal->value(),
-                        treshold->value());
+    emit cdbParamsChanged(blackVal->value(), whiteVal->value(),
+                          treshold->value());
 }
 
 void CDBDialog::on_treshold_valueChanged(int value) {
-  this->lcdNumber->display(value);
-  emit cdbParamsChanged(blackVal->value(), whiteVal->value(),
-                        treshold->value());
+    this->lcdNumber->display(value);
+    emit cdbParamsChanged(blackVal->value(), whiteVal->value(),
+                          treshold->value());
 }
 
 void CDBDialog::closeEvent(QCloseEvent* event) {
-  event->accept();
+    event->accept();
 }

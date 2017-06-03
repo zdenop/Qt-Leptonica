@@ -19,7 +19,7 @@
 #define AREA_GRID_SIZE           3
 
 class AreaItem : public QGraphicsItem {
-public:
+  public:
     explicit AreaItem(QGraphicsItem *parent);
     ~AreaItem();
     QRectF areaRect (void) const;
@@ -29,12 +29,12 @@ public:
                         const QStyleOptionGraphicsItem *option,
                         QWidget *widget = 0);
 
-protected:
+  protected:
     void mousePressEvent (QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent (QGraphicsSceneMouseEvent *event);
     void mouseMoveEvent (QGraphicsSceneMouseEvent *event);
 
-private:
+  private:
     enum AreaItemResize {
         AreaItemResizeNone,
         AreaItemResizeTopLeft,
@@ -43,7 +43,7 @@ private:
         AreaItemResizeBottomRight,
     };
 
-private:
+  private:
     AreaItemResize _areaResize;
     QRectF _areaRect;
     bool _mousePress;

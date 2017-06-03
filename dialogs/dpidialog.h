@@ -28,13 +28,13 @@
 #include "ui_dpidialog.h"
 
 class DPIDialog : public QDialog, public Ui::DPIDialog {
-  Q_OBJECT
+    Q_OBJECT
 
- public:
-  explicit DPIDialog(QWidget* parent = 0, int x_dpi=0, int y_dpi=0);
+  public:
+    explicit DPIDialog(QWidget* parent = 0, int x_dpi=0, int y_dpi=0);
 
- protected:
-  void closeEvent(QCloseEvent* event);
+  protected:
+    void closeEvent(QCloseEvent* event);
 };
 
 #endif  // DIALOGS_DPIDIALOG_H_
