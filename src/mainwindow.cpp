@@ -517,9 +517,11 @@ void MainWindow::crop(QRectF rect) {
     l_int32 y = rect.y();
     l_int32 w = rect.width();
     l_int32 h = rect.height();
+    l_int32 format = pixGetInputFormat(pixs);
     BOX *crop_box = boxCreate(x, y, w, h);
     PIX *cropped = pixClipRectangle(pixs, crop_box, NULL);
     pixs = pixCopy(NULL, cropped);
+    pixSetInputFormat(pixs, format);
     setPixToScene();
     pixDestroy(&cropped);
     boxDestroy(&crop_box);
