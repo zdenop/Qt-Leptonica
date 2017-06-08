@@ -786,6 +786,19 @@ void MainWindow::on_actionDeskew_triggered() {
 }
 
 /*
+ * Remove lines from image
+ */
+void MainWindow::on_actionRemovelines_triggered() {
+    PIXA *pixa;
+    pixa = lineremoval(pixs);
+    int final = pixaGetCount(pixa) - 1;
+    // pixs = pixaDisplayTiledInRows(pixa, 32, 1500, 1.0, 0, 30, 2);
+    pixs = pixaGetPix(pixa, final, L_CLONE);
+    pixaDestroy(&pixa);
+    setPixToScene();
+}
+
+/*
  * Clean dark background action handling
  */
 void MainWindow::on_actionCleanDarkBackground_triggered() {

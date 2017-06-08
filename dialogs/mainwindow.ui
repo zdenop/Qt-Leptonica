@@ -88,6 +88,7 @@
     <addaction name="separator"/>
     <addaction name="actionBinarizeUnIl"/>
     <addaction name="actionCleanDarkBackground"/>
+    <addaction name="actionRemovelines"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -129,6 +130,7 @@
    <addaction name="actionDewarp"/>
    <addaction name="actionDeskew"/>
    <addaction name="actionCleanDarkBackground"/>
+   <addaction name="actionRemovelines"/>
   </widget>
   <action name="actionAbout">
    <property name="text">
@@ -360,6 +362,15 @@
   <action name="actionSetFormat">
    <property name="text">
     <string>Set fileformat...</string>
+   </property>
+  </action>
+  <action name="actionRemovelines">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/images/remove-line.svg</normaloff>:/images/remove-line.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Remove lines</string>
    </property>
   </action>
  </widget>
