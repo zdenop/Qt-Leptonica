@@ -1,5 +1,6 @@
 
 #include <QObject>
+#include <QDebug>
 
 #include "qleptonica.h"
 
@@ -51,13 +52,29 @@ PIXA * lineremoval(PIX * pix_input){
     pixa = pixaCreate(0);
 
     /* Threshold to binary, extracting much of the lines */
-    pix1 = pixThresholdToBinary(pix_input, 170);
+    if (pix_input->d == 4 || pix_input->d == 8)
+        pix1 = pixThresholdToBinary(pix_input, 170);
+    else if (pix_input->d == 1) {
+        pix1 = pixCopy(NULL, pix_input);
+    } else if (pix_input->d == 32) {
+        PIX * pixsg = pixConvertRGBToLuminance(pix_input);
+        pix1 = pixThresholdToBinary(pixsg, 170);
+        pixDestroy(&pixsg);
+    } else {
+        return 0;
+    }
+
     pixaAddPix(pixa, pix1, L_INSERT);
 
     /* Find the skew angle and deskew using an interpolated
              * rotator for anti-aliasing (to avoid jaggies) */
     pixFindSkew(pix1, &angle, &conf);
-    pix2 = pixRotateAMGray(pix_input, deg2rad * angle, 255);
+    if (pix_input->d != 8) {
+        qDebug() << "Error in pixRotateAMGray: pixs must be 8 bpp";
+        return 0;
+    } else {
+        pix2 = pixRotateAMGray(pix_input, deg2rad * angle, 255);
+    }
     pixaAddPix(pixa, pix2, L_INSERT);
 
     /* Extract the lines to be removed */

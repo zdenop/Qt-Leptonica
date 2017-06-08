@@ -791,11 +791,16 @@ void MainWindow::on_actionDeskew_triggered() {
 void MainWindow::on_actionRemovelines_triggered() {
     PIXA *pixa;
     pixa = lineremoval(pixs);
+    if (!pixa) {
+        this->statusBar()->showMessage(tr("Removing lines failed..."), 2000);
+        return;
+    }
     int final = pixaGetCount(pixa) - 1;
     // pixs = pixaDisplayTiledInRows(pixa, 32, 1500, 1.0, 0, 30, 2);
     pixs = pixaGetPix(pixa, final, L_CLONE);
     pixaDestroy(&pixa);
     setPixToScene();
+    this->statusBar()->showMessage(tr("Finished..."), 2000);
 }
 
 /*
