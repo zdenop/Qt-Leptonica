@@ -98,6 +98,7 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
     void on_actionCleanDarkBackground_triggered();
     void slotCleanDarkBackground(int blackval, int whiteval, int thresh);
     void on_actionRemovelines_triggered();
+    void on_actionConvert2GS_triggered();
 
   private slots:
     void imageInfo();

@@ -34,7 +34,7 @@
      <x>0</x>
      <y>0</y>
      <width>568</width>
-     <height>21</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuAbout">
@@ -89,6 +89,7 @@
     <addaction name="actionBinarizeUnIl"/>
     <addaction name="actionCleanDarkBackground"/>
     <addaction name="actionRemovelines"/>
+    <addaction name="actionConvert2GS"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -371,6 +372,11 @@
    </property>
    <property name="text">
     <string>Remove lines</string>
+   </property>
+  </action>
+  <action name="actionConvert2GS">
+   <property name="text">
+    <string>Convert to GrayScale</string>
    </property>
   </action>
  </widget>

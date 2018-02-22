@@ -803,6 +803,15 @@ void MainWindow::on_actionRemovelines_triggered() {
     this->statusBar()->showMessage(tr("Finished..."), 2000);
 }
 
+void MainWindow::on_actionConvert2GS_triggered() {
+    PIX *pixd;
+    pixd = pixConvert1To8(NULL, pixs, 0, 0);
+    pixs = pixCopy(NULL, pixd);
+    pixDestroy(&pixd);
+    setPixToScene();
+    this->statusBar()->showMessage(tr("Finished..."), 2000);
+}
+
 /*
  * Clean dark background action handling
  */
