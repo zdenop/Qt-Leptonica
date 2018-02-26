@@ -127,14 +127,14 @@ void Scene::contextMenuEvent(QGraphicsSceneContextMenuEvent * event) {
         menu->addSeparator();
 
         QAction* rotateCWAction = menu->addAction(QIcon(":/rotateCW.svg"),
-                                  tr("Rotate CW"));
+                                  tr("Rotate 90° CW"));
         connect(rotateCWAction, SIGNAL(triggered()), this, SLOT(rotateCW()));
 
         QAction* rotateCCWAction = menu->addAction(QIcon(":/rotateCCW.svg"),
-                                   tr("Rotate CCW"));
+                                   tr("Rotate 90° CCW"));
         connect(rotateCCWAction, SIGNAL(triggered()), this, SLOT(rotateCCW()));
 
-        QAction* rotateHalfAction = menu->addAction(QIcon(":/rotateCCW.svg"),
+        QAction* rotateHalfAction = menu->addAction(QIcon(":/rotate_180"),
                                     tr("Rotate 180°"));
         connect(rotateHalfAction, SIGNAL(triggered()), this, SLOT(rotateHalf()));
         QAction* detectOrientationAction = menu->addAction(QIcon(":/orientation.svg"),

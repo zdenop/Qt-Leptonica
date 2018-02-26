@@ -34,7 +34,7 @@
      <x>0</x>
      <y>0</y>
      <width>568</width>
-     <height>19</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuAbout">
@@ -50,6 +50,9 @@
     </property>
     <addaction name="actionOpenFile"/>
     <addaction name="actionReloadFile"/>
+    <addaction name="separator"/>
+    <addaction name="actionSetFormat"/>
+    <addaction name="actionChange_resolution"/>
     <addaction name="separator"/>
     <addaction name="actionSave"/>
     <addaction name="actionSaveAs"/>
@@ -75,9 +78,6 @@
     <addaction name="actionPaste"/>
     <addaction name="actionFixPasteFromPDF"/>
     <addaction name="separator"/>
-    <addaction name="actionChange_resolution"/>
-    <addaction name="actionSetFormat"/>
-    <addaction name="separator"/>
     <addaction name="actionRotateCW"/>
     <addaction name="actionRotateCCW"/>
     <addaction name="actionRotate180"/>
@@ -92,8 +92,8 @@
     <addaction name="actionConvert2GS"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuEdit"/>
    <addaction name="menuView"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -134,16 +134,28 @@
    <addaction name="actionRemovelines"/>
   </widget>
   <action name="actionAbout">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/about</normaloff>:/about</iconset>
+   </property>
    <property name="text">
     <string>About...</string>
    </property>
   </action>
   <action name="actionAbout_Qt">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/info.svg</normaloff>:/info.svg</iconset>
+   </property>
    <property name="text">
     <string>About Qt</string>
    </property>
   </action>
   <action name="actionOpenFile">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/open</normaloff>:/open</iconset>
+   </property>
    <property name="text">
     <string>Open File...</string>
    </property>
@@ -152,6 +164,10 @@
    </property>
   </action>
   <action name="actionSave">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/save</normaloff>:/save</iconset>
+   </property>
    <property name="text">
     <string>Save</string>
    </property>
@@ -160,6 +176,10 @@
    </property>
   </action>
   <action name="actionSaveAs">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/saveAs</normaloff>:/saveAs</iconset>
+   </property>
    <property name="text">
     <string>Save as...</string>
    </property>
@@ -168,6 +188,10 @@
    </property>
   </action>
   <action name="actionQuit">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/quit</normaloff>:/quit</iconset>
+   </property>
    <property name="text">
     <string>Quit</string>
    </property>
@@ -299,6 +323,10 @@
    </property>
   </action>
   <action name="actionReloadFile">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/reload</normaloff>:/reload</iconset>
+   </property>
    <property name="text">
     <string>Reload file</string>
    </property>
@@ -331,6 +359,10 @@
    </property>
   </action>
   <action name="actionRotate180">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/rotate_180</normaloff>:/rotate_180</iconset>
+   </property>
    <property name="text">
     <string>Rotate 180°</string>
    </property>
@@ -339,6 +371,10 @@
    </property>
   </action>
   <action name="actionPaste">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/paste</normaloff>:/paste</iconset>
+   </property>
    <property name="text">
     <string>Paste</string>
    </property>
@@ -361,6 +397,10 @@
    </property>
   </action>
   <action name="actionSetFormat">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/properties</normaloff>:/properties</iconset>
+   </property>
    <property name="text">
     <string>Set fileformat...</string>
    </property>
