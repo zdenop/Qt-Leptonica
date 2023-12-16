@@ -12,3 +12,4 @@ qt-leptonica.pro.*
 *.Release
 qt-leptonica
 TODO
+build/*
