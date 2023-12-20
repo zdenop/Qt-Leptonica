@@ -109,8 +109,10 @@ void MainWindow::updateRecentFileActions() {
 void MainWindow::openRecentFile() {
     QAction* action = qobject_cast<QAction*>(sender());
 
-    if (action)
+    if (action) {
         openImage(action->data().toString());
+        on_actionFit_to_window_triggered();
+    }
 }
 
 /*
@@ -337,6 +339,7 @@ void MainWindow::on_actionOpenFile_triggered() {
                            filetype);
     if (!fileName.isEmpty()) {
         openImage(fileName);
+        on_actionFit_to_window_triggered();
     }
 }
 
@@ -404,6 +407,7 @@ void MainWindow::dropEvent(QDropEvent *event) {
     if (urls.count()) {
         QString filename = urls[0].toLocalFile();
         openImage(filename);
+        on_actionFit_to_window_triggered();
         event->acceptProposedAction();
     }
 }
