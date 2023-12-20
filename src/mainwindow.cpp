@@ -67,11 +67,10 @@ MainWindow::MainWindow(QWidget *parent, const QString &fileName)
         menuFile->addAction(recentFileActs[i]);
     updateRecentFileActions();
 
+    // Open last file on init if there was no argument
+    recentFile = recentFileActs[0]->data().toString();
     readSettings(true);
-    if (fileName.isEmpty()) {
-        // Open last file on init if there was no argument
-        recentFile = recentFileActs[0]->data().toString();
-    } else {
+    if (!fileName.isEmpty()) {
         recentFile = fileName;
         setZoom(1.0);
     }
