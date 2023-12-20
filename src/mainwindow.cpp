@@ -9,6 +9,12 @@
 #include "dialogs/cdbdialog.h"
 #include "dialogs/combodialog.h"
 
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#include <string>
+#endif
+
 MainWindow::MainWindow(QWidget *parent, const QString &fileName)
     : QMainWindow(parent) {
     setupUi(this);
@@ -237,9 +243,18 @@ void MainWindow::aboutQt() {
 /*
  * QString to const char
  */
-const char *MainWindow::qString2Char(QString string) {
-    QByteArray byteArray = string.toUtf8();
-    const char * constChar = byteArray.data();
+const char *MainWindow::qString2Char(QString qstring) {
+    const char * constChar;
+#ifdef _WIN32
+    const std::wstring& wstr = qstring.toStdWString();
+    int count = WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), wstr.length(), NULL, 0, NULL, NULL);
+    std::string str(count, 0);
+    WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), -1, &str[0], count, NULL, NULL);
+    constChar = str.c_str();
+#else
+    QByteArray byteArray = qstring.toUtf8();
+    constChar = byteArray.data();
+#endif
     return constChar;
 }
 
