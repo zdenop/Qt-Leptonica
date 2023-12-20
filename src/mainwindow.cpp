@@ -210,7 +210,7 @@ PIX* MainWindow::QImageToPIX(const QImage& qImage) {
  */
 void MainWindow::about() {
     QString abouttext =
-        tr("<h1>%1 %2</h1>").arg(SETTING_APPLICATION).arg(VERSION);
+        tr("<h1>%1 %2</h1>").arg(SETTING_APPLICATION, VERSION);
 
     abouttext.append(tr("<p>playground for leptonica and "));
     abouttext.append(tr("<a href=\"http://www.qt.io/\">Qt</a></p>"));
@@ -219,7 +219,7 @@ void MainWindow::about() {
     abouttext.append(tr("<b>Image libraries in Leptonica:</b><br/> %1</p>").arg(
                          getImagelibVersions()));
     abouttext.append(tr("<p>Project page: <a href=%1>%2</a></p>").
-                     arg(PROJECT_URL).arg(PROJECT_URL_NAME));
+                     arg(PROJECT_URL, PROJECT_URL_NAME));
     abouttext.append(tr("Copyright 2015-2017 Zdenko Podobný</p>"));
     abouttext.append(tr("<p>This software is released under "
                         "<a href=\"http://www.apache.org/licenses/LICENSE-2.0\"" \
@@ -680,7 +680,7 @@ void MainWindow::on_actionSetFormat_triggered() {
             QString basename = QFileInfo(recentFile).completeBaseName();
             const char * extention = getFormatExtension(format);
             recentFile = QDir::cleanPath(path + QDir::separator() +
-                                         QString("%1.%2").arg(basename).arg(extention));
+                                         QString("%1.%2").arg(basename, extention));
             updateTitle();
         }
     }
