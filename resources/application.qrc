@@ -26,5 +26,7 @@
     <file alias="info.svg">images/address-book-new.svg</file>
     <file alias="about">images/help-about.svg</file>
     <file alias="crop.svg">images/crop-tool-button.svg</file>
+    <file alias="undo">images/undo.svg</file>
+    <file alias="redo">images/redo.svg</file>
   </qresource>
 </RCC>

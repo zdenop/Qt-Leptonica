@@ -11,6 +11,7 @@
 #include <QMessageBox>
 #include <QSettings>
 
+#include <stack>
 #include <leptonica/allheaders.h>
 #include "ui_mainwindow.h"
 
@@ -53,6 +54,8 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
     QAction* recentFileActs[MaxRecentFiles];
     QString recentFile;
     PIX *pixs;
+    std::stack<PIX *> undoPixStack;
+    std::stack<PIX *> redoPixStack;
 
     QLabel* _zoom;
     void zoomOriginal();
@@ -68,6 +71,10 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
     bool setPixToScene(PIX *lep_pix);
     PIX *cleanDarkBackground(int blackval, int whiteval, int thresh);
     int blackval, whiteval, thresh;
+
+    QAction *undoAction;
+    QAction *redoAction;
+    void createUndoStackAndActions();
 
   private Q_SLOTS:
     void on_actionOpenFile_triggered();
@@ -101,6 +108,8 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
     void on_actionConvert2GS_triggered();
 
   private slots:
+    void pix_undo();
+    void pix_redo();
     void imageInfo();
     void openRecentFile();
     void openImage(const QString& imageFileName);

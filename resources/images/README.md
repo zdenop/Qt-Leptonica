@@ -9,3 +9,5 @@ Excluding:
  - remove-line.svg	<div>Icons made by <a href="http://www.flaticon.com/authors/butterflytronics" title="Butterflytronics">Butterflytronics</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
  - application-exit.png	https://github.com/fc8855/arc-icons/blob/master/Arc/actions/24/application-exit.png
  - if_loop_326543.svg	https://www.iconfinder.com/icons/326543/loop_reload_replay_icon#size=512
+ - undo	https://iconscout.com/free-icon/undo-1781799
+ - redo https://iconscout.com/free-icon/redo-1779890
