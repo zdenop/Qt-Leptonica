@@ -84,6 +84,10 @@ MainWindow::MainWindow(QWidget *parent, const QString &fileName)
 }
 
 MainWindow::~MainWindow() {
+    delete fileWatcher;
+    delete imageScene;
+    pixDestroy(&pixs);
+    delete _zoom;
 }
 
 void MainWindow::updateRecentFileActions() {
