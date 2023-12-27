@@ -361,8 +361,7 @@ void MainWindow::on_actionSave_triggered() {
         on_actionSaveAs_triggered();
         return;
     }
-    char *cFilename = recentFile.toLatin1().data();
-    ret = pixWrite(cFilename, pixs, format);
+    ret = pixWrite(qString2Char(recentFile), pixs, format);
     if (ret) {
         statusBar()->showMessage(
             tr("Saving failed with error code %1").arg(ret), 2000);
