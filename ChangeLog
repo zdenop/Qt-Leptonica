@@ -1,0 +1,26 @@
+2023-12-27 - v0.3
+* Implemented Undo&Redo functionality
+* add cmake support
+* drop qmake support
+* fix opening image with Unicode path (on Windows)
+* restore zoom after starting app and opening last image
+
+2017-05-30 - v0.2
+* added crop area functionality
+* added paste from clipboard + fix scale from PDF copy&paste
+* added getFormatDesc
+* added Convert to GrayScale
+
+2017-05-30 - v0.1
+* initial code
+* add convert pix to QImage
+* implement drag&drop
+* watch opened image / reload modifies open file
+* implement resent files
+* implement zoom functions
+* implement rotate functions
+* implement binarize image
+* implement page orientation detection
+* implement deskew
+* implement Clean Dark Background
+* pixToQimage
