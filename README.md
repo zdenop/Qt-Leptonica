@@ -3,7 +3,9 @@ Qt Leptonica is a simple fun C++ project to learn Qt5 and to test Leptonica libr
 
 ![screenshot](test/Qt-leptonica.png)
 
-# Install
+The Windows 64bit binary version could be downloaded from [Release page](https://github.com/zdenop/Qt-Leptonica/releases/tag/v0.3)
+
+# Install from source
 
 ## Requirements
 
