@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>568</width>
-    <height>447</height>
+    <width>731</width>
+    <height>505</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -75,6 +75,9 @@
     <property name="title">
      <string>Edit</string>
     </property>
+    <addaction name="actionUndo"/>
+    <addaction name="actionRedo"/>
+    <addaction name="separator"/>
     <addaction name="actionPaste"/>
     <addaction name="actionFixPasteFromPDF"/>
     <addaction name="separator"/>
@@ -125,6 +128,9 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionUndo"/>
+   <addaction name="actionRedo"/>
+   <addaction name="separator"/>
    <addaction name="actionChange_resolution"/>
    <addaction name="actionDetectOrientation"/>
    <addaction name="actionBinarizeUnIl"/>
@@ -417,6 +423,24 @@
   <action name="actionConvert2GS">
    <property name="text">
     <string>Convert to GrayScale</string>
+   </property>
+  </action>
+  <action name="actionUndo">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/undo</normaloff>:/undo</iconset>
+   </property>
+   <property name="text">
+    <string>Undo</string>
+   </property>
+  </action>
+  <action name="actionRedo">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/redo</normaloff>:/redo</iconset>
+   </property>
+   <property name="text">
+    <string>Redo</string>
    </property>
   </action>
  </widget>

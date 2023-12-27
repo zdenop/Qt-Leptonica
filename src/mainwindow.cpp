@@ -90,8 +90,6 @@ MainWindow::~MainWindow() {
     delete imageScene;
     pixDestroy(&pixs);
     delete _zoom;
-    delete undoAction;
-    delete redoAction;
 
     while (!undoPixStack.empty()) {
         delete undoPixStack.top();
@@ -103,33 +101,7 @@ MainWindow::~MainWindow() {
     }
 }
 
-void MainWindow::createUndoStackAndActions(){
 
-    undoAction = new QAction(tr("&Undom"), this);
-    connect(undoAction, &QAction::triggered, this, &MainWindow::pix_undo);
-    redoAction = new QAction(tr("&Redom"), this);
-    connect(redoAction, &QAction::triggered, this, &MainWindow::pix_redo);
-
-    // undoStack = new QUndoStack(this);
-    // undoAction = undoStack->createUndoAction(this, tr("&Undo"));
-    undoAction->setIcon(QIcon(":undo"));
-    undoAction->setShortcuts(QKeySequence::Undo);
-    undoAction->setDisabled(true);
-    // redoAction = undoStack->createRedoAction(this, tr("&Redo"));
-    redoAction->setIcon(QIcon(":redo"));
-    redoAction->setShortcuts(QKeySequence::Redo);
-    redoAction->setDisabled(true);
-
-    // ui->actionRedo->setEnabled(false);
-    // ui->actionUndo->setEnabled(false);
-
-    editBar->addSeparator();
-    editBar->addAction(undoAction);
-    editBar->addAction(redoAction);
-    menuEdit->insertAction(menuEdit->actions().at(0), redoAction);
-    menuEdit->insertAction(redoAction, undoAction);
-    menuEdit->insertSeparator(menuEdit->actions().at(2));
-}
 
 void MainWindow::updateRecentFileActions() {
     QSettings settings(QSettings::IniFormat, QSettings::UserScope,
@@ -158,48 +130,6 @@ void MainWindow::openRecentFile() {
         openImage(action->data().toString());
         on_actionFit_to_window_triggered();
     }
-}
-
-
-/*
- * Simple undo function for Leptonica Pix object
- */
-void MainWindow::pix_undo() {
-    if (undoPixStack.empty()){
-        this->statusBar()->showMessage(tr("Nothing to undo..."), 4000);
-        return;
-    }
-    // first store copy of current PIX image to redoPixStack
-    PIX *originalPix = pixClone(pixs);
-    redoPixStack.push(originalPix);
-    redoAction->setDisabled(false);
-
-    pixDestroy(&pixs);
-    pixs = undoPixStack.top();
-    undoPixStack.pop();
-    setPixToScene();
-
-    // if (undoPixStack.empty())
-    //     undoAction->setDisabled(true);
-}
-
-/*
- * Simple redo function for Leptonica Pix object
- */
-void MainWindow::pix_redo() {
-    if (redoPixStack.empty()){
-        this->statusBar()->showMessage(tr("Nothing to redo..."), 4000);
-        return;
-    }
-    // first store copy of current PIX image to undoPixStack
-    PIX *originalPix = pixClone(pixs);
-    undoPixStack.push(originalPix);
-    undoAction->setDisabled(false);
-
-    pixDestroy(&pixs);
-    pixs = redoPixStack.top();
-    redoPixStack.pop();
-    setPixToScene();
 }
 
 /*
@@ -919,7 +849,7 @@ void MainWindow::on_actionConvert2GS_triggered() {
         this->statusBar()->showMessage(tr("Coud not convert to Grayccale..."), 2000);
     }
     undoPixStack.push(originalPix);
-    undoAction->setDisabled(false);
+    actionUndo->setDisabled(false);
     pixDestroy(&pixs);
     pixs = pixCopy(NULL, processedPix);
     pixDestroy(&processedPix);

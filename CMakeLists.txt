@@ -31,6 +31,7 @@ set(project_RESOURCES
 set(project_SOURCES
     src/main.cpp
     src/mainwindow.cpp
+    src/undo.cpp
     src/scene.cpp
     src/areaitem.cpp
     src/qleptonica.cpp

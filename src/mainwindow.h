@@ -71,9 +71,6 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
     bool setPixToScene(PIX *lep_pix);
     PIX *cleanDarkBackground(int blackval, int whiteval, int thresh);
     int blackval, whiteval, thresh;
-
-    QAction *undoAction;
-    QAction *redoAction;
     void createUndoStackAndActions();
 
   private Q_SLOTS:
