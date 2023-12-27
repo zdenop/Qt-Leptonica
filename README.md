@@ -29,5 +29,5 @@ set PATH=%QTDIR%/bin;%LEPTONICA%/bin;%PATH%
 rm -Rf build/*
 cmake -G "Visual Studio 16 2019" -A x64 -S . -B build -DCMAKE_PREFIX_PATH="%QTDIR%;%LEPTONICA%"
 cmake --build build --config Release --verbose
-copy build\Release\Qt-leptonica-1.0-alpha.exe %LEPTONICA%
+copy build\Release\Qt-leptonica.exe %LEPTONICA%
 ```
