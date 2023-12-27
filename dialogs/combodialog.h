@@ -9,11 +9,9 @@
 class ComboBoxDialog : public QDialog, public Ui::ComboBoxDialog {
     Q_OBJECT
 
-  public:
+   public:
     explicit ComboBoxDialog(QWidget *parent = 0);
     ~ComboBoxDialog();
-
 };
 
-#endif // COMBOBOXDIALOG_H
-
+#endif  // COMBOBOXDIALOG_H

@@ -1,8 +1,8 @@
 
-#include <QObject>
-#include <QDebug>
-
 #include "qleptonica.h"
+
+#include <QDebug>
+#include <QObject>
 
 /**
  * List of Leptonica formats
@@ -42,11 +42,11 @@ QString getFormatDesc(int format) {
 /*
  * A fun little application, saved as a regression test.
  */
-PIXA * lineremoval(PIX * pix_input){
-    l_float32     angle, conf, deg2rad;
-    PIX          *pix1, *pix2, *pix3, *pix4, *pix5;
-    PIX          *pix6, *pix7, *pix8, *pix9;
-    PIXA         *pixa;
+PIXA *lineremoval(PIX *pix_input) {
+    l_float32 angle, conf, deg2rad;
+    PIX *pix1, *pix2, *pix3, *pix4, *pix5;
+    PIX *pix6, *pix7, *pix8, *pix9;
+    PIXA *pixa;
 
     deg2rad = static_cast<l_float32>(3.14159 / 180.00);
     pixa = pixaCreate(0);
@@ -57,7 +57,7 @@ PIXA * lineremoval(PIX * pix_input){
     else if (pix_input->d == 1) {
         pix1 = pixCopy(NULL, pix_input);
     } else if (pix_input->d == 32) {
-        PIX * pixsg = pixConvertRGBToLuminance(pix_input);
+        PIX *pixsg = pixConvertRGBToLuminance(pix_input);
         pix1 = pixThresholdToBinary(pixsg, 170);
         pixDestroy(&pixsg);
     } else {
@@ -67,7 +67,7 @@ PIXA * lineremoval(PIX * pix_input){
     pixaAddPix(pixa, pix1, L_INSERT);
 
     /* Find the skew angle and deskew using an interpolated
-             * rotator for anti-aliasing (to avoid jaggies) */
+     * rotator for anti-aliasing (to avoid jaggies) */
     pixFindSkew(pix1, &angle, &conf);
     if (pix_input->d != 8) {
         qDebug() << "Error in pixRotateAMGray: pixs must be 8 bpp";

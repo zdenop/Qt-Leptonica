@@ -1,30 +1,23 @@
 #include "areaitem.h"
 
-AreaItem::AreaItem(QGraphicsItem *parent)
-    : QGraphicsItem(parent) {
+AreaItem::AreaItem(QGraphicsItem *parent) : QGraphicsItem(parent) {
     _mousePress = false;
     _areaRect = QRectF();
     grabMouse();
 }
 
-AreaItem::~AreaItem() {
+AreaItem::~AreaItem() {}
+
+void AreaItem::setAreaRect(QRectF rectF) { _areaRect = QRectF(rectF); }
+
+QRectF AreaItem::areaRect(void) const { return (_areaRect); }
+
+QRectF AreaItem::boundingRect(void) const {
+    return (parentItem()->boundingRect());
 }
 
-void AreaItem::setAreaRect(QRectF rectF) {
-    _areaRect = QRectF(rectF);
-}
-
-QRectF AreaItem::areaRect (void) const {
-    return(_areaRect);
-}
-
-QRectF AreaItem::boundingRect (void) const {
-    return(parentItem()->boundingRect());
-}
-
-void AreaItem::paint (QPainter *painter,
-                      const QStyleOptionGraphicsItem *option,
-                      QWidget *widget) {
+void AreaItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+                     QWidget *widget) {
     Q_UNUSED(widget)
 
     painter->save();
@@ -102,7 +95,7 @@ void AreaItem::paint (QPainter *painter,
     painter->restore();
 }
 
-void AreaItem::mousePressEvent (QGraphicsSceneMouseEvent *event) {
+void AreaItem::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     QGraphicsItem::mousePressEvent(event);
 
     _mousePress = true;
@@ -136,7 +129,7 @@ void AreaItem::mousePressEvent (QGraphicsSceneMouseEvent *event) {
     update();
 }
 
-void AreaItem::mouseReleaseEvent (QGraphicsSceneMouseEvent *event) {
+void AreaItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
     QGraphicsItem::mouseReleaseEvent(event);
 
     _areaResize = AreaItemResizeNone;
@@ -145,45 +138,43 @@ void AreaItem::mouseReleaseEvent (QGraphicsSceneMouseEvent *event) {
     update();
 }
 
-void AreaItem::mouseMoveEvent (QGraphicsSceneMouseEvent *event) {
+void AreaItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
     QGraphicsItem::mouseMoveEvent(event);
 
     qreal minSize = 4 + (AREA_BORDER_LINE << 1);
 
     QPointF delta = event->pos() - event->lastPos();
     switch (_areaResize) {
-    case AreaItemResizeNone:
-        if (!_areaRect.contains(event->pos()))
-            return;
+        case AreaItemResizeNone:
+            if (!_areaRect.contains(event->pos())) return;
 
-        if (!(event->buttons() & Qt::LeftButton))
-            return;
+            if (!(event->buttons() & Qt::LeftButton)) return;
 
-        _areaRect.translate(delta);
-        break;
-    case AreaItemResizeTopLeft:
-        delta.setY(qMin(_areaRect.height() - minSize, delta.y()));
-        delta.setX(qMin(_areaRect.width() - minSize, delta.x()));
-        _areaRect.setHeight(_areaRect.height() - delta.y());
-        _areaRect.setWidth(_areaRect.width() - delta.x());
-        _areaRect.translate(delta);
-        break;
-    case AreaItemResizeTopRight:
-        delta.setY(qMin(_areaRect.height() - minSize, delta.y()));
-        _areaRect.setWidth(_areaRect.width() + delta.x());
-        _areaRect.setHeight(_areaRect.height() - delta.y());
-        _areaRect.translate(0, delta.y());
-        break;
-    case AreaItemResizeBottomLeft:
-        delta.setX(qMin(_areaRect.width() - minSize, delta.x()));
-        _areaRect.setHeight(_areaRect.height() + delta.y());
-        _areaRect.setWidth(_areaRect.width() - delta.x());
-        _areaRect.translate(delta.x(), 0);
-        break;
-    case AreaItemResizeBottomRight:
-        _areaRect.setWidth(_areaRect.width() + delta.x());
-        _areaRect.setHeight(_areaRect.height() + delta.y());
-        break;
+            _areaRect.translate(delta);
+            break;
+        case AreaItemResizeTopLeft:
+            delta.setY(qMin(_areaRect.height() - minSize, delta.y()));
+            delta.setX(qMin(_areaRect.width() - minSize, delta.x()));
+            _areaRect.setHeight(_areaRect.height() - delta.y());
+            _areaRect.setWidth(_areaRect.width() - delta.x());
+            _areaRect.translate(delta);
+            break;
+        case AreaItemResizeTopRight:
+            delta.setY(qMin(_areaRect.height() - minSize, delta.y()));
+            _areaRect.setWidth(_areaRect.width() + delta.x());
+            _areaRect.setHeight(_areaRect.height() - delta.y());
+            _areaRect.translate(0, delta.y());
+            break;
+        case AreaItemResizeBottomLeft:
+            delta.setX(qMin(_areaRect.width() - minSize, delta.x()));
+            _areaRect.setHeight(_areaRect.height() + delta.y());
+            _areaRect.setWidth(_areaRect.width() - delta.x());
+            _areaRect.translate(delta.x(), 0);
+            break;
+        case AreaItemResizeBottomRight:
+            _areaRect.setWidth(_areaRect.width() + delta.x());
+            _areaRect.setHeight(_areaRect.height() + delta.y());
+            break;
     }
 
     if (_areaRect.width() < minSize) _areaRect.setWidth(minSize);

@@ -6,5 +6,4 @@
 #define PROJECT_URL "https://github.com/zdenop/QT-Leptonica"
 #define PROJECT_URL_NAME "github.com/zdenop/QT-Leptonica"
 #define VERSION "0.3"
-#endif // SETTINGS
-
+#endif  // SETTINGS

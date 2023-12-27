@@ -44,7 +44,7 @@ void MainWindow::pix_redo() {
     updateTitle();
 }
 
-void MainWindow::storeUndoPIX(PIX * newPix) {
+void MainWindow::storeUndoPIX(PIX *newPix) {
     if (pixs) {
         PIX *originalPix = pixClone(pixs);
         undoPixStack.push(originalPix);
@@ -56,7 +56,6 @@ void MainWindow::storeUndoPIX(PIX * newPix) {
     modified = true;
     updateTitle();
 }
-
 
 void MainWindow::cleanUndoStack() {
     while (!undoPixStack.empty()) {

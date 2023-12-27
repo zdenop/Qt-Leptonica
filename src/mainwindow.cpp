@@ -1,17 +1,19 @@
+#include "mainwindow.h"
+
+#include <QMap>
 #include <QMimeData>
 #include <QUrl>
-#include <QMap>
 
-#include "mainwindow.h"
-#include "settings.h"
-#include "qleptonica.h"
-#include "dialogs/dpidialog.h"
 #include "dialogs/cdbdialog.h"
 #include "dialogs/combodialog.h"
+#include "dialogs/dpidialog.h"
+#include "qleptonica.h"
+#include "settings.h"
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+
 #include <string>
 #endif
 
@@ -30,27 +32,30 @@ MainWindow::MainWindow(QWidget *parent, const QString &fileName)
 
     fileWatcher = 0;
 
-    gViewResult->viewport()->setGeometry(QRect(0,0,0,0));
+    gViewResult->viewport()->setGeometry(QRect(0, 0, 0, 0));
     imageScene = new Scene();
-    connect(imageScene, SIGNAL(dropedFilename(QString)),
-            this, SLOT(openImage(QString)));
-    connect(imageScene, SIGNAL(sceneScaleChanged(qreal)),
-            this, SLOT(changeSceneScale(qreal)));
-    connect(imageScene, SIGNAL(rotateImage(int)),
-            this, SLOT(rotate(int)));
+    connect(imageScene, SIGNAL(dropedFilename(QString)), this,
+            SLOT(openImage(QString)));
+    connect(imageScene, SIGNAL(sceneScaleChanged(qreal)), this,
+            SLOT(changeSceneScale(qreal)));
+    connect(imageScene, SIGNAL(rotateImage(int)), this, SLOT(rotate(int)));
     connect(imageScene, SIGNAL(imageInfoTriggered()), this, SLOT(imageInfo()));
     connect(imageScene, SIGNAL(detectOrientationSignal()), this,
             SLOT(on_actionDetectOrientation_triggered()));
-    connect(imageScene, SIGNAL(imageCropTriggered(QRectF)),
-            this, SLOT(crop(QRectF)));
+    connect(imageScene, SIGNAL(imageCropTriggered(QRectF)), this,
+            SLOT(crop(QRectF)));
 
     gViewResult->setScene(imageScene);
     gViewResult->setRenderHint(QPainter::Antialiasing);
     gViewResult->setCacheMode(QGraphicsView::CacheBackground);
-    gViewResult->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
-    gViewResult->setOptimizationFlags(QGraphicsView::DontSavePainterState | QGraphicsView::DontAdjustForAntialiasing);
-    gViewResult->viewport()->setSizeIncrement(gViewResult->sceneRect().width(),gViewResult->sceneRect().height());
-    gViewResult->viewport()->setSizeIncrement(gViewResult->sceneRect().width(),gViewResult->sceneRect().height());
+    gViewResult->setViewportUpdateMode(
+        QGraphicsView::BoundingRectViewportUpdate);
+    gViewResult->setOptimizationFlags(QGraphicsView::DontSavePainterState |
+                                      QGraphicsView::DontAdjustForAntialiasing);
+    gViewResult->viewport()->setSizeIncrement(
+        gViewResult->sceneRect().width(), gViewResult->sceneRect().height());
+    gViewResult->viewport()->setSizeIncrement(
+        gViewResult->sceneRect().width(), gViewResult->sceneRect().height());
 
     connect(actionAbout, SIGNAL(triggered()), this, SLOT(about()));
     connect(actionAbout_Qt, SIGNAL(triggered()), this, SLOT(aboutQt()));
@@ -58,8 +63,8 @@ MainWindow::MainWindow(QWidget *parent, const QString &fileName)
     for (int i = 0; i < MaxRecentFiles; ++i) {
         recentFileActs[i] = new QAction(this);
         recentFileActs[i]->setVisible(false);
-        connect(recentFileActs[i], SIGNAL(triggered()),
-                this, SLOT(openRecentFile()));
+        connect(recentFileActs[i], SIGNAL(triggered()), this,
+                SLOT(openRecentFile()));
     }
 
     fSeparatorAct = menuFile->addSeparator();
@@ -74,8 +79,7 @@ MainWindow::MainWindow(QWidget *parent, const QString &fileName)
         recentFile = fileName;
         setZoom(1.0);
     }
-    if (!recentFile.isEmpty())
-        openImage(recentFile);
+    if (!recentFile.isEmpty()) openImage(recentFile);
 
     // default values for Clean Dark Background
     blackval = 70;
@@ -93,7 +97,6 @@ MainWindow::~MainWindow() {
     cleanUndoStack();
 }
 
-
 void MainWindow::updateRecentFileActions() {
     QSettings settings(QSettings::IniFormat, QSettings::UserScope,
                        SETTING_ORGANIZATION, SETTING_APPLICATION);
@@ -102,7 +105,8 @@ void MainWindow::updateRecentFileActions() {
     int numRecentFiles = qMin(files.size(), static_cast<int>(MaxRecentFiles));
 
     for (int i = 0; i < numRecentFiles; ++i) {
-        QString text = tr("&%1 %2").arg(i + 1).arg(QFileInfo(files[i]).fileName());
+        QString text =
+            tr("&%1 %2").arg(i + 1).arg(QFileInfo(files[i]).fileName());
 
         recentFileActs[i]->setText(text);
         recentFileActs[i]->setData(files[i]);
@@ -115,7 +119,7 @@ void MainWindow::updateRecentFileActions() {
 }
 
 void MainWindow::openRecentFile() {
-    QAction* action = qobject_cast<QAction*>(sender());
+    QAction *action = qobject_cast<QAction *>(sender());
 
     if (action) {
         openImage(action->data().toString());
@@ -131,15 +135,15 @@ QImage MainWindow::PixToQImage(PIX *pixs) {
 
     // create color tables
     QVector<QRgb> _bwCT;
-    _bwCT.append(qRgb(255,255,255));
-    _bwCT.append(qRgb(0,0,0));
+    _bwCT.append(qRgb(255, 255, 255));
+    _bwCT.append(qRgb(0, 0, 0));
 
     QVector<QRgb> _grayscaleCT(256);
-    for (int i = 0; i < 256; i++)  {
+    for (int i = 0; i < 256; i++) {
         _grayscaleCT[i] = qRgb(i, i, i);
     }
 
-    l_uint32 * s_data = pixGetData(pixEndianByteSwapNew(pixs));
+    l_uint32 *s_data = pixGetData(pixEndianByteSwapNew(pixs));
 
     int width = pixGetWidth(pixs);
     int height = pixGetHeight(pixs);
@@ -154,28 +158,28 @@ QImage MainWindow::PixToQImage(PIX *pixs) {
     else
         format = QImage::Format_RGB32;
 
-    QImage result((uchar*)s_data, width, height, bytesPerLine, format);
+    QImage result((uchar *)s_data, width, height, bytesPerLine, format);
 
     // Set resolution
-    l_int32 	xres, yres;
+    l_int32 xres, yres;
     pixGetResolution(pixs, &xres, &yres);
     const qreal toDPM = 1.0 / 0.0254;
     result.setDotsPerMeterX(xres * toDPM);
     result.setDotsPerMeterY(yres * toDPM);
 
     switch (depth) {
-    case 1:
-        result.setColorTable(_bwCT);
-        break;
-    case 8:
-        result.setColorTable(_grayscaleCT);
-        break;
-    default:
-        result.setColorTable(_grayscaleCT);
+        case 1:
+            result.setColorTable(_bwCT);
+            break;
+        case 8:
+            result.setColorTable(_grayscaleCT);
+            break;
+        default:
+            result.setColorTable(_grayscaleCT);
     }
 
     if (result.isNull()) {
-        static QImage none(0,0,QImage::Format_Invalid);
+        static QImage none(0, 0, QImage::Format_Invalid);
         return none;
     }
 
@@ -187,8 +191,8 @@ QImage MainWindow::PixToQImage(PIX *pixs) {
 /*
  * Convert QT QImage to Leptonica PIX
  */
-PIX* MainWindow::QImageToPIX(const QImage& qImage) {
-    PIX * pixs;
+PIX *MainWindow::QImageToPIX(const QImage &qImage) {
+    PIX *pixs;
 
     QImage myImage = qImage.rgbSwapped();
     int width = myImage.width();
@@ -203,7 +207,7 @@ PIX* MainWindow::QImageToPIX(const QImage& qImage) {
 
     for (int y = 0; y < height; y++) {
         l_uint32 *lines = datas + y * wpl;
-        QByteArray a((const char*)myImage.scanLine(y), myImage.bytesPerLine());
+        QByteArray a((const char *)myImage.scanLine(y), myImage.bytesPerLine());
         for (int j = 0; j < a.size(); j++) {
             *((l_uint8 *)lines + j) = a[j];
         }
@@ -224,41 +228,41 @@ PIX* MainWindow::QImageToPIX(const QImage& qImage) {
  * Provide information about application
  */
 void MainWindow::about() {
-    QString abouttext =
-        tr("<h1>%1 %2</h1>").arg(SETTING_APPLICATION, VERSION);
+    QString abouttext = tr("<h1>%1 %2</h1>").arg(SETTING_APPLICATION, VERSION);
 
     abouttext.append(tr("<p>playground for leptonica and "));
     abouttext.append(tr("<a href=\"http://www.qt.io/\">Qt</a></p>"));
-    abouttext.append(tr("<p><b>Leptonica version:</b><br/> %1<br/>").arg(
-                         getLeptonicaVersion()));
-    abouttext.append(tr("<b>Image libraries in Leptonica:</b><br/> %1</p>").arg(
-                         getImagelibVersions()));
-    abouttext.append(tr("<p>Project page: <a href=%1>%2</a></p>").
-                     arg(PROJECT_URL, PROJECT_URL_NAME));
+    abouttext.append(tr("<p><b>Leptonica version:</b><br/> %1<br/>")
+                         .arg(getLeptonicaVersion()));
+    abouttext.append(tr("<b>Image libraries in Leptonica:</b><br/> %1</p>")
+                         .arg(getImagelibVersions()));
+    abouttext.append(tr("<p>Project page: <a href=%1>%2</a></p>")
+                         .arg(PROJECT_URL, PROJECT_URL_NAME));
     abouttext.append(tr("Copyright 2015-2017 Zdenko Podobný</p>"));
-    abouttext.append(tr("<p>This software is released under "
-                        "<a href=\"http://www.apache.org/licenses/LICENSE-2.0\"" \
-                        ">Apache License 2.0</a></p>"));
+    abouttext.append(
+        tr("<p>This software is released under "
+           "<a href=\"http://www.apache.org/licenses/LICENSE-2.0\""
+           ">Apache License 2.0</a></p>"));
     QMessageBox::about(this, tr("About application"), abouttext);
 }
 
 /*
  * Provide information about Qt version
  */
-void MainWindow::aboutQt() {
-    QMessageBox::aboutQt(this, tr("About Qt"));
-}
+void MainWindow::aboutQt() { QMessageBox::aboutQt(this, tr("About Qt")); }
 
 /*
  * QString to const char
  */
 const char *MainWindow::qString2Char(QString qstring) {
-    const char * constChar;
+    const char *constChar;
 #ifdef _WIN32
-    const std::wstring& wstr = qstring.toStdWString();
-    int count = WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), wstr.length(), NULL, 0, NULL, NULL);
+    const std::wstring &wstr = qstring.toStdWString();
+    int count = WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), wstr.length(),
+                                    NULL, 0, NULL, NULL);
     std::string str(count, 0);
-    WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), -1, &str[0], count, NULL, NULL);
+    WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), -1, &str[0], count, NULL,
+                        NULL);
     constChar = str.c_str();
 #else
     QByteArray byteArray = qstring.toUtf8();
@@ -273,21 +277,19 @@ const char *MainWindow::qString2Char(QString qstring) {
  */
 void MainWindow::updateTitle() {
     QString title = recentFile;
-    if (modified)
-        title += " *";
+    if (modified) title += " *";
     this->setWindowTitle(title);
 }
 
 /*
  * openImage with leptonica
  */
-void MainWindow::openImage(const QString& imageFileName) {
+void MainWindow::openImage(const QString &imageFileName) {
     if (!imageFileName.isEmpty()) {
         pixs = pixRead(qString2Char(imageFileName));
         if (!pixs) {
             this->statusBar()->showMessage(
-                tr("Cannot open input file: %1").arg(imageFileName),
-                4000);
+                tr("Cannot open input file: %1").arg(imageFileName), 4000);
             return;
         }
     }
@@ -300,14 +302,11 @@ void MainWindow::openImage(const QString& imageFileName) {
     }
 }
 
-bool MainWindow::setPixToScene() {
-    return setPixToScene(pixs);
-}
+bool MainWindow::setPixToScene() { return setPixToScene(pixs); }
 
 bool MainWindow::setPixToScene(PIX *lep_pix) {
     QImage image = PixToQImage(lep_pix);
-    if (image.isNull())
-        return false;
+    if (image.isNull()) return false;
     if (imageScene->m_image) {
         imageScene->removeImage();
         QPixmap::fromImage(image);
@@ -330,8 +329,7 @@ void MainWindow::addToResentFiles(QString filename) {
     QStringList files = settings.value("recentFileList").toStringList();
     files.removeAll(filename);
     files.prepend(filename);
-    while (files.size() > MaxRecentFiles)
-        files.removeLast();
+    while (files.size() > MaxRecentFiles) files.removeLast();
 
     settings.setValue("recentFileList", files);
     updateRecentFileActions();
@@ -342,10 +340,7 @@ void MainWindow::on_actionOpenFile_triggered() {
     filetype += "Tiff files (*.tif *.tiff);;All files (*.*)";
     QString last_path = QFileInfo(recentFile).absolutePath();
     QString fileName = QFileDialog::getOpenFileName(
-                           this,
-                           tr("Select image file..."),
-                           last_path,
-                           filetype);
+        this, tr("Select image file..."), last_path, filetype);
     if (!fileName.isEmpty()) {
         openImage(fileName);
         on_actionFit_to_window_triggered();
@@ -357,20 +352,20 @@ void MainWindow::on_actionReloadFile_triggered() {
         statusBar()->showMessage(tr("Reloading file...."));
     openImage(recentFile);
     statusBar()->showMessage(tr("File reloaded."), 2000);
-
 }
 
 void MainWindow::on_actionSave_triggered() {
-    l_int32  ret;
+    l_int32 ret;
     l_int32 format = pixGetInputFormat(pixs);
     if (recentFile.isEmpty() || !format) {
         on_actionSaveAs_triggered();
         return;
     }
-    char * cFilename = recentFile.toLatin1().data();
+    char *cFilename = recentFile.toLatin1().data();
     ret = pixWrite(cFilename, pixs, format);
     if (ret) {
-        statusBar()->showMessage(tr("Saving failed with error code %1").arg(ret), 2000);
+        statusBar()->showMessage(
+            tr("Saving failed with error code %1").arg(ret), 2000);
     } else {
         statusBar()->showMessage(tr("File saved"), 2000);
         modified = false;
@@ -379,24 +374,22 @@ void MainWindow::on_actionSave_triggered() {
 }
 
 void MainWindow::on_actionSaveAs_triggered() {
-    l_int32  ret;
+    l_int32 ret;
     l_int32 format = pixGetInputFormat(pixs);
-    QString fileName = QFileDialog::getSaveFileName(this,
-                       tr("Save image as..."),
-                       recentFile,
-                       tr("All files (*)"));
+    QString fileName = QFileDialog::getSaveFileName(
+        this, tr("Save image as..."), recentFile, tr("All files (*)"));
 
-    if (fileName.isEmpty())
-        return;
+    if (fileName.isEmpty()) return;
 
-    char * cFilename = fileName.toLatin1().data();
+    char *cFilename = fileName.toLatin1().data();
     if (format == IFF_UNKNOWN) {
         ret = pixWriteAutoFormat(cFilename, pixs);
     } else {
         ret = pixWrite(cFilename, pixs, format);
     }
     if (ret) {
-        statusBar()->showMessage(tr("Saving failed with error code %1").arg(ret), 2000);
+        statusBar()->showMessage(
+            tr("Saving failed with error code %1").arg(ret), 2000);
     } else {
         statusBar()->showMessage(tr("File saved as %1").arg(fileName), 2000);
         addToResentFiles(fileName);
@@ -424,13 +417,13 @@ void MainWindow::dropEvent(QDropEvent *event) {
 /*
  * monitor opened file
  */
-void MainWindow::setFileWatcher(const QString & fileName) {
+void MainWindow::setFileWatcher(const QString &fileName) {
     if (fileWatcher) {
         fileWatcher->removePaths(fileWatcher->files());
     } else {
         fileWatcher = new QFileSystemWatcher(this);
-        connect(fileWatcher, SIGNAL(fileChanged(const QString &)),
-                this, SLOT(slotfileChanged(const QString &)));
+        connect(fileWatcher, SIGNAL(fileChanged(const QString &)), this,
+                SLOT(slotfileChanged(const QString &)));
     }
     fileWatcher->addPath(fileName);
 }
@@ -458,17 +451,11 @@ void MainWindow::changeSceneScale(qreal scale) {
     setZoomStatus();
 }
 
-void MainWindow::on_actionZoom_to_original_triggered() {
-    setZoom(1);
-}
+void MainWindow::on_actionZoom_to_original_triggered() { setZoom(1); }
 
-void MainWindow::on_actionZoom_in_triggered() {
-    changeSceneScale(1.2);
-}
+void MainWindow::on_actionZoom_in_triggered() { changeSceneScale(1.2); }
 
-void MainWindow::on_actionZoom_out_triggered() {
-    changeSceneScale(1/1.2);
-}
+void MainWindow::on_actionZoom_out_triggered() { changeSceneScale(1 / 1.2); }
 
 void MainWindow::on_actionFit_to_window_triggered() {
     float viewWidth = gViewResult->viewport()->width();
@@ -508,18 +495,18 @@ void MainWindow::imageInfo() {
     aboutImage.append(tr("width in pixels: %1<br/>").arg(pixs->w));
     aboutImage.append(tr("height in pixels: %1<br/>").arg(pixs->h));
     aboutImage.append(tr("depth in bits (bpp): %1<br/>").arg(pixs->d));
-    aboutImage.append(tr("number of samples per pixel [spp]: %1<br/>")
-                      .arg(pixs->spp));
+    aboutImage.append(
+        tr("number of samples per pixel [spp]: %1<br/>").arg(pixs->spp));
     aboutImage.append(tr("32-bit words/line [wpl]: %1<br/>").arg(pixs->wpl));
-    aboutImage.append(tr("resolution: %1x%2<br/>").arg(pixs->xres)
-                      .arg(pixs->yres));
+    aboutImage.append(
+        tr("resolution: %1x%2<br/>").arg(pixs->xres).arg(pixs->yres));
     int format = pixGetInputFormat(pixs);
     QString desc = getFormatDesc(format);
     aboutImage.append(tr("input format: %1 (%2)</p>").arg(desc).arg(format));
     char *text = pixGetText(pixs);
     if (text)
-        aboutImage.append(tr("text string associated with pix: %1</p>")
-                          .arg(text));
+        aboutImage.append(
+            tr("text string associated with pix: %1</p>").arg(text));
     QMessageBox::about(this, tr("About image"), aboutImage);
 }
 
@@ -552,31 +539,25 @@ void MainWindow::crop(QRectF rect) {
 /*
  * Rotate pixs by 90 degree clockwise
  */
-void MainWindow::on_actionRotateCW_triggered() {
-    rotate(1);
-}
+void MainWindow::on_actionRotateCW_triggered() { rotate(1); }
 
 /*
  * Rotate pixs by 90 degree counterclockwise
  */
-void MainWindow::on_actionRotateCCW_triggered() {
-    rotate(3);
-}
+void MainWindow::on_actionRotateCCW_triggered() { rotate(3); }
 
 /*
  * Rotate pixs by 180 degree
  */
-void MainWindow::on_actionRotate180_triggered() {
-    rotate(2);
-}
+void MainWindow::on_actionRotate180_triggered() { rotate(2); }
 
 /*
  * Page orientation detection (four 90 degree angles) Rasterop implementation
  */
 void MainWindow::on_actionDetectOrientation_triggered() {
-    l_int32   orient, alt_rot = 0;
+    l_int32 orient, alt_rot = 0;
     l_float32 upconf1, leftconf1;
-    PIX       *fpixs;
+    PIX *fpixs;
 
     fpixs = pixConvertTo1(pixs, 130);
     pixOrientDetect(fpixs, &upconf1, &leftconf1, 0, 0);
@@ -590,7 +571,8 @@ void MainWindow::on_actionDetectOrientation_triggered() {
     if (orient == L_TEXT_ORIENT_UNKNOWN) {
         statusBar()->showMessage(
             tr("Confidence is low; no determination is made. "
-               "But maybe there is %1 deg rotation.").arg(alt_rot),
+               "But maybe there is %1 deg rotation.")
+                .arg(alt_rot),
             4000);
     } else if (orient == L_TEXT_ORIENT_UP) {
         statusBar()->showMessage(tr("Text is rightside-up"), 4000);
@@ -601,7 +583,7 @@ void MainWindow::on_actionDetectOrientation_triggered() {
     } else if (orient == L_TEXT_ORIENT_DOWN) {
         statusBar()->showMessage(tr("Text is upside-down"), 4000);
         alt_rot = 180;
-    } else {  /* orient == L_TEXT_ORIENT_RIGHT */
+    } else { /* orient == L_TEXT_ORIENT_RIGHT */
         statusBar()->showMessage(tr("Text is rotated 90 deg cw"), 4000);
         alt_rot = 270;
     }
@@ -609,12 +591,12 @@ void MainWindow::on_actionDetectOrientation_triggered() {
 
     if (alt_rot) {
         QMessageBox::StandardButton reply;
-        reply = QMessageBox::question(this, tr("Fix orientation?"),
-                                      tr("Rotate image by %1 degrees?").
-                                      arg(alt_rot),
-                                      QMessageBox::Yes|QMessageBox::No);
+        reply = QMessageBox::question(
+            this, tr("Fix orientation?"),
+            tr("Rotate image by %1 degrees?").arg(alt_rot),
+            QMessageBox::Yes | QMessageBox::No);
         if (reply == QMessageBox::Yes) {
-            rotate(alt_rot/90);
+            rotate(alt_rot / 90);
         }
     }
 }
@@ -623,8 +605,7 @@ static QImage clipboardImage() {
     if (const QMimeData *mimeData = QGuiApplication::clipboard()->mimeData()) {
         if (mimeData->hasImage()) {
             const QImage image = qvariant_cast<QImage>(mimeData->imageData());
-            if (!image.isNull())
-                return image;
+            if (!image.isNull()) return image;
         }
     }
     return QImage();
@@ -636,16 +617,21 @@ void MainWindow::on_actionPaste_triggered() {
     if (newImage.isNull()) {
         statusBar()->showMessage(tr("No image in clipboard"));
     } else {
-        const QString message = tr("Obtained image from clipboard, %1x%2, Depth: %3")
-                                .arg(newImage.width()).arg(newImage.height()).arg(newImage.depth());
+        const QString message =
+            tr("Obtained image from clipboard, %1x%2, Depth: %3")
+                .arg(newImage.width())
+                .arg(newImage.height())
+                .arg(newImage.depth());
         statusBar()->showMessage(message);
-        PIX * clipboard = QImageToPIX(newImage);
+        PIX *clipboard = QImageToPIX(newImage);
         if (clipboard) {
             recentFile = "";
-            if(actionFixPasteFromPDF->isChecked()) {
-                l_float32 scalex = (l_float32)clipboard->h/(l_float32)clipboard->w;
-                l_float32 scaley = (l_float32)clipboard->w/(l_float32)clipboard->h;
-                PIX * fixedPix = pixScale(clipboard, scalex, scaley);
+            if (actionFixPasteFromPDF->isChecked()) {
+                l_float32 scalex =
+                    (l_float32)clipboard->h / (l_float32)clipboard->w;
+                l_float32 scaley =
+                    (l_float32)clipboard->w / (l_float32)clipboard->h;
+                PIX *fixedPix = pixScale(clipboard, scalex, scaley);
                 storeUndoPIX(fixedPix);
                 pixDestroy(&fixedPix);
             } else {
@@ -655,7 +641,7 @@ void MainWindow::on_actionPaste_triggered() {
             pixDestroy(&clipboard);
         }
     }
-#endif // !QT_NO_CLIPBOARD
+#endif  // !QT_NO_CLIPBOARD
 }
 
 void MainWindow::on_actionChange_resolution_triggered() {
@@ -687,7 +673,8 @@ void MainWindow::on_actionSetFormat_triggered() {
         items.next();
         comboDialog.comboBox->addItem(items.value(), items.key());
     }
-    comboDialog.comboBox->setCurrentIndex(comboDialog.comboBox->findData(format));
+    comboDialog.comboBox->setCurrentIndex(
+        comboDialog.comboBox->findData(format));
 
     if (comboDialog.exec() == QDialog::Accepted) {
         format = comboDialog.comboBox->currentData().toInt();
@@ -695,9 +682,10 @@ void MainWindow::on_actionSetFormat_triggered() {
         if (!recentFile.isEmpty()) {
             QString path = QFileInfo(recentFile).canonicalPath();
             QString basename = QFileInfo(recentFile).completeBaseName();
-            const char * extention = getFormatExtension(format);
-            recentFile = QDir::cleanPath(path + QDir::separator() +
-                                         QString("%1.%2").arg(basename, extention));
+            const char *extention = getFormatExtension(format);
+            recentFile =
+                QDir::cleanPath(path + QDir::separator() +
+                                QString("%1.%2").arg(basename, extention));
             updateTitle();
         }
     }
@@ -710,14 +698,16 @@ void MainWindow::on_actionBinarizeUnIl_triggered() {
     QApplication::setOverrideCursor(Qt::WaitCursor);
     PIX *pixc, *pixg, *pixsg, *pixd;
     if (pixs->d != 32) {
-        this->statusBar()->showMessage(tr("Function need input image with 32 bit depth."));
+        this->statusBar()->showMessage(
+            tr("Function need input image with 32 bit depth."));
         QApplication::restoreOverrideCursor();
         return;
     }
     /* Convert the RGB image to grayscale. */
     pixsg = pixConvertRGBToLuminance(pixs);
     if (!pixsg) {
-        this->statusBar()->showMessage(tr("Convert the RGB image to grayscale failed!"));
+        this->statusBar()->showMessage(
+            tr("Convert the RGB image to grayscale failed!"));
         QApplication::restoreOverrideCursor();
         return;
     }
@@ -750,11 +740,12 @@ void MainWindow::on_actionBinarizeUnIl_triggered() {
 
 /*
  * Dewarp image
- * todo: test: https://github.com/renard314/leptonica-samples/blob/master/src/Examples.cpp
+ * todo: test:
+ * https://github.com/renard314/leptonica-samples/blob/master/src/Examples.cpp
  */
 void MainWindow::on_actionDewarp_triggered() {
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    Pix* dewarped;
+    Pix *dewarped;
 #if (LIBLEPT_MAJOR_VERSION >= 1) && (LIBLEPT_MINOR_VERSION >= 73)
     dewarpSinglePage(pixs, 1, 100, 1, 1, &dewarped, NULL, 0);
 #else
@@ -772,8 +763,8 @@ void MainWindow::on_actionDewarp_triggered() {
  */
 void MainWindow::on_actionDeskew_triggered() {
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    #define DESKEW_REDUCTION  4      /* 1, 2 or 4 */
-    Pix* deskewd = pixDeskew(pixs, DESKEW_REDUCTION);
+#define DESKEW_REDUCTION 4 /* 1, 2 or 4 */
+    Pix *deskewd = pixDeskew(pixs, DESKEW_REDUCTION);
     storeUndoPIX(deskewd);
     pixDestroy(&deskewd);
     this->statusBar()->showMessage(tr("Finished..."), 2000);
@@ -790,7 +781,7 @@ void MainWindow::on_actionRemovelines_triggered() {
         this->statusBar()->showMessage(tr("Removing lines failed..."), 2000);
         return;
     }
-    PIX * withoutLines = pixaGetPix(pixa, pixaGetCount(pixa) - 1, L_CLONE);
+    PIX *withoutLines = pixaGetPix(pixa, pixaGetCount(pixa) - 1, L_CLONE);
     storeUndoPIX(withoutLines);
     pixDestroy(&withoutLines);
     pixaDestroy(&pixa);
@@ -803,7 +794,8 @@ void MainWindow::on_actionRemovelines_triggered() {
 void MainWindow::on_actionConvert2GS_triggered() {
     PIX *processedPix = pixConvertTo8(pixs, 0);
     if (!processedPix) {
-        this->statusBar()->showMessage(tr("Coud not convert to Grayccale..."), 2000);
+        this->statusBar()->showMessage(tr("Coud not convert to Grayccale..."),
+                                       2000);
         return;
     }
     storeUndoPIX(processedPix);
@@ -817,8 +809,8 @@ void MainWindow::on_actionConvert2GS_triggered() {
 void MainWindow::on_actionCleanDarkBackground_triggered() {
     CDBDialog cdb_dialog(this);
     cdb_dialog.setValues(blackval, whiteval, thresh);
-    connect(&cdb_dialog, SIGNAL(cdbParamsChanged(int, int, int)),
-            this, SLOT(slotCleanDarkBackground(int, int , int)));
+    connect(&cdb_dialog, SIGNAL(cdbParamsChanged(int, int, int)), this,
+            SLOT(slotCleanDarkBackground(int, int, int)));
 
     if (cdb_dialog.exec() == QDialog::Accepted) {
         blackval = cdb_dialog.blackVal->value();
@@ -829,12 +821,13 @@ void MainWindow::on_actionCleanDarkBackground_triggered() {
         pixDestroy(&cleaned);
         this->statusBar()->showMessage(tr("Finished..."), 2000);
     } else {
-        setPixToScene(); // reverts to unmodified pixs, as scene shows modified image
+        setPixToScene();  // reverts to unmodified pixs, as scene shows modified
+                          // image
     }
 }
 
 void MainWindow::slotCleanDarkBackground(int blackval, int whiteval,
-        int thresh) {
+                                         int thresh) {
     QApplication::setOverrideCursor(Qt::WaitCursor);
     PIX *pixt;
     pixt = cleanDarkBackground(blackval, whiteval, thresh);
@@ -842,14 +835,13 @@ void MainWindow::slotCleanDarkBackground(int blackval, int whiteval,
     QApplication::restoreOverrideCursor();
 }
 
-
 /*
  * Clean dark background of image
  * based on leptonica adaptmap_dark.c
  */
-PIX* MainWindow::cleanDarkBackground(int blackval, int whiteval, int thresh) {
+PIX *MainWindow::cleanDarkBackground(int blackval, int whiteval, int thresh) {
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    PIX     *pix1, *pix2;
+    PIX *pix1, *pix2;
     pix1 = pixBackgroundNorm(pixs, NULL, NULL, 10, 15, thresh, 25, 200, 2, 1);
     pix2 = pixGammaTRC(NULL, pix1, 1.0, blackval, whiteval);
     setPixToScene(pix2);  // live display of modified values
@@ -872,7 +864,8 @@ void MainWindow::readSettings(bool init) {
         restoreState(settings.value("state").toByteArray());
         if (!recentFile.isEmpty())
             setZoom(settings.value("lastZoom").toFloat());
-        actionFixPasteFromPDF->setChecked(settings.value("fixPasteFromPDF").toBool());
+        actionFixPasteFromPDF->setChecked(
+            settings.value("fixPasteFromPDF").toBool());
         settings.endGroup();
     }
 }
@@ -892,7 +885,7 @@ void MainWindow::writeSettings() {
     settings.endGroup();
 }
 
-void MainWindow::closeEvent(QCloseEvent* event) {
+void MainWindow::closeEvent(QCloseEvent *event) {
     writeSettings();
     event->accept();
 }

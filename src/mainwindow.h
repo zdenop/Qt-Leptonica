@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <leptonica/allheaders.h>
+
 #include <QDebug>
 #include <QDragEnterEvent>
 #include <QFileDialog>
@@ -10,9 +12,8 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QSettings>
-
 #include <stack>
-#include <leptonica/allheaders.h>
+
 #include "ui_mainwindow.h"
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
@@ -24,25 +25,26 @@
 class MainWindow : public QMainWindow, public Ui::MainWindow {
     Q_OBJECT
 
-  public:
-    explicit MainWindow(QWidget *parent = 0, const QString &fileName=QString());
+   public:
+    explicit MainWindow(QWidget *parent = 0,
+                        const QString &fileName = QString());
     ~MainWindow();
     static const char *qString2Char(QString string);
 
-  public slots:
+   public slots:
     QImage PixToQImage(PIX *pixs);
-    PIX* QImageToPIX(const QImage& qImage);
+    PIX *QImageToPIX(const QImage &qImage);
 
-  protected:
+   protected:
     Scene *imageScene;
     bool modified;
-    void dragEnterEvent(QDragEnterEvent* event);
-    void dropEvent(QDropEvent* event);
-    void closeEvent(QCloseEvent* event);
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dropEvent(QDropEvent *event);
+    void closeEvent(QCloseEvent *event);
 
-  private:
+   private:
     QFileSystemWatcher *fileWatcher;
-    void setFileWatcher(const QString & fileName);
+    void setFileWatcher(const QString &fileName);
     void readSettings(bool init);
     void writeSettings();
     void updateTitle();
@@ -50,14 +52,14 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
     void addToResentFiles(QString filename);
     void updateRecentFileActions();
     enum { MaxRecentFiles = 8 };
-    QAction* fSeparatorAct;
-    QAction* recentFileActs[MaxRecentFiles];
+    QAction *fSeparatorAct;
+    QAction *recentFileActs[MaxRecentFiles];
     QString recentFile;
     PIX *pixs;
     std::stack<PIX *> undoPixStack;
     std::stack<PIX *> redoPixStack;
 
-    QLabel* _zoom;
+    QLabel *_zoom;
     void zoomOriginal();
     void zoomIn();
     void zoomOut();
@@ -74,7 +76,7 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
     void createUndoStackAndActions();
     void cleanUndoStack();
 
-  private Q_SLOTS:
+   private Q_SLOTS:
     void on_actionOpenFile_triggered();
     void on_actionReloadFile_triggered();
     void on_actionSave_triggered();
@@ -105,16 +107,16 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
     void on_actionRemovelines_triggered();
     void on_actionConvert2GS_triggered();
 
-  private slots:
+   private slots:
     void pix_undo();
     void pix_redo();
-    void storeUndoPIX(PIX * newPix);
+    void storeUndoPIX(PIX *newPix);
     void imageInfo();
     void openRecentFile();
-    void openImage(const QString& imageFileName);
-    void slotfileChanged(const QString& fileName);
+    void openImage(const QString &imageFileName);
+    void slotfileChanged(const QString &fileName);
     void about();
     void aboutQt();
 };
 
-#endif // MAINWINDOW_H
+#endif  // MAINWINDOW_H
