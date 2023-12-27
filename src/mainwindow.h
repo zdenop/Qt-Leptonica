@@ -72,6 +72,7 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
     PIX *cleanDarkBackground(int blackval, int whiteval, int thresh);
     int blackval, whiteval, thresh;
     void createUndoStackAndActions();
+    void cleanUndoStack();
 
   private Q_SLOTS:
     void on_actionOpenFile_triggered();
@@ -107,6 +108,7 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
   private slots:
     void pix_undo();
     void pix_redo();
+    void storeUndoPIX(PIX * newPix);
     void imageInfo();
     void openRecentFile();
     void openImage(const QString& imageFileName);

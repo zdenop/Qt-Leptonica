@@ -17,12 +17,13 @@ void MainWindow::pix_undo() {
     PIX *originalPix = pixClone(pixs);
     redoPixStack.push(originalPix);
     actionRedo->setDisabled(false);
-
     pixDestroy(&pixs);
     pixs = undoPixStack.top();
     undoPixStack.pop();
     setPixToScene();
     if (undoPixStack.empty()) actionUndo->setDisabled(true);
+    modified = true;
+    updateTitle();
 }
 
 /*
@@ -39,4 +40,33 @@ void MainWindow::pix_redo() {
     redoPixStack.pop();
     setPixToScene();
     if (redoPixStack.empty()) actionRedo->setDisabled(true);
+    modified = true;
+    updateTitle();
+}
+
+void MainWindow::storeUndoPIX(PIX * newPix) {
+    if (pixs) {
+        PIX *originalPix = pixClone(pixs);
+        undoPixStack.push(originalPix);
+        pixDestroy(&pixs);
+    }
+    if (!actionUndo->isEnabled()) actionUndo->setDisabled(false);
+    pixs = pixCopy(NULL, newPix);
+    setPixToScene();
+    modified = true;
+    updateTitle();
+}
+
+
+void MainWindow::cleanUndoStack() {
+    while (!undoPixStack.empty()) {
+        pixDestroy(&undoPixStack.top());
+        undoPixStack.pop();
+    }
+    actionUndo->setDisabled(true);
+    while (!redoPixStack.empty()) {
+        pixDestroy(&redoPixStack.top());
+        redoPixStack.pop();
+    }
+    actionRedo->setDisabled(true);
 }

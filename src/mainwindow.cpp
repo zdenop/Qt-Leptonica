@@ -90,17 +90,8 @@ MainWindow::~MainWindow() {
     delete imageScene;
     pixDestroy(&pixs);
     delete _zoom;
-
-    while (!undoPixStack.empty()) {
-        delete undoPixStack.top();
-        undoPixStack.pop();
-    }
-    while (!redoPixStack.empty()) {
-        delete redoPixStack.top();
-        redoPixStack.pop();
-    }
+    cleanUndoStack();
 }
-
 
 
 void MainWindow::updateRecentFileActions() {
@@ -305,6 +296,7 @@ void MainWindow::openImage(const QString& imageFileName) {
         addToResentFiles(imageFileName);
         modified = false;
         updateTitle();
+        cleanUndoStack();
     }
 }
 
