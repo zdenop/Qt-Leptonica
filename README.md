@@ -1,11 +1,11 @@
-Qt Leptonica is a simple fun C++ project to learn Qt5 and to test Leptonica library. Contribution and code improvement is welcommed.
+Qt Leptonica is a simple fun C++ project to learn Qt5 and to test Leptonica library. Contribution and code improvements are welcomed.
 
 
 # Install
 
 ## Requirements
 
-* [cmake]((https://cmake.org/) (qmake support abandoned)
+* [cmake](https://cmake.org/) (qmake support abandoned)
 * [Leptonica](https://github.com/DanBloomberg/leptonica)
 * [Qt5](https://www.qt.io/download-open-source) (Qt6 not tested, Qt4 no supported)
 
@@ -13,7 +13,7 @@ Qt Leptonica is a simple fun C++ project to learn Qt5 and to test Leptonica libr
 
 ### Install Leptonica
 
-Follow instruction on [Leptonica wiki](https://github.com/DanBloomberg/leptonica/wiki#windows)
+Follow instructions on [Leptonica wiki](https://github.com/DanBloomberg/leptonica/wiki#windows)
 
 ### Build Qt Leptonica
 
