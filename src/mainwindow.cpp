@@ -436,7 +436,7 @@ void MainWindow::setFileWatcher(const QString & fileName) {
 }
 
 /*
- * reload if file was changed
+ * reload when file was changed
  */
 void MainWindow::slotfileChanged(const QString &fileName) {
     if (!modified) {
@@ -527,13 +527,9 @@ void MainWindow::imageInfo() {
  * Rotate pixs by number of 90 degree cw rotations
  */
 void MainWindow::rotate(int quads) {
-    PIX *pixd;
-    pixd = pixRotateOrth(pixs, quads);
-    pixs = pixCopy(NULL, pixd);
-    setPixToScene();
-    pixDestroy(&pixd);
-    modified = true;
-    updateTitle();
+    PIX *rotated = pixRotateOrth(pixs, quads);
+    storeUndoPIX(rotated);
+    pixDestroy(&rotated);
 }
 
 /*
@@ -547,13 +543,10 @@ void MainWindow::crop(QRectF rect) {
     l_int32 format = pixGetInputFormat(pixs);
     BOX *crop_box = boxCreate(x, y, w, h);
     PIX *cropped = pixClipRectangle(pixs, crop_box, NULL);
-    pixs = pixCopy(NULL, cropped);
+    storeUndoPIX(cropped);
     pixSetInputFormat(pixs, format);
-    setPixToScene();
     pixDestroy(&cropped);
     boxDestroy(&crop_box);
-    modified = true;
-    updateTitle();
 }
 
 /*
@@ -648,20 +641,17 @@ void MainWindow::on_actionPaste_triggered() {
         statusBar()->showMessage(message);
         PIX * clipboard = QImageToPIX(newImage);
         if (clipboard) {
+            recentFile = "";
             if(actionFixPasteFromPDF->isChecked()) {
                 l_float32 scalex = (l_float32)clipboard->h/(l_float32)clipboard->w;
                 l_float32 scaley = (l_float32)clipboard->w/(l_float32)clipboard->h;
-                PIX * pixc = pixScale( clipboard, scalex, scaley);
-                pixs = pixCopy(NULL, pixc);
-                pixDestroy(&pixc);
+                PIX * fixedPix = pixScale(clipboard, scalex, scaley);
+                storeUndoPIX(fixedPix);
+                pixDestroy(&fixedPix);
             } else {
-                pixs = pixCopy(NULL, clipboard);
+                storeUndoPIX(clipboard);
             }
-            setPixToScene();
-            modified = true;
             setWindowFilePath(QString());
-            recentFile = "";
-            updateTitle();
             pixDestroy(&clipboard);
         }
     }
@@ -719,55 +709,42 @@ void MainWindow::on_actionSetFormat_triggered() {
 void MainWindow::on_actionBinarizeUnIl_triggered() {
     QApplication::setOverrideCursor(Qt::WaitCursor);
     PIX *pixc, *pixg, *pixsg, *pixd;
-
-    /* Convert the RGB image to grayscale. */
-    this->statusBar()->showMessage(tr("Convert the RGB image to grayscale."));
-    if (pixs->d == 32) {
-        pixsg = pixConvertRGBToLuminance(pixs);
-        if (!pixsg) {
-            this->statusBar()->showMessage(tr("Convert the RGB image to grayscale failed!"));
-            QApplication::restoreOverrideCursor();
-            return;
-        }
-        setPixToScene(pixsg);
-    } else {
+    if (pixs->d != 32) {
         this->statusBar()->showMessage(tr("Function need input image with 32 bit depth."));
         QApplication::restoreOverrideCursor();
         return;
     }
-
+    /* Convert the RGB image to grayscale. */
+    pixsg = pixConvertRGBToLuminance(pixs);
+    if (!pixsg) {
+        this->statusBar()->showMessage(tr("Convert the RGB image to grayscale failed!"));
+        QApplication::restoreOverrideCursor();
+        return;
+    }
     /* Remove the text in the fg. */
-    this->statusBar()->showMessage(tr("Remove the text in the fg."));
     pixc = pixCloseGray(pixsg, 25, 25);
-    setPixToScene(pixc);
 
     /* Smooth the bg with a convolution. */
     // pixsm = pixBlockconv(pixc, 15, 15);
     // pixDestroy(&pixsm);
 
     /* Normalize for uneven illumination on gray image. */
-    this->statusBar()->showMessage(tr("Normalize for uneven illumination on gray image."));
     pixBackgroundNormGrayArrayMorph(pixsg, NULL, 4, 5, 200, &pixg);
     pixc = pixApplyInvBackgroundGrayMap(pixsg, pixg, 4, 4);
     pixDestroy(&pixsg);
     pixDestroy(&pixg);
-    setPixToScene(pixc);
 
     /* Increase the dynamic range. */
     // make dark gray *black* and light gray *white*
-    this->statusBar()->showMessage(tr("Increase the dynamic range."));
     pixd = pixGammaTRC(NULL, pixc, 1.0, 50, 220);
-    setPixToScene(pixd);
+    pixDestroy(&pixc);
 
     /* Threshold to 1 bpp. */
-    this->statusBar()->showMessage(tr("Threshold to 1 bpp."));
-    pixs = pixThresholdToBinary(pixd, 120);
+    PIX *binarized = pixThresholdToBinary(pixd, 120);
+    storeUndoPIX(binarized);
+    pixDestroy(&binarized);
     pixDestroy(&pixd);
-    setPixToScene();
-
     this->statusBar()->showMessage(tr("Finished..."), 2000);
-    modified = true;
-    updateTitle();
     QApplication::restoreOverrideCursor();
 }
 
@@ -777,19 +754,15 @@ void MainWindow::on_actionBinarizeUnIl_triggered() {
  */
 void MainWindow::on_actionDewarp_triggered() {
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    Pix* pixd;
+    Pix* dewarped;
 #if (LIBLEPT_MAJOR_VERSION >= 1) && (LIBLEPT_MINOR_VERSION >= 73)
-    dewarpSinglePage(pixs, 1, 100, 1, 1, &pixd, NULL, 0);
+    dewarpSinglePage(pixs, 1, 100, 1, 1, &dewarped, NULL, 0);
 #else
-    dewarpSinglePage(pixs, 1, 100, 1, &pixd, NULL, 0);
+    dewarpSinglePage(pixs, 1, 100, 1, &dewarped, NULL, 0);
 #endif
-    pixs = pixCopy(NULL, pixd);
-    pixDestroy(&pixd);
-    setPixToScene();
-
+    storeUndoPIX(dewarped);
+    pixDestroy(&dewarped);
     this->statusBar()->showMessage(tr("Finished..."), 2000);
-    modified = true;
-    updateTitle();
     QApplication::restoreOverrideCursor();
 }
 
@@ -799,16 +772,11 @@ void MainWindow::on_actionDewarp_triggered() {
  */
 void MainWindow::on_actionDeskew_triggered() {
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    Pix* pixd;
-#define DESKEW_REDUCTION  4      /* 1, 2 or 4 */
-    pixd = pixDeskew(pixs, DESKEW_REDUCTION);
-    pixs = pixCopy(NULL, pixd);
-    pixDestroy(&pixd);
-    setPixToScene();
-
+    #define DESKEW_REDUCTION  4      /* 1, 2 or 4 */
+    Pix* deskewd = pixDeskew(pixs, DESKEW_REDUCTION);
+    storeUndoPIX(deskewd);
+    pixDestroy(&deskewd);
     this->statusBar()->showMessage(tr("Finished..."), 2000);
-    modified = true;
-    updateTitle();
     QApplication::restoreOverrideCursor();
 }
 
@@ -822,11 +790,10 @@ void MainWindow::on_actionRemovelines_triggered() {
         this->statusBar()->showMessage(tr("Removing lines failed..."), 2000);
         return;
     }
-    int final = pixaGetCount(pixa) - 1;
-    // pixs = pixaDisplayTiledInRows(pixa, 32, 1500, 1.0, 0, 30, 2);
-    pixs = pixaGetPix(pixa, final, L_CLONE);
+    PIX * withoutLines = pixaGetPix(pixa, pixaGetCount(pixa) - 1, L_CLONE);
+    storeUndoPIX(withoutLines);
+    pixDestroy(&withoutLines);
     pixaDestroy(&pixa);
-    setPixToScene();
     this->statusBar()->showMessage(tr("Finished..."), 2000);
 }
 
@@ -834,18 +801,13 @@ void MainWindow::on_actionRemovelines_triggered() {
  * Convert image to grayscale
  */
 void MainWindow::on_actionConvert2GS_triggered() {
-    PIX *originalPix = pixClone(pixs);
     PIX *processedPix = pixConvertTo8(pixs, 0);
     if (!processedPix) {
-        pixDestroy(&originalPix);
         this->statusBar()->showMessage(tr("Coud not convert to Grayccale..."), 2000);
+        return;
     }
-    undoPixStack.push(originalPix);
-    actionUndo->setDisabled(false);
-    pixDestroy(&pixs);
-    pixs = pixCopy(NULL, processedPix);
+    storeUndoPIX(processedPix);
     pixDestroy(&processedPix);
-    setPixToScene();
     this->statusBar()->showMessage(tr("Finished..."), 2000);
 }
 
@@ -853,7 +815,6 @@ void MainWindow::on_actionConvert2GS_triggered() {
  * Clean dark background action handling
  */
 void MainWindow::on_actionCleanDarkBackground_triggered() {
-    PIX *pixt;
     CDBDialog cdb_dialog(this);
     cdb_dialog.setValues(blackval, whiteval, thresh);
     connect(&cdb_dialog, SIGNAL(cdbParamsChanged(int, int, int)),
@@ -863,15 +824,12 @@ void MainWindow::on_actionCleanDarkBackground_triggered() {
         blackval = cdb_dialog.blackVal->value();
         whiteval = cdb_dialog.whiteVal->value();
         thresh = cdb_dialog.treshold->value();
-        pixt = cleanDarkBackground(blackval, whiteval, thresh);
-        pixs = pixCopy(NULL, pixt);
-        pixDestroy(&pixt);
-        setPixToScene();
-        modified = true;
-        updateTitle();
+        PIX *cleaned = cleanDarkBackground(blackval, whiteval, thresh);
+        storeUndoPIX(cleaned);
+        pixDestroy(&cleaned);
         this->statusBar()->showMessage(tr("Finished..."), 2000);
     } else {
-        setPixToScene();
+        setPixToScene(); // reverts to unmodified pixs, as scene shows modified image
     }
 }
 
@@ -884,6 +842,7 @@ void MainWindow::slotCleanDarkBackground(int blackval, int whiteval,
     QApplication::restoreOverrideCursor();
 }
 
+
 /*
  * Clean dark background of image
  * based on leptonica adaptmap_dark.c
@@ -893,7 +852,7 @@ PIX* MainWindow::cleanDarkBackground(int blackval, int whiteval, int thresh) {
     PIX     *pix1, *pix2;
     pix1 = pixBackgroundNorm(pixs, NULL, NULL, 10, 15, thresh, 25, 200, 2, 1);
     pix2 = pixGammaTRC(NULL, pix1, 1.0, blackval, whiteval);
-    setPixToScene(pix2);
+    setPixToScene(pix2);  // live display of modified values
     pixDestroy(&pix1);
     QApplication::restoreOverrideCursor();
     return pix2;
