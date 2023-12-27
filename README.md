@@ -1,5 +1,7 @@
+# About
 Qt Leptonica is a simple fun C++ project to learn Qt5 and to test Leptonica library. Contribution and code improvements are welcomed.
 
+![screenshot](test/Qt-leptonica.png)
 
 # Install
 
