@@ -87,6 +87,7 @@ MainWindow::MainWindow(QWidget *parent, const QString &fileName)
     thresh = 60;
 
     createUndoStackAndActions();
+    dockWidget->setVisible(actionShowLogger->isChecked());
 }
 
 MainWindow::~MainWindow() {
@@ -865,6 +866,8 @@ void MainWindow::readSettings(bool init) {
             setZoom(settings.value("lastZoom").toFloat());
         actionFixPasteFromPDF->setChecked(
             settings.value("fixPasteFromPDF").toBool());
+        actionShowLogger->setChecked(
+            settings.value("loggerVisible").toBool());
         settings.endGroup();
     }
 }
@@ -881,6 +884,7 @@ void MainWindow::writeSettings() {
     settings.setValue("state", saveState());
     settings.setValue("lastZoom", gViewResult->transform().m11());
     settings.setValue("fixPasteFromPDF", actionFixPasteFromPDF->isChecked());
+    settings.setValue("loggerVisible", actionShowLogger->isChecked());
     settings.endGroup();
 }
 
