@@ -90,6 +90,7 @@ MainWindow::MainWindow(QWidget *parent, const QString &fileName)
     dockWidget->setVisible(actionShowLogger->isChecked());
     m_psMainWindow = this;
     leptSetStderrHandler(myErrorHandler);
+    qInstallMessageHandler(customMessageHandler);
 }
 
 MainWindow::~MainWindow() {
@@ -99,6 +100,7 @@ MainWindow::~MainWindow() {
     delete _zoom;
     cleanUndoStack();
 }
+
 
 void MainWindow::updateRecentFileActions() {
     QSettings settings(QSettings::IniFormat, QSettings::UserScope,

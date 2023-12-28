@@ -77,6 +77,7 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
     int blackval, whiteval, thresh;
     void createUndoStackAndActions();
     void cleanUndoStack();
+    static void customMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 
    private Q_SLOTS:
     void on_actionOpenFile_triggered();
