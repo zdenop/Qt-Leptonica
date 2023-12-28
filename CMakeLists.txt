@@ -35,6 +35,7 @@ set(project_SOURCES
     src/scene.cpp
     src/areaitem.cpp
     src/qleptonica.cpp
+    src/logger.cpp
     dialogs/dpidialog.cpp
     dialogs/cdbdialog.cpp
     dialogs/combodialog.cpp)

@@ -87,6 +87,10 @@ MainWindow::MainWindow(QWidget *parent, const QString &fileName)
     thresh = 60;
 
     createUndoStackAndActions();
+    dockWidget->setVisible(actionShowLogger->isChecked());
+    m_psMainWindow = this;
+    leptSetStderrHandler(myErrorHandler);
+    qInstallMessageHandler(customMessageHandler);
 }
 
 MainWindow::~MainWindow() {
@@ -125,103 +129,6 @@ void MainWindow::openRecentFile() {
         openImage(action->data().toString());
         on_actionFit_to_window_triggered();
     }
-}
-
-/*
- * Convert Leptonica PIX to QT QImage
- */
-QImage MainWindow::PixToQImage(PIX *pixs) {
-    // TODO: first check if pixs is PIX ;-) inputFormat(pix)
-
-    // create color tables
-    QVector<QRgb> _bwCT;
-    _bwCT.append(qRgb(255, 255, 255));
-    _bwCT.append(qRgb(0, 0, 0));
-
-    QVector<QRgb> _grayscaleCT(256);
-    for (int i = 0; i < 256; i++) {
-        _grayscaleCT[i] = qRgb(i, i, i);
-    }
-
-    l_uint32 *s_data = pixGetData(pixEndianByteSwapNew(pixs));
-
-    int width = pixGetWidth(pixs);
-    int height = pixGetHeight(pixs);
-    int depth = pixGetDepth(pixs);
-    int bytesPerLine = pixGetWpl(pixs) * 4;
-
-    QImage::Format format;
-    if (depth == 1)
-        format = QImage::Format_Mono;
-    else if (depth == 8)
-        format = QImage::Format_Indexed8;
-    else
-        format = QImage::Format_RGB32;
-
-    QImage result((uchar *)s_data, width, height, bytesPerLine, format);
-
-    // Set resolution
-    l_int32 xres, yres;
-    pixGetResolution(pixs, &xres, &yres);
-    const qreal toDPM = 1.0 / 0.0254;
-    result.setDotsPerMeterX(xres * toDPM);
-    result.setDotsPerMeterY(yres * toDPM);
-
-    switch (depth) {
-        case 1:
-            result.setColorTable(_bwCT);
-            break;
-        case 8:
-            result.setColorTable(_grayscaleCT);
-            break;
-        default:
-            result.setColorTable(_grayscaleCT);
-    }
-
-    if (result.isNull()) {
-        static QImage none(0, 0, QImage::Format_Invalid);
-        return none;
-    }
-
-    // QRgb *line = (QRgb*)(result.scanLine(0));
-    // QColor color = QColor::fromRgb(result.pixel(0,0));
-    return result.rgbSwapped();
-}
-
-/*
- * Convert QT QImage to Leptonica PIX
- */
-PIX *MainWindow::QImageToPIX(const QImage &qImage) {
-    PIX *pixs;
-
-    QImage myImage = qImage.rgbSwapped();
-    int width = myImage.width();
-    int height = myImage.height();
-    int depth = myImage.depth();
-    int wpl = myImage.bytesPerLine() / 4;
-
-    pixs = pixCreate(width, height, depth);
-    pixSetWpl(pixs, wpl);
-    pixSetColormap(pixs, NULL);
-    l_uint32 *datas = pixs->data;
-
-    for (int y = 0; y < height; y++) {
-        l_uint32 *lines = datas + y * wpl;
-        QByteArray a((const char *)myImage.scanLine(y), myImage.bytesPerLine());
-        for (int j = 0; j < a.size(); j++) {
-            *((l_uint8 *)lines + j) = a[j];
-        }
-    }
-
-    const qreal toDPM = 1.0 / 0.0254;
-    int resolutionX = myImage.dotsPerMeterX() / toDPM;
-    int resolutionY = myImage.dotsPerMeterY() / toDPM;
-
-    if (resolutionX < 300) resolutionX = 300;
-    if (resolutionY < 300) resolutionY = 300;
-    pixSetResolution(pixs, resolutionX, resolutionY);
-
-    return pixEndianByteSwapNew(pixs);
 }
 
 /*
@@ -288,8 +195,8 @@ void MainWindow::openImage(const QString &imageFileName) {
     if (!imageFileName.isEmpty()) {
         pixs = pixRead(qString2Char(imageFileName));
         if (!pixs) {
-            this->statusBar()->showMessage(
-                tr("Cannot open input file: %1").arg(imageFileName), 4000);
+            textEdit->append(
+                tr("Cannot open input file: %1").arg(imageFileName));
             return;
         }
     }
@@ -349,7 +256,7 @@ void MainWindow::on_actionOpenFile_triggered() {
 
 void MainWindow::on_actionReloadFile_triggered() {
     if (modified)  // reload only if file was modified...
-        statusBar()->showMessage(tr("Reloading file...."));
+        textEdit->append(tr("Reloading file...."));
     openImage(recentFile);
     statusBar()->showMessage(tr("File reloaded."), 2000);
 }
@@ -363,10 +270,10 @@ void MainWindow::on_actionSave_triggered() {
     }
     ret = pixWrite(qString2Char(recentFile), pixs, format);
     if (ret) {
-        statusBar()->showMessage(
-            tr("Saving failed with error code %1").arg(ret), 2000);
+        textEdit->append(
+            tr("Saving failed with error code: %1").arg(ret));
     } else {
-        statusBar()->showMessage(tr("File saved"), 2000);
+        statusBar()->showMessage(tr("File saved."), 2000);
         modified = false;
         updateTitle();
     }
@@ -387,10 +294,10 @@ void MainWindow::on_actionSaveAs_triggered() {
         ret = pixWrite(cFilename, pixs, format);
     }
     if (ret) {
-        statusBar()->showMessage(
-            tr("Saving failed with error code %1").arg(ret), 2000);
+        textEdit->append(
+            tr("Saving failed with error code: %1").arg(ret));
     } else {
-        statusBar()->showMessage(tr("File saved as %1").arg(fileName), 2000);
+        statusBar()->showMessage(tr("File saved as '%1'.").arg(fileName), 2000);
         addToResentFiles(fileName);
         modified = false;
         updateTitle();
@@ -568,22 +475,21 @@ void MainWindow::on_actionDetectOrientation_triggered() {
     if ((leftconf1 < -1) && abs(leftconf1) > abs(upconf1)) alt_rot = 270;
 
     if (orient == L_TEXT_ORIENT_UNKNOWN) {
-        statusBar()->showMessage(
+        textEdit->append(
             tr("Confidence is low; no determination is made. "
                "But maybe there is %1 deg rotation.")
-                .arg(alt_rot),
-            4000);
+                .arg(alt_rot));
     } else if (orient == L_TEXT_ORIENT_UP) {
-        statusBar()->showMessage(tr("Text is rightside-up"), 4000);
+        textEdit->append(tr("Text is rightside-up"));
         alt_rot = 0;
     } else if (orient == L_TEXT_ORIENT_LEFT) {
-        statusBar()->showMessage(tr("Text is rotated 90 deg ccw"), 4000);
+        textEdit->append(tr("Text is rotated 90 deg ccw"));
         alt_rot = 90;
     } else if (orient == L_TEXT_ORIENT_DOWN) {
-        statusBar()->showMessage(tr("Text is upside-down"), 4000);
+        textEdit->append(tr("Text is upside-down"));
         alt_rot = 180;
     } else { /* orient == L_TEXT_ORIENT_RIGHT */
-        statusBar()->showMessage(tr("Text is rotated 90 deg cw"), 4000);
+        textEdit->append(tr("Text is rotated 90 deg cw"));
         alt_rot = 270;
     }
     pixDestroy(&fpixs);
@@ -621,7 +527,7 @@ void MainWindow::on_actionPaste_triggered() {
                 .arg(newImage.width())
                 .arg(newImage.height())
                 .arg(newImage.depth());
-        statusBar()->showMessage(message);
+        textEdit->append(message);
         PIX *clipboard = QImageToPIX(newImage);
         if (clipboard) {
             recentFile = "";
@@ -697,16 +603,14 @@ void MainWindow::on_actionBinarizeUnIl_triggered() {
     QApplication::setOverrideCursor(Qt::WaitCursor);
     PIX *pixc, *pixg, *pixsg, *pixd;
     if (pixs->d != 32) {
-        this->statusBar()->showMessage(
-            tr("Function need input image with 32 bit depth."));
+        textEdit->append(tr("Function need input image with 32 bit depth."));
         QApplication::restoreOverrideCursor();
         return;
     }
     /* Convert the RGB image to grayscale. */
     pixsg = pixConvertRGBToLuminance(pixs);
     if (!pixsg) {
-        this->statusBar()->showMessage(
-            tr("Convert the RGB image to grayscale failed!"));
+        textEdit->append(tr("Convert the RGB image to grayscale failed!"));
         QApplication::restoreOverrideCursor();
         return;
     }
@@ -733,7 +637,7 @@ void MainWindow::on_actionBinarizeUnIl_triggered() {
     storeUndoPIX(binarized);
     pixDestroy(&binarized);
     pixDestroy(&pixd);
-    this->statusBar()->showMessage(tr("Finished..."), 2000);
+    this->statusBar()->showMessage(tr("Finished!"), 2000);
     QApplication::restoreOverrideCursor();
 }
 
@@ -752,7 +656,7 @@ void MainWindow::on_actionDewarp_triggered() {
 #endif
     storeUndoPIX(dewarped);
     pixDestroy(&dewarped);
-    this->statusBar()->showMessage(tr("Finished..."), 2000);
+    this->statusBar()->showMessage(tr("Finished!"), 2000);
     QApplication::restoreOverrideCursor();
 }
 
@@ -766,7 +670,7 @@ void MainWindow::on_actionDeskew_triggered() {
     Pix *deskewd = pixDeskew(pixs, DESKEW_REDUCTION);
     storeUndoPIX(deskewd);
     pixDestroy(&deskewd);
-    this->statusBar()->showMessage(tr("Finished..."), 2000);
+    this->statusBar()->showMessage(tr("Finished!"), 2000);
     QApplication::restoreOverrideCursor();
 }
 
@@ -784,7 +688,7 @@ void MainWindow::on_actionRemovelines_triggered() {
     storeUndoPIX(withoutLines);
     pixDestroy(&withoutLines);
     pixaDestroy(&pixa);
-    this->statusBar()->showMessage(tr("Finished..."), 2000);
+    this->statusBar()->showMessage(tr("Finished!"), 2000);
 }
 
 /*
@@ -799,7 +703,7 @@ void MainWindow::on_actionConvert2GS_triggered() {
     }
     storeUndoPIX(processedPix);
     pixDestroy(&processedPix);
-    this->statusBar()->showMessage(tr("Finished..."), 2000);
+    this->statusBar()->showMessage(tr("Finished!"), 2000);
 }
 
 /*
@@ -818,7 +722,7 @@ void MainWindow::on_actionCleanDarkBackground_triggered() {
         PIX *cleaned = cleanDarkBackground(blackval, whiteval, thresh);
         storeUndoPIX(cleaned);
         pixDestroy(&cleaned);
-        this->statusBar()->showMessage(tr("Finished..."), 2000);
+        this->statusBar()->showMessage(tr("Finished!"), 2000);
     } else {
         setPixToScene();  // reverts to unmodified pixs, as scene shows modified
                           // image
@@ -865,6 +769,7 @@ void MainWindow::readSettings(bool init) {
             setZoom(settings.value("lastZoom").toFloat());
         actionFixPasteFromPDF->setChecked(
             settings.value("fixPasteFromPDF").toBool());
+        actionShowLogger->setChecked(settings.value("loggerVisible").toBool());
         settings.endGroup();
     }
 }
@@ -881,6 +786,7 @@ void MainWindow::writeSettings() {
     settings.setValue("state", saveState());
     settings.setValue("lastZoom", gViewResult->transform().m11());
     settings.setValue("fixPasteFromPDF", actionFixPasteFromPDF->isChecked());
+    settings.setValue("loggerVisible", actionShowLogger->isChecked());
     settings.endGroup();
 }
 
