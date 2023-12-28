@@ -88,6 +88,8 @@ MainWindow::MainWindow(QWidget *parent, const QString &fileName)
 
     createUndoStackAndActions();
     dockWidget->setVisible(actionShowLogger->isChecked());
+    m_psMainWindow = this;
+    leptSetStderrHandler(myErrorHandler);
 }
 
 MainWindow::~MainWindow() {

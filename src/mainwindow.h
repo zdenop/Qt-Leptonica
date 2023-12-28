@@ -30,6 +30,7 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
                         const QString &fileName = QString());
     ~MainWindow();
     static const char *qString2Char(QString string);
+    static void myErrorHandler(const char *msg);
 
    public slots:
     QImage PixToQImage(PIX *pixs);
@@ -43,6 +44,7 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
     void closeEvent(QCloseEvent *event);
 
    private:
+    static MainWindow *m_psMainWindow;
     QFileSystemWatcher *fileWatcher;
     void setFileWatcher(const QString &fileName);
     void readSettings(bool init);
