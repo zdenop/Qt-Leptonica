@@ -49,6 +49,18 @@ set(project_HEADERS
     dialogs/cdbdialog.h
     dialogs/combodialog.h)
 
+if(NOT CMAKE_BUILD_TYPE)
+  message(STATUS "Setting build type to 'Release' as none was specified.")
+  set(CMAKE_BUILD_TYPE
+      Release
+      CACHE STRING "Choose the type of build." FORCE)
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release")
+endif()
+
+STRING(TOUPPER ${CMAKE_BUILD_TYPE} BUILD_TYPE)
+if(WIN32 AND ${BUILD_TYPE} MATCHES RELEASE)
+   set(EXTRA_FLAGS "WIN32")
+endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     enable_language("RC")
@@ -56,7 +68,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 endif()
 
 add_executable(
-  ${CMAKE_PROJECT_NAME} ${project_SOURCES} ${UI_HEADERS}
+  ${CMAKE_PROJECT_NAME} ${EXTRA_FLAGS} ${project_SOURCES} ${UI_HEADERS}
                                ${project_HEADERS} ${project_RESOURCES} ${WIN32_RESOURCES})
 target_link_libraries(
   ${CMAKE_PROJECT_NAME} PRIVATE Qt5::Widgets Qt5::Svg ${Leptonica_LIBRARIES})
