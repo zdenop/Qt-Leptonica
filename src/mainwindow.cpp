@@ -195,8 +195,8 @@ void MainWindow::openImage(const QString &imageFileName) {
     if (!imageFileName.isEmpty()) {
         pixs = pixRead(qString2Char(imageFileName));
         if (!pixs) {
-            this->statusBar()->showMessage(
-                tr("Cannot open input file: %1").arg(imageFileName), 4000);
+            textEdit->append(
+                tr("Cannot open input file: %1").arg(imageFileName));
             return;
         }
     }
@@ -256,7 +256,7 @@ void MainWindow::on_actionOpenFile_triggered() {
 
 void MainWindow::on_actionReloadFile_triggered() {
     if (modified)  // reload only if file was modified...
-        statusBar()->showMessage(tr("Reloading file...."));
+        textEdit->append(tr("Reloading file...."));
     openImage(recentFile);
     statusBar()->showMessage(tr("File reloaded."), 2000);
 }
@@ -270,10 +270,10 @@ void MainWindow::on_actionSave_triggered() {
     }
     ret = pixWrite(qString2Char(recentFile), pixs, format);
     if (ret) {
-        statusBar()->showMessage(
-            tr("Saving failed with error code %1").arg(ret), 2000);
+        textEdit->append(
+            tr("Saving failed with error code: %1").arg(ret));
     } else {
-        statusBar()->showMessage(tr("File saved"), 2000);
+        statusBar()->showMessage(tr("File saved."), 2000);
         modified = false;
         updateTitle();
     }
@@ -294,10 +294,10 @@ void MainWindow::on_actionSaveAs_triggered() {
         ret = pixWrite(cFilename, pixs, format);
     }
     if (ret) {
-        statusBar()->showMessage(
-            tr("Saving failed with error code %1").arg(ret), 2000);
+        textEdit->append(
+            tr("Saving failed with error code: %1").arg(ret));
     } else {
-        statusBar()->showMessage(tr("File saved as %1").arg(fileName), 2000);
+        statusBar()->showMessage(tr("File saved as '%1'.").arg(fileName), 2000);
         addToResentFiles(fileName);
         modified = false;
         updateTitle();
@@ -475,22 +475,21 @@ void MainWindow::on_actionDetectOrientation_triggered() {
     if ((leftconf1 < -1) && abs(leftconf1) > abs(upconf1)) alt_rot = 270;
 
     if (orient == L_TEXT_ORIENT_UNKNOWN) {
-        statusBar()->showMessage(
+        textEdit->append(
             tr("Confidence is low; no determination is made. "
                "But maybe there is %1 deg rotation.")
-                .arg(alt_rot),
-            4000);
+                .arg(alt_rot));
     } else if (orient == L_TEXT_ORIENT_UP) {
-        statusBar()->showMessage(tr("Text is rightside-up"), 4000);
+        textEdit->append(tr("Text is rightside-up"));
         alt_rot = 0;
     } else if (orient == L_TEXT_ORIENT_LEFT) {
-        statusBar()->showMessage(tr("Text is rotated 90 deg ccw"), 4000);
+        textEdit->append(tr("Text is rotated 90 deg ccw"));
         alt_rot = 90;
     } else if (orient == L_TEXT_ORIENT_DOWN) {
-        statusBar()->showMessage(tr("Text is upside-down"), 4000);
+        textEdit->append(tr("Text is upside-down"));
         alt_rot = 180;
     } else { /* orient == L_TEXT_ORIENT_RIGHT */
-        statusBar()->showMessage(tr("Text is rotated 90 deg cw"), 4000);
+        textEdit->append(tr("Text is rotated 90 deg cw"));
         alt_rot = 270;
     }
     pixDestroy(&fpixs);
@@ -528,7 +527,7 @@ void MainWindow::on_actionPaste_triggered() {
                 .arg(newImage.width())
                 .arg(newImage.height())
                 .arg(newImage.depth());
-        statusBar()->showMessage(message);
+        textEdit->append(message);
         PIX *clipboard = QImageToPIX(newImage);
         if (clipboard) {
             recentFile = "";
@@ -604,16 +603,14 @@ void MainWindow::on_actionBinarizeUnIl_triggered() {
     QApplication::setOverrideCursor(Qt::WaitCursor);
     PIX *pixc, *pixg, *pixsg, *pixd;
     if (pixs->d != 32) {
-        this->statusBar()->showMessage(
-            tr("Function need input image with 32 bit depth."));
+        textEdit->append(tr("Function need input image with 32 bit depth."));
         QApplication::restoreOverrideCursor();
         return;
     }
     /* Convert the RGB image to grayscale. */
     pixsg = pixConvertRGBToLuminance(pixs);
     if (!pixsg) {
-        this->statusBar()->showMessage(
-            tr("Convert the RGB image to grayscale failed!"));
+        textEdit->append(tr("Convert the RGB image to grayscale failed!"));
         QApplication::restoreOverrideCursor();
         return;
     }
@@ -640,7 +637,7 @@ void MainWindow::on_actionBinarizeUnIl_triggered() {
     storeUndoPIX(binarized);
     pixDestroy(&binarized);
     pixDestroy(&pixd);
-    this->statusBar()->showMessage(tr("Finished..."), 2000);
+    this->statusBar()->showMessage(tr("Finished!"), 2000);
     QApplication::restoreOverrideCursor();
 }
 
@@ -659,7 +656,7 @@ void MainWindow::on_actionDewarp_triggered() {
 #endif
     storeUndoPIX(dewarped);
     pixDestroy(&dewarped);
-    this->statusBar()->showMessage(tr("Finished..."), 2000);
+    this->statusBar()->showMessage(tr("Finished!"), 2000);
     QApplication::restoreOverrideCursor();
 }
 
@@ -673,7 +670,7 @@ void MainWindow::on_actionDeskew_triggered() {
     Pix *deskewd = pixDeskew(pixs, DESKEW_REDUCTION);
     storeUndoPIX(deskewd);
     pixDestroy(&deskewd);
-    this->statusBar()->showMessage(tr("Finished..."), 2000);
+    this->statusBar()->showMessage(tr("Finished!"), 2000);
     QApplication::restoreOverrideCursor();
 }
 
@@ -691,7 +688,7 @@ void MainWindow::on_actionRemovelines_triggered() {
     storeUndoPIX(withoutLines);
     pixDestroy(&withoutLines);
     pixaDestroy(&pixa);
-    this->statusBar()->showMessage(tr("Finished..."), 2000);
+    this->statusBar()->showMessage(tr("Finished!"), 2000);
 }
 
 /*
@@ -706,7 +703,7 @@ void MainWindow::on_actionConvert2GS_triggered() {
     }
     storeUndoPIX(processedPix);
     pixDestroy(&processedPix);
-    this->statusBar()->showMessage(tr("Finished..."), 2000);
+    this->statusBar()->showMessage(tr("Finished!"), 2000);
 }
 
 /*
@@ -725,7 +722,7 @@ void MainWindow::on_actionCleanDarkBackground_triggered() {
         PIX *cleaned = cleanDarkBackground(blackval, whiteval, thresh);
         storeUndoPIX(cleaned);
         pixDestroy(&cleaned);
-        this->statusBar()->showMessage(tr("Finished..."), 2000);
+        this->statusBar()->showMessage(tr("Finished!"), 2000);
     } else {
         setPixToScene();  // reverts to unmodified pixs, as scene shows modified
                           // image
