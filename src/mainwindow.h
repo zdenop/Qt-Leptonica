@@ -8,19 +8,15 @@
 #include <QFileDialog>
 #include <QFileSystemWatcher>
 #include <QGraphicsItem>
+#include <QGuiApplication>
 #include <QLabel>
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QSettings>
 #include <stack>
 
-#include "ui_mainwindow.h"
-
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-#include <QGuiApplication>
-#endif
-
 #include "scene.h"
+#include "ui_mainwindow.h"
 
 class MainWindow : public QMainWindow, public Ui::MainWindow {
     Q_OBJECT
@@ -77,7 +73,9 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
     int blackval, whiteval, thresh;
     void createUndoStackAndActions();
     void cleanUndoStack();
-    static void customMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
+    static void customMessageHandler(QtMsgType type,
+                                     const QMessageLogContext &context,
+                                     const QString &msg);
 
    private Q_SLOTS:
     void on_actionOpenFile_triggered();

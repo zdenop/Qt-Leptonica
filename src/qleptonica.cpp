@@ -1,5 +1,6 @@
-#include "mainwindow.h"
 #include "qleptonica.h"
+
+#include "mainwindow.h"
 
 /**
  * List of Leptonica formats
@@ -46,7 +47,8 @@ PIXA *lineremoval(PIX *pix_input) {
     PIXA *pixa;
 
     if (pix_input->d != 8) {
-        qDebug() << "Failure: Function pixRotateAMGray requires 8 bpp image depth.";
+        qDebug()
+            << "Failure: Function pixRotateAMGray requires 8 bpp image depth.";
         return 0;
     }
 
@@ -151,14 +153,14 @@ QImage MainWindow::PixToQImage(PIX *pixs) {
     result.setDotsPerMeterY(yres * toDPM);
 
     switch (depth) {
-    case 1:
-        result.setColorTable(_bwCT);
-        break;
-    case 8:
-        result.setColorTable(_grayscaleCT);
-        break;
-    default:
-        result.setColorTable(_grayscaleCT);
+        case 1:
+            result.setColorTable(_bwCT);
+            break;
+        case 8:
+            result.setColorTable(_grayscaleCT);
+            break;
+        default:
+            result.setColorTable(_grayscaleCT);
     }
 
     if (result.isNull()) {

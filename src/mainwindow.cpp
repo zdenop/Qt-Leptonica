@@ -101,7 +101,6 @@ MainWindow::~MainWindow() {
     cleanUndoStack();
 }
 
-
 void MainWindow::updateRecentFileActions() {
     QSettings settings(QSettings::IniFormat, QSettings::UserScope,
                        SETTING_ORGANIZATION, SETTING_APPLICATION);
@@ -131,7 +130,6 @@ void MainWindow::openRecentFile() {
         on_actionFit_to_window_triggered();
     }
 }
-
 
 /*
  * Provide information about application
@@ -774,8 +772,7 @@ void MainWindow::readSettings(bool init) {
             setZoom(settings.value("lastZoom").toFloat());
         actionFixPasteFromPDF->setChecked(
             settings.value("fixPasteFromPDF").toBool());
-        actionShowLogger->setChecked(
-            settings.value("loggerVisible").toBool());
+        actionShowLogger->setChecked(settings.value("loggerVisible").toBool());
         settings.endGroup();
     }
 }
