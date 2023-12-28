@@ -28,5 +28,6 @@
     <file alias="crop.svg">images/crop-tool-button.svg</file>
     <file alias="undo">images/undo.svg</file>
     <file alias="redo">images/redo.svg</file>
+    <file alias="grayscale">images/grayscale.svg</file>
   </qresource>
 </RCC>

@@ -138,6 +138,7 @@
    <addaction name="actionDeskew"/>
    <addaction name="actionCleanDarkBackground"/>
    <addaction name="actionRemovelines"/>
+   <addaction name="actionConvert2GS"/>
   </widget>
   <action name="actionAbout">
    <property name="icon">
@@ -421,6 +422,10 @@
    </property>
   </action>
   <action name="actionConvert2GS">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/grayscale</normaloff>:/grayscale</iconset>
+   </property>
    <property name="text">
     <string>Convert to GrayScale</string>
    </property>

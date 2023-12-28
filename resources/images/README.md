@@ -11,3 +11,4 @@ Excluding:
  - if_loop_326543.svg	https://www.iconfinder.com/icons/326543/loop_reload_replay_icon#size=512
  - undo	https://iconscout.com/free-icon/undo-1781799
  - redo https://iconscout.com/free-icon/redo-1779890
+ - grayscale	https://staging.svgrepo.com/svg/500881/grayscale	COLLECTION: Ligature Symbols Icons	LICENSE: OFL License	AUTHOR: kudakurage
