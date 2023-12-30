@@ -530,7 +530,7 @@ void MainWindow::on_actionPaste_triggered() {
         textEdit->append(message);
         PIX *clipboard = QImageToPIX(newImage);
         if (clipboard) {
-            recentFile = "";
+            recentFile = "Untitled.png";  // TODO: read from settings
             if (actionFixPasteFromPDF->isChecked()) {
                 l_float32 scalex =
                     (l_float32)clipboard->h / (l_float32)clipboard->w;
@@ -542,7 +542,12 @@ void MainWindow::on_actionPaste_triggered() {
             } else {
                 storeUndoPIX(clipboard);
             }
+            // TODO: read from settings
             setWindowFilePath(QString());
+            pixSetInputFormat(pixs, IFF_PNG);
+            l_int32 res = 300;
+            pixGetResolution(pixs, &res, &res);
+            // end of TODO ;-)
             pixDestroy(&clipboard);
         }
     }
