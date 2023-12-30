@@ -97,6 +97,7 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
     void on_actionRotate180_triggered();
     void on_actionDetectOrientation_triggered();
 
+    void on_actionCopy_triggered();
     void on_actionPaste_triggered();
     void on_actionChange_resolution_triggered();
     void on_actionSetFormat_triggered();

@@ -13,6 +13,7 @@
     <file>images/zoom-original.svg</file>
     <file>images/zoom-in.svg</file>
     <file>images/zoom-out.svg</file>
+    <file alias="copy">images/edit-copy.svg</file>
     <file alias="paste">images/edit-paste.svg</file>
     <file alias="rotateCW.svg">images/object-rotate-right.svg</file>
     <file alias="rotateCCW.svg">images/object-rotate-left.svg</file>

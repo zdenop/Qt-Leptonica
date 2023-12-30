@@ -91,6 +91,7 @@ MainWindow::MainWindow(QWidget *parent, const QString &fileName)
     m_psMainWindow = this;
     leptSetStderrHandler(myErrorHandler);
     qInstallMessageHandler(customMessageHandler);
+    actionCopy->setShortcuts(QKeySequence::Copy);
 }
 
 MainWindow::~MainWindow() {
@@ -514,6 +515,13 @@ static QImage clipboardImage() {
         }
     }
     return QImage();
+}
+
+void MainWindow::on_actionCopy_triggered() {
+#ifndef QT_NO_CLIPBOARD
+    QImage image = PixToQImage(pixs);
+    QApplication::clipboard()->setImage(image, QClipboard::Clipboard);
+#endif  // !QT_NO_CLIPBOARD
 }
 
 void MainWindow::on_actionPaste_triggered() {

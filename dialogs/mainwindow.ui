@@ -76,6 +76,7 @@
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
     <addaction name="separator"/>
+    <addaction name="actionCopy"/>
     <addaction name="actionPaste"/>
     <addaction name="actionFixPasteFromPDF"/>
     <addaction name="separator"/>
@@ -401,6 +402,15 @@
    </property>
    <property name="shortcut">
     <string>U</string>
+   </property>
+  </action>
+  <action name="actionCopy">
+   <property name="icon">
+    <iconset resource="../resources/application.qrc">
+     <normaloff>:/copy</normaloff>:/copy</iconset>
+   </property>
+   <property name="text">
+    <string>Copy</string>
    </property>
   </action>
   <action name="actionPaste">
