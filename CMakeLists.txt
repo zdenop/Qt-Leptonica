@@ -8,7 +8,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC OFF)  # https://stackoverflow.com/questions/46862737/cmake-qt-uic-failed
  
 find_package(Qt5 REQUIRED Widgets Svg)
-find_package(leptonica REQUIRED)
+find_package(Leptonica REQUIRED)
 
 include_directories(
     ${Leptonica_INCLUDE_DIRS}
