@@ -462,11 +462,26 @@ void MainWindow::on_actionRotate180_triggered() { rotate(2); }
  * Page orientation detection (four 90 degree angles) Rasterop implementation
  */
 void MainWindow::on_actionDetectOrientation_triggered() {
-    l_int32 orient, alt_rot = 0;
+    l_int32 orient, alt_rot = 0, xres, yres;
     l_float32 upconf1, leftconf1;
-    PIX *fpixs;
+    PIX *fpixs, *pix2;
+    // image should have a resolution between 150 and 300 ppi
+    pixGetResolution(pixs, &xres, &yres);
+    if (xres == 0){
+        textEdit->append(
+            tr("Image has no information about resolution!"));
+    }
+    if (xres != 0 && (xres < 150 || xres > 300)) {
+        l_float32 scale_factor = 200.0/xres ;
+        textEdit->append(
+            tr("Image resolution is %1: changing resolution by factor %2.")
+                .arg(xres).arg(scale_factor));
+        pix2 = pixScale(pixs, scale_factor, scale_factor);  // reduces resolution to about 200 ppi
+    } else {
+        pix2 = pixClone(pixs);
+    }
 
-    fpixs = pixConvertTo1(pixs, 130);
+    fpixs = pixConvertTo1(pix2, 130);
     pixOrientDetect(fpixs, &upconf1, &leftconf1, 0, 0);
     makeOrientDecision(upconf1, leftconf1, 0, 0, &orient, 1);
 
@@ -493,6 +508,7 @@ void MainWindow::on_actionDetectOrientation_triggered() {
         textEdit->append(tr("Text is rotated 90 deg cw"));
         alt_rot = 270;
     }
+    pixDestroy(&pix2);
     pixDestroy(&fpixs);
 
     if (alt_rot) {
