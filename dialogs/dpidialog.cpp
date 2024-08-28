@@ -23,12 +23,15 @@
 #include "dialogs/dpidialog.h"
 
 DPIDialog::DPIDialog(QWidget* parent, int x_dpi, int y_dpi) : QDialog(parent) {
-    setupUi(this);
-    xDPI->setValue(x_dpi);
-    yDPI->setValue(y_dpi);
+    setupUi(this);  // Initializes the UI components
+    xDPI->setValue(x_dpi);  // Set initial x DPI value
+    yDPI->setValue(y_dpi);  // Set initial y DPI value
 
+    // Connect the dialog's buttons to the accept and reject slots
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 }
 
-void DPIDialog::closeEvent(QCloseEvent* event) { event->accept(); }
+void DPIDialog::closeEvent(QCloseEvent* event) {
+    event->accept();  // Accept the close event, allowing the dialog to close
+}

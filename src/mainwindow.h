@@ -73,6 +73,8 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
     int blackval, whiteval, thresh;
     void createUndoStackAndActions();
     void cleanUndoStack();
+    void cleanRedoStack();
+    void clearPixStack(std::stack<PIX*>& stack);
     static void customMessageHandler(QtMsgType type,
                                      const QMessageLogContext &context,
                                      const QString &msg);

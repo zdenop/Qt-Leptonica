@@ -6,7 +6,9 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC OFF)  # https://stackoverflow.com/questions/46862737/cmake-qt-uic-failed
- 
+
+set(CMAKE_CXX_STANDARD 17)
+
 find_package(Qt5 REQUIRED Widgets Svg)
 find_package(Leptonica REQUIRED)
 
