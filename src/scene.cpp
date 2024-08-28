@@ -8,47 +8,55 @@
 #include <QUrl>
 #include <QWidget>
 
-Scene::Scene() {
+Scene::Scene() : m_rubberBand(nullptr), m_image(nullptr), m_init(false) {
     setBackgroundBrush(Qt::gray);
-    this->installEventFilter(this);
-    m_rubberBand = 0;
-    m_image = 0;
-    m_init = false;
+    installEventFilter(this);
 }
 
-Scene::~Scene() {
-    if (m_rubberBand) removeRubberBand();
-    if (m_image) removeImage();
-}
+Scene::~Scene() = default;
 
-void Scene::setImage(QPixmap pixmap) { m_image = this->addPixmap(pixmap); }
+void Scene::setImage(const QPixmap& pixmap) {
+    m_image = addPixmap(pixmap);
+}
 
 void Scene::removeRubberBand() {
     if (m_rubberBand) {
-        this->removeItem(m_rubberBand);
-        delete (m_rubberBand);
-        m_rubberBand = 0;
+        removeItem(m_rubberBand);
+        m_rubberBand = nullptr;
     }
 }
 
 void Scene::removeImage() {
-    if (m_rubberBand) removeRubberBand();
-    this->removeItem(static_cast<QGraphicsItem*>(m_image));
-    delete m_image;
-    m_image = 0;
+    removeRubberBand();
+    if (m_image) {
+        removeItem(m_image);
+        m_image = nullptr;
+    }
 }
 
-void Scene::imageCrop() { emit imageCropTriggered(m_rubberBand->areaRect()); }
+void Scene::imageCrop() {
+    emit imageCropTriggered(m_rubberBand->areaRect());
+}
 
-void Scene::imageInfo() { emit imageInfoTriggered(); }
+void Scene::imageInfo() {
+    emit imageInfoTriggered();
+}
 
-void Scene::rotateCW() { emit rotateImage(1); }
+void Scene::rotateCW() {
+    emit rotateImage(1);
+}
 
-void Scene::rotateCCW() { emit rotateImage(3); }
+void Scene::rotateCCW() {
+    emit rotateImage(3);
+}
 
-void Scene::rotateHalf() { emit rotateImage(2); }
+void Scene::rotateHalf() {
+    emit rotateImage(2);
+}
 
-void Scene::detectOrientation() { emit detectOrientationSignal(); }
+void Scene::detectOrientation() {
+    emit detectOrientationSignal();
+}
 
 void Scene::dragEnterEvent(QGraphicsSceneDragDropEvent* event) {
     event->acceptProposedAction();
@@ -63,78 +71,57 @@ void Scene::dragMoveEvent(QGraphicsSceneDragDropEvent* event) {
 }
 
 void Scene::dropEvent(QGraphicsSceneDragDropEvent* event) {
-    QList<QUrl> urls = event->mimeData()->urls();
-    if (urls.count()) {
-        QString filename = urls[0].toLocalFile();
-        emit dropedFilename(filename);
+    const auto& urls = event->mimeData()->urls();
+    if (!urls.isEmpty()) {
+        emit dropedFilename(urls.first().toLocalFile());
         event->acceptProposedAction();
     }
 }
 
 bool Scene::eventFilter(QObject* object, QEvent* event) {
     if (event->type() == QEvent::GraphicsSceneWheel) {
-        QGraphicsSceneWheelEvent* wheelEvent =
-            static_cast<QGraphicsSceneWheelEvent*>(event);
+        auto* wheelEvent = static_cast<QGraphicsSceneWheelEvent*>(event);
         if (wheelEvent->modifiers().testFlag(Qt::ControlModifier)) {
-            int delta = wheelEvent->delta();
-            qreal scale = 1.00;
-            if (delta > 0) {
-                scale = 1.10;
-            } else {
-                scale = 1 / 1.10;
-            }
+            const qreal scale = wheelEvent->delta() > 0 ? 1.10 : 1 / 1.10;
             emit sceneScaleChanged(scale);
             wheelEvent->accept();
             return true;
         }
     }
-
     return false;
 }
 
 void Scene::contextMenuEvent(QGraphicsSceneContextMenuEvent* event) {
     event->accept();
+    auto menu = std::make_unique<QMenu>();
+
     if (m_rubberBand) {
-        QMenu* menu = new QMenu();
-        QAction* ImageCropAction =
-            menu->addAction(QIcon(":/crop.svg"), tr("Crop area"));
-        connect(ImageCropAction, SIGNAL(triggered()), this, SLOT(imageCrop()));
-        menu->addSeparator();
-        menu->exec(event->screenPos());
-        menu->deleteLater();
+        auto* imageCropAction = menu->addAction(QIcon(":/crop.svg"), tr("Crop area"));
+        connect(imageCropAction, &QAction::triggered, this, &Scene::imageCrop);
     } else {
-        QMenu* menu = new QMenu();
-        QAction* ImageInfoAction =
-            menu->addAction(QIcon(":/info.svg"), tr("Image info"));
-        connect(ImageInfoAction, SIGNAL(triggered()), this, SLOT(imageInfo()));
+        auto* imageInfoAction = menu->addAction(QIcon(":/info.svg"), tr("Image info"));
+        connect(imageInfoAction, &QAction::triggered, this, &Scene::imageInfo);
         menu->addSeparator();
 
-        QAction* rotateCWAction =
-            menu->addAction(QIcon(":/rotateCW.svg"), tr("Rotate 90° CW"));
-        connect(rotateCWAction, SIGNAL(triggered()), this, SLOT(rotateCW()));
+        auto* rotateCWAction = menu->addAction(QIcon(":/rotateCW.svg"), tr("Rotate 90° CW"));
+        connect(rotateCWAction, &QAction::triggered, this, &Scene::rotateCW);
 
-        QAction* rotateCCWAction =
-            menu->addAction(QIcon(":/rotateCCW.svg"), tr("Rotate 90° CCW"));
-        connect(rotateCCWAction, SIGNAL(triggered()), this, SLOT(rotateCCW()));
+        auto* rotateCCWAction = menu->addAction(QIcon(":/rotateCCW.svg"), tr("Rotate 90° CCW"));
+        connect(rotateCCWAction, &QAction::triggered, this, &Scene::rotateCCW);
 
-        QAction* rotateHalfAction =
-            menu->addAction(QIcon(":/rotate_180"), tr("Rotate 180°"));
-        connect(rotateHalfAction, SIGNAL(triggered()), this,
-                SLOT(rotateHalf()));
-        QAction* detectOrientationAction = menu->addAction(
-            QIcon(":/orientation.svg"), tr("Detect orientation"));
-        detectOrientationAction->setToolTip(
-            tr("Page orientation detection (four 90 degree angles)"));
-        connect(detectOrientationAction, SIGNAL(triggered()), this,
-                SLOT(detectOrientation()));
-        menu->exec(event->screenPos());
-        menu->deleteLater();
+        auto* rotateHalfAction = menu->addAction(QIcon(":/rotate_180"), tr("Rotate 180°"));
+        connect(rotateHalfAction, &QAction::triggered, this, &Scene::rotateHalf);
+
+        auto* detectOrientationAction = menu->addAction(QIcon(":/orientation.svg"), tr("Detect orientation"));
+        detectOrientationAction->setToolTip(tr("Page orientation detection (four 90 degree angles)"));
+        connect(detectOrientationAction, &QAction::triggered, this, &Scene::detectOrientation);
     }
+
+    menu->exec(event->screenPos());
 }
 
 void Scene::mousePressEvent(QGraphicsSceneMouseEvent* event) {
-    if (event->modifiers() == Qt::ControlModifier &&
-        event->button() == Qt::LeftButton) {
+    if (event->modifiers() == Qt::ControlModifier && event->button() == Qt::LeftButton) {
         origPoint = event->scenePos();
     }
     QGraphicsScene::mousePressEvent(event);
@@ -144,7 +131,7 @@ void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent* event) {
     if (!m_rubberBand && m_image && event->modifiers() == Qt::ControlModifier) {
         m_rubberBand = new AreaItem(m_image);
         m_rubberBand->setAreaRect(QRectF(origPoint, event->scenePos()));
-        this->addItem(m_rubberBand);
+        addItem(m_rubberBand);
         m_init = true;
     }
     if (m_init) {
@@ -165,12 +152,12 @@ void Scene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) {
 }
 
 void Scene::keyPressEvent(QKeyEvent* event) {
-    // Not working on m_rubberBand
-    if (event->key() == Qt::Key_Delete)
-        foreach (QGraphicsItem* item, selectedItems()) {
+    if (event->key() == Qt::Key_Delete) {
+        for (auto* item : selectedItems()) {
             removeItem(item);
             delete item;
         }
-    else
+    } else {
         QGraphicsScene::keyPressEvent(event);
+    }
 }
