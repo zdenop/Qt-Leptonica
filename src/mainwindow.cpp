@@ -128,7 +128,7 @@ void MainWindow::openRecentFile() {
 
     if (action) {
         openImage(action->data().toString());
-        on_actionFit_to_window_triggered();
+        if (pixs) on_actionFit_to_window_triggered();
     }
 }
 
