@@ -7,6 +7,8 @@
 /test/*
 win32*/*
 win64*/*
+backups/*
+*.user*
 *.patch
 qt-leptonica.pro.*
 *.Debug
