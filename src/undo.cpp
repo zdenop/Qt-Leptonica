@@ -51,21 +51,31 @@ void MainWindow::storeUndoPIX(PIX *newPix) {
         pixDestroy(&pixs);
     }
     if (!actionUndo->isEnabled()) actionUndo->setDisabled(false);
+    // any new action should clear redo stack
+    if (!redoPixStack.empty()) cleanRedoStack();
     pixs = pixCopy(NULL, newPix);
     setPixToScene();
     modified = true;
     updateTitle();
 }
 
+void MainWindow::clearPixStack(std::stack<PIX*>& stack)
+{
+    while (!stack.empty()) {
+        pixDestroy(&stack.top());
+        stack.pop();
+    }
+}
+
 void MainWindow::cleanUndoStack() {
-    while (!undoPixStack.empty()) {
-        pixDestroy(&undoPixStack.top());
-        undoPixStack.pop();
-    }
+    clearPixStack(undoPixStack);
     actionUndo->setDisabled(true);
-    while (!redoPixStack.empty()) {
-        pixDestroy(&redoPixStack.top());
-        redoPixStack.pop();
-    }
+    clearPixStack(redoPixStack);
+    actionRedo->setDisabled(true);
+}
+
+void MainWindow::cleanRedoStack()
+{
+    clearPixStack(redoPixStack);
     actionRedo->setDisabled(true);
 }
