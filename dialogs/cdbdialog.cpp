@@ -35,20 +35,8 @@ void CDBDialog::setValues(int blackval, int whiteval, int thresh) {
     this->lcdNumber->display(thresh);
 }
 
-void CDBDialog::on_blackVal_valueChanged(int value) {
-    emit cdbParamsChanged(blackVal->value(), whiteVal->value(),
-                          treshold->value());
-}
-
-void CDBDialog::on_whiteVal_valueChanged(int value) {
-    emit cdbParamsChanged(blackVal->value(), whiteVal->value(),
-                          treshold->value());
-}
-
 void CDBDialog::on_treshold_valueChanged(int value) {
     this->lcdNumber->display(value);
-    emit cdbParamsChanged(blackVal->value(), whiteVal->value(),
-                          treshold->value());
 }
 
 void CDBDialog::closeEvent(QCloseEvent* event) { event->accept(); }

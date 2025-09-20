@@ -1,0 +1,5 @@
+/app/CMakeFiles/Qt-leptonica.dir
+/app/CMakeFiles/edit_cache.dir
+/app/CMakeFiles/rebuild_cache.dir
+/app/CMakeFiles/Qt-leptonica_autogen_timestamp_deps.dir
+/app/CMakeFiles/Qt-leptonica_autogen.dir

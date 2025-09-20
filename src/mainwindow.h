@@ -69,8 +69,10 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
     void setZoom(float scale);
     bool setPixToScene();
     bool setPixToScene(PIX *lep_pix);
-    PIX *cleanDarkBackground(int blackval, int whiteval, int thresh);
+    PIX *cleanDarkBackground();
     int blackval, whiteval, thresh;
+    PIX *pix_clean_bg_normalized;
+    PIX *pix_preview_cleaned;
     void createUndoStackAndActions();
     void cleanUndoStack();
     void cleanRedoStack();
@@ -108,6 +110,8 @@ class MainWindow : public QMainWindow, public Ui::MainWindow {
     void on_actionDeskew_triggered();
     void on_actionCleanDarkBackground_triggered();
     void slotCleanDarkBackground(int blackval, int whiteval, int thresh);
+    void previewCleanDarkBackground(int blackval, int whiteval);
+    void tmpCleanDarkBackground(int thresh);
     void on_actionRemovelines_triggered();
     void on_actionConvert2GS_triggered();
 

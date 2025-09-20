@@ -34,15 +34,10 @@ class CDBDialog : public QDialog, public Ui::CDBDialog {
     explicit CDBDialog(QWidget* parent = 0);
     void setValues(int blackval, int whiteval, int thresh);
 
-   signals:
-    void cdbParamsChanged(int blackval, int whiteval, int thresh);
-
    protected:
     void closeEvent(QCloseEvent* event);
 
    private Q_SLOTS:
-    void on_blackVal_valueChanged(int value);
-    void on_whiteVal_valueChanged(int value);
     void on_treshold_valueChanged(int value);
 };
 

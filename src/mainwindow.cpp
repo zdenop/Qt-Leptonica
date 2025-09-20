@@ -85,6 +85,8 @@ MainWindow::MainWindow(QWidget *parent, const QString &fileName)
     blackval = 70;
     whiteval = 180;
     thresh = 60;
+    pix_clean_bg_normalized = NULL;
+    pix_preview_cleaned = NULL;
 
     createUndoStackAndActions();
     dockWidget->setVisible(actionShowLogger->isChecked());
@@ -741,14 +743,21 @@ void MainWindow::on_actionConvert2GS_triggered() {
 void MainWindow::on_actionCleanDarkBackground_triggered() {
     CDBDialog cdb_dialog(this);
     cdb_dialog.setValues(blackval, whiteval, thresh);
-    connect(&cdb_dialog, SIGNAL(cdbParamsChanged(int, int, int)), this,
-            SLOT(slotCleanDarkBackground(int, int, int)));
+    tmpCleanDarkBackground(thresh);
+    previewCleanDarkBackground(blackval, whiteval);
+
+    connect(cdb_dialog.blackVal, qOverload<int>(&QSpinBox::valueChanged),
+            [&](int value) { previewCleanDarkBackground(value, cdb_dialog.whiteVal->value()); });
+    connect(cdb_dialog.whiteVal, qOverload<int>(&QSpinBox::valueChanged),
+            [&](int value) { previewCleanDarkBackground(cdb_dialog.blackVal->value(), value); });
+    connect(cdb_dialog.treshold, &QSlider::valueChanged,
+            [&](int value) { slotCleanDarkBackground(cdb_dialog.blackVal->value(), cdb_dialog.whiteVal->value(), value); });
 
     if (cdb_dialog.exec() == QDialog::Accepted) {
         blackval = cdb_dialog.blackVal->value();
         whiteval = cdb_dialog.whiteVal->value();
         thresh = cdb_dialog.treshold->value();
-        PIX *cleaned = cleanDarkBackground(blackval, whiteval, thresh);
+        PIX *cleaned = cleanDarkBackground();
         storeUndoPIX(cleaned);
         pixDestroy(&cleaned);
         this->statusBar()->showMessage(tr("Finished!"), 2000);
@@ -756,30 +765,53 @@ void MainWindow::on_actionCleanDarkBackground_triggered() {
         setPixToScene();  // reverts to unmodified pixs, as scene shows modified
                           // image
     }
+    pixDestroy(&pix_clean_bg_normalized);
+    pixDestroy(&pix_preview_cleaned);
+}
+
+void MainWindow::previewCleanDarkBackground(int blackval, int whiteval) {
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    // clean up previousely generated pix
+    if (pix_preview_cleaned) pixDestroy(&pix_preview_cleaned);
+
+    pix_preview_cleaned =
+        pixGammaTRC(NULL, pix_clean_bg_normalized, 1.0, blackval, whiteval);
+    setPixToScene(pix_preview_cleaned);  // live display of modified values
+    QApplication::restoreOverrideCursor();
+}
+
+void MainWindow::tmpCleanDarkBackground(int thresh) {
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    // clean up previousely generated pix
+    if (pix_clean_bg_normalized) pixDestroy(&pix_clean_bg_normalized);
+
+    pix_clean_bg_normalized =
+        pixBackgroundNorm(pixs, NULL, NULL, 10, 15, thresh, 25, 200, 2, 1);
+    QApplication::restoreOverrideCursor();
 }
 
 void MainWindow::slotCleanDarkBackground(int blackval, int whiteval,
                                          int thresh) {
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    PIX *pixt;
-    pixt = cleanDarkBackground(blackval, whiteval, thresh);
-    pixDestroy(&pixt);
-    QApplication::restoreOverrideCursor();
+    CDBDialog *cdb_dialog = qobject_cast<CDBDialog *>(sender()->parent());
+    if (cdb_dialog) {
+        thresh = cdb_dialog->treshold->value();
+        blackval = cdb_dialog->blackVal->value();
+        whiteval = cdb_dialog->whiteVal->value();
+    }
+    tmpCleanDarkBackground(thresh);
+    previewCleanDarkBackground(blackval, whiteval);
 }
 
 /*
  * Clean dark background of image
  * based on leptonica adaptmap_dark.c
  */
-PIX *MainWindow::cleanDarkBackground(int blackval, int whiteval, int thresh) {
+PIX *MainWindow::cleanDarkBackground() {
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    PIX *pix1, *pix2;
-    pix1 = pixBackgroundNorm(pixs, NULL, NULL, 10, 15, thresh, 25, 200, 2, 1);
-    pix2 = pixGammaTRC(NULL, pix1, 1.0, blackval, whiteval);
-    setPixToScene(pix2);  // live display of modified values
-    pixDestroy(&pix1);
+    PIX *pix1;
+    pix1 = pixGammaTRC(NULL, pix_clean_bg_normalized, 1.0, blackval, whiteval);
     QApplication::restoreOverrideCursor();
-    return pix2;
+    return pix1;
 }
 
 /*

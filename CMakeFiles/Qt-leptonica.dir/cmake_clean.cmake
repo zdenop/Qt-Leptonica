@@ -1,0 +1,43 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/Qt-leptonica_autogen.dir/AutogenUsed.txt"
+  "CMakeFiles/Qt-leptonica_autogen.dir/ParseCache.txt"
+  "Qt-leptonica_autogen"
+  "CMakeFiles/Qt-leptonica.dir/Qt-leptonica_autogen/3YJK5W5UP7/qrc_application.cpp.o"
+  "CMakeFiles/Qt-leptonica.dir/Qt-leptonica_autogen/3YJK5W5UP7/qrc_application.cpp.o.d"
+  "CMakeFiles/Qt-leptonica.dir/Qt-leptonica_autogen/mocs_compilation.cpp.o"
+  "CMakeFiles/Qt-leptonica.dir/Qt-leptonica_autogen/mocs_compilation.cpp.o.d"
+  "CMakeFiles/Qt-leptonica.dir/dialogs/cdbdialog.cpp.o"
+  "CMakeFiles/Qt-leptonica.dir/dialogs/cdbdialog.cpp.o.d"
+  "CMakeFiles/Qt-leptonica.dir/dialogs/combodialog.cpp.o"
+  "CMakeFiles/Qt-leptonica.dir/dialogs/combodialog.cpp.o.d"
+  "CMakeFiles/Qt-leptonica.dir/dialogs/dpidialog.cpp.o"
+  "CMakeFiles/Qt-leptonica.dir/dialogs/dpidialog.cpp.o.d"
+  "CMakeFiles/Qt-leptonica.dir/src/areaitem.cpp.o"
+  "CMakeFiles/Qt-leptonica.dir/src/areaitem.cpp.o.d"
+  "CMakeFiles/Qt-leptonica.dir/src/logger.cpp.o"
+  "CMakeFiles/Qt-leptonica.dir/src/logger.cpp.o.d"
+  "CMakeFiles/Qt-leptonica.dir/src/main.cpp.o"
+  "CMakeFiles/Qt-leptonica.dir/src/main.cpp.o.d"
+  "CMakeFiles/Qt-leptonica.dir/src/mainwindow.cpp.o"
+  "CMakeFiles/Qt-leptonica.dir/src/mainwindow.cpp.o.d"
+  "CMakeFiles/Qt-leptonica.dir/src/qleptonica.cpp.o"
+  "CMakeFiles/Qt-leptonica.dir/src/qleptonica.cpp.o.d"
+  "CMakeFiles/Qt-leptonica.dir/src/scene.cpp.o"
+  "CMakeFiles/Qt-leptonica.dir/src/scene.cpp.o.d"
+  "CMakeFiles/Qt-leptonica.dir/src/undo.cpp.o"
+  "CMakeFiles/Qt-leptonica.dir/src/undo.cpp.o.d"
+  "Qt-leptonica"
+  "Qt-leptonica.pdb"
+  "Qt-leptonica_autogen/3YJK5W5UP7/qrc_application.cpp"
+  "Qt-leptonica_autogen/mocs_compilation.cpp"
+  "Qt-leptonica_autogen/timestamp"
+  "ui_cdbdialog.h"
+  "ui_combodialog.h"
+  "ui_dpidialog.h"
+  "ui_mainwindow.h"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/Qt-leptonica.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

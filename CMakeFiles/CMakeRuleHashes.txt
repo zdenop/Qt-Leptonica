@@ -1,0 +1,9 @@
+# Hashes of file build rules.
+8c069df52082beee3c95ca17836fb8e2 CMakeFiles/Qt-leptonica_autogen
+8c069df52082beee3c95ca17836fb8e2 CMakeFiles/Qt-leptonica_autogen_timestamp_deps
+3b95666ea48b9cb9d760f44391ea7c46 Qt-leptonica_autogen/3YJK5W5UP7/qrc_application.cpp
+1fe244a29cc837611b9b09a9b782c436 Qt-leptonica_autogen/timestamp
+b231e5287382f03ad94b0cb8e710cfff ui_cdbdialog.h
+85bb52f77fbe5044f8839073fe157287 ui_combodialog.h
+348da961127b9986c6a41b529decf043 ui_dpidialog.h
+da6ed6f5f188476d311e0622866da283 ui_mainwindow.h

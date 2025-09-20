@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 
 project(Qt-leptonica CXX)
 
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -74,4 +75,4 @@ add_executable(
   ${CMAKE_PROJECT_NAME} ${EXTRA_FLAGS} ${project_SOURCES} ${UI_HEADERS}
                                ${project_HEADERS} ${project_RESOURCES} ${WIN32_RESOURCES})
 target_link_libraries(
-  ${CMAKE_PROJECT_NAME} PRIVATE Qt5::Widgets Qt5::Svg ${Leptonica_LIBRARIES})
+  ${CMAKE_PROJECT_NAME} PRIVATE Qt5::Widgets Qt5::Svg ${LEPTONICA_LIBRARY})
