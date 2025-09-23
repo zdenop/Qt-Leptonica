@@ -35,6 +35,7 @@ void CDBDialog::setValues(int blackval, int whiteval, int thresh) {
     this->lcdNumber->display(thresh);
 }
 
+
 void CDBDialog::on_treshold_valueChanged(int value) {
     this->lcdNumber->display(value);
 }
